@@ -9,7 +9,11 @@ public class CurrentGameModel {
 
     private GameState gameState;
 
-    private boolean isPLayerMaster;
+    private boolean isPLayerMaster = false;
+
+    public CurrentGameModel(){
+
+    }
 
     public CurrentGameModel(int playerId, GameConfig currentConfig, GameState gameState) {
         this.playerId = playerId;

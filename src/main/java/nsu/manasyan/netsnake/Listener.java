@@ -1,6 +1,5 @@
 package nsu.manasyan.netsnake;
 
-import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.models.MessageContext;
 import nsu.manasyan.netsnake.out.SnakesProto;
 

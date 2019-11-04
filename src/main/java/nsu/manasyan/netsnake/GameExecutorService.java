@@ -3,10 +3,14 @@ package nsu.manasyan.netsnake;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class GameExecutorService {
-    private static ExecutorService executorService = Executors.newCachedThreadPool();
+public final class GameExecutorService {
+    private GameExecutorService(){}
+
+    private static class SingletonHelper{
+        private static final ExecutorService executorService = Executors.newCachedThreadPool();
+    }
 
     public static ExecutorService getExecutorService() {
-        return executorService;
+        return SingletonHelper.executorService;
     }
 }
