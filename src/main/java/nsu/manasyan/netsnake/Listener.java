@@ -87,9 +87,28 @@ public class Listener {
 
     }
 
+    private void handleState(GameMessage message, InetSocketAddress address){
+        controller.updateGameState(message.getState());
+    }
+
+    private void handleAck(GameMessage message, InetSocketAddress address){
+        sentMessages.entrySet().removeIf(m -> message.getMsgSeq() == m.getValue().getMessage().getMsgSeq());
+    }
+
+    private void handlePing(GameMessage message, InetSocketAddress address){
+        controller.setAlive(address.getHostName(), address.getPort());
+    }
+
+    private void handleQuit(GameMessage message, InetSocketAddress address){
+        controller.removePlayer(address.getHostName(), address.getPort());
+    }
+
     private void initHandlers(){
         handlers.put(Type.JOIN_PLAY, this::handleJoinPlay);
         handlers.put(Type.STEER_UP, this::handleSteerUp);
+        handlers.put(Type.STATE, this::handleState);
+        handlers.put(Type.QUIT, this::handleState);
+        handlers.put(Type.ACK, this::handleAck);
     }
 
 

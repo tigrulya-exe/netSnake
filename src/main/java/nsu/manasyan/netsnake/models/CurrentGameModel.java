@@ -2,6 +2,9 @@ package nsu.manasyan.netsnake.models;
 
 import nsu.manasyan.netsnake.out.SnakesProto.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CurrentGameModel {
     private int playerId;
 
@@ -10,6 +13,9 @@ public class CurrentGameModel {
     private GameState gameState;
 
     private boolean isPLayerMaster = false;
+
+    // key - address:port, value - isAlive
+    private Map<String, Boolean> alivePlayers = new HashMap<>();
 
     public CurrentGameModel(){
 
@@ -52,5 +58,9 @@ public class CurrentGameModel {
 
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
+    }
+
+    public Map<String, Boolean> getAlivePlayers() {
+        return alivePlayers;
     }
 }
