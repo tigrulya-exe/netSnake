@@ -3,7 +3,6 @@ package nsu.manasyan.netsnake;
 import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.out.SnakesProto.*;
 
-import java.util.Collections;
 import java.util.List;
 
 public class CurrentGameController {
@@ -32,11 +31,13 @@ public class CurrentGameController {
         addSnake(player.getId());
     }
 
-    // TODO tmp
     public void removePlayer(String address, int port){
-        int playerId = getPlayerId(address,port);
-
         model.getAlivePlayers().remove(address + ":" + port);
+        removePlayer(getPlayerId(address,port));
+    }
+
+    // TODO tmp
+    public void removePlayer(int playerId){
         GameState gameState = model.getGameState();
         List<GamePlayer> otherPlayers = gameState.getPlayers().getOthersList();
         otherPlayers.removeIf(p -> p.getId() == playerId);
@@ -94,4 +95,22 @@ public class CurrentGameController {
 
         return -1;
     }
+
+//    public void becomeMaster(){
+//        int playerId = model.getPlayerId();
+//        GamePlayers.Builder gamePlayersBuilder = model.getGameState().getPlayers().toBuilder();
+//
+//
+//        int player = gamePlayersBuilder.getOthersList()
+//                .stream()
+//                .filter(p -> p.getId() == playerId)
+//                .findFirst()
+//                .get();
+//
+//        gamePlayersBuilder.
+//
+//        model.setGameState(model.getGameState().toBuilder().setPlayers(players).build());
+//        removeSnake(playerId);
+//
+//    }
 }

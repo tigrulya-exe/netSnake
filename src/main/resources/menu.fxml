@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" styleClass="anchor-pane" stylesheets="@view.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.manasyan.netsnake.controllers.MenuController">
+   <children>
+      <VBox layoutX="372.0" layoutY="190.0" prefHeight="381.0" prefWidth="269.0" spacing="40.0">
+         <children>
+            <Button fx:id="newGameButton" mnemonicParsing="false" onAction="#newGameClicked" prefHeight="100.0" prefWidth="365.0" text="NEW GAME" />
+            <Button mnemonicParsing="false" prefHeight="100.0" prefWidth="369.0" text="SEARCH GAMES" />
+            <Button fx:id="exitButton" mnemonicParsing="false" onAction="#exitClicked" prefHeight="100.0" prefWidth="342.0" text="EXIT" />
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </VBox>
+      <Label layoutX="378.0" layoutY="54.0" prefHeight="69.0" prefWidth="257.0" text="NET SNAKE" textAlignment="CENTER">
+         <font>
+            <Font size="54.0" />
+         </font>
+      </Label>
+      <Label id="studio_name" layoutX="801.0" layoutY="647.0" prefHeight="39.0" prefWidth="175.0" text="\@216b games" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="8.0" />
+   </children>
+</AnchorPane>
