@@ -1,4 +1,4 @@
-package nsu.manasyan.netsnake.controllers;
+package nsu.manasyan.netsnake.gui;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

@@ -1,4 +1,4 @@
-package nsu.manasyan.netsnake;
+package nsu.manasyan.netsnake.util;
 
 import nsu.manasyan.netsnake.out.SnakesProto.*;
 
@@ -21,8 +21,14 @@ public class GameObjectBuilder {
         GamePlayer master = initMaster();
         return GamePlayers
                 .newBuilder()
-                .setMaster(master)
+                .addPlayers(master)
                 .build();
+    }
+
+    public static GameMessage initPingMessage(){
+        GameMessage message = initMessage();
+        message.toBuilder().setPing(GameMessage.PingMsg.newBuilder().build());
+        return message;
     }
 
     public static GamePlayer initMaster() {
@@ -32,6 +38,7 @@ public class GameObjectBuilder {
                 .setIpAddress(DEFAULT_ADDRESS_STR)
                 .setPort(DEFAULT_PORT)
                 .setName(DEFAULT_NAME)
+                .setRole(NodeRole.MASTER)
                 .build();
     }
 
@@ -59,19 +66,12 @@ public class GameObjectBuilder {
         return foods;
     }
 
-    public static GameMessage initMessage(GameMessage.Type type){
+    public static GameMessage initMessage(){
         return GameMessage.newBuilder()
                 .setMsgSeq(currentGameMsgSeq++)
-                .setType(type)
                 .build();
     }
 
-    public static GameMessage initStateMessage(GameState state){
-        return initMessage(GameMessage.Type.STATE)
-                .newBuilderForType()
-                .setState(state)
-                .build();
-    }
 
     public static GameState.Snake initNewSnake(int playerId, GameState gameState){
         if(gameState == null){

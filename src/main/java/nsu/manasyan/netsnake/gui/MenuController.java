@@ -1,9 +1,8 @@
-package nsu.manasyan.netsnake.controllers;
+package nsu.manasyan.netsnake.gui;
 
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import nsu.manasyan.netsnake.NetSnakeApp;
 
 
 public class MenuController {

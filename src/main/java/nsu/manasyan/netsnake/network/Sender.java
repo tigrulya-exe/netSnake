@@ -1,33 +1,39 @@
-package nsu.manasyan.netsnake;
+package nsu.manasyan.netsnake.network;
 
+import nsu.manasyan.netsnake.util.GameExecutorService;
+import nsu.manasyan.netsnake.controllers.CurrentGameController;
 import nsu.manasyan.netsnake.models.MessageContext;
 import nsu.manasyan.netsnake.out.SnakesProto.*;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
+import java.net.*;
 import java.util.List;
 import java.util.Map;
 
 public class Sender {
     private static final int MAX_MSG_BUF_SIZE = 4096;
 
+    private InetAddress multicastAddress;
+
     private CurrentGameController controller;
 
     private Map<String, MessageContext> sentMessages;
 
-    private DatagramSocket socket;
+    private MulticastSocket socket;
+
+    private int port;
 
     private String name;
 
-    public Sender(CurrentGameController controller, DatagramSocket socket, Map<String, MessageContext> sentMessages, String name) {
+    public Sender(CurrentGameController controller, MulticastSocket socket, Map<String, MessageContext> sentMessages, String name) {
         this.socket = socket;
         this.name = name;
         this.sentMessages = sentMessages;
     }
 
     public void broadcastMessage(GameMessage message) {
+
+
         GameExecutorService.getExecutorService().submit(() ->
                 getPlayersToBroadcast().forEach(player -> {
 //                    if(isConfirmNeed) {
@@ -43,19 +49,20 @@ public class Sender {
                 }));
     }
 
-    public void broadcastState(){
-        broadcastMessage(GameObjectBuilder.initStateMessage(controller.getModel().getGameState()));
+    public void broadcastState(GameMessage.StateMsg state) throws IOException {
+        byte[] buf = state.toByteArray();
+        socket.send(new DatagramPacket(buf, buf.length,multicastAddress, port));
     }
 
     private List<GamePlayer> getPlayersToBroadcast(){
-        return controller.getModel().getGameState().getPlayers().getOthersList();
+        return controller.getModel().getGameState().getPlayers().getPlayersList();
     }
 
-    public void sendMessage(InetSocketAddress receiverAddress, GameMessage message) throws IOException {
+    public void sendMessage(InetSocketAddress receiverAddress, GameMessage message) {
         try {
             byte[] buf = message.toByteArray();
             socket.send(new DatagramPacket(buf, buf.length, receiverAddress));
-        } catch (IllegalArgumentException e){
+        } catch (IOException e){
             System.out.println(receiverAddress);
         }
     }

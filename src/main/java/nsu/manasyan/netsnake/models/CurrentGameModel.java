@@ -2,30 +2,35 @@ package nsu.manasyan.netsnake.models;
 
 import nsu.manasyan.netsnake.out.SnakesProto.*;
 
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CurrentGameModel {
+    private static final int MASTER_INDEX = 0;
+
     private int playerId;
+
+    private NodeRole playerRole;
 
     private GameConfig currentConfig;
 
     private GameState gameState;
 
-    private boolean isPLayerMaster = false;
+    private InetSocketAddress masterAddress;
 
-    // key - address:port, value - isAlive
-    private Map<String, Boolean> alivePlayers = new HashMap<>();
+    // key - id, value - isAlive
+    private Map<Integer, Boolean> alivePlayers = new HashMap<>();
 
     public CurrentGameModel(){
 
     }
 
-    public CurrentGameModel(int playerId, GameConfig currentConfig, GameState gameState) {
+    public CurrentGameModel(int playerId, GameConfig currentConfig, GameState gameState, NodeRole playerRole) {
         this.playerId = playerId;
         this.currentConfig = currentConfig;
         this.gameState = gameState;
-        this.isPLayerMaster =  playerId == gameState.getPlayers().getMaster().getId();
+        this.playerRole =  playerRole;
     }
 
     public GameConfig getCurrentConfig() {
@@ -44,12 +49,12 @@ public class CurrentGameModel {
         this.gameState = gameState;
     }
 
-    public boolean isPLayerMaster() {
-        return isPLayerMaster;
+    public NodeRole getPlayerRole() {
+        return playerRole;
     }
 
-    public void setPLayerMaster(boolean PLayerMaster) {
-        this.isPLayerMaster = PLayerMaster;
+    public void setPlayerRole(NodeRole playerRole) {
+        this.playerRole = playerRole;
     }
 
     public int getPlayerId() {
@@ -60,7 +65,15 @@ public class CurrentGameModel {
         this.playerId = playerId;
     }
 
-    public Map<String, Boolean> getAlivePlayers() {
+    public Map<Integer, Boolean> getAlivePlayers() {
         return alivePlayers;
+    }
+
+    public InetSocketAddress getMasterAddress() {
+        return masterAddress;
+    }
+
+    public void setMasterAddress(InetSocketAddress masterAddress) {
+        this.masterAddress = masterAddress;
     }
 }

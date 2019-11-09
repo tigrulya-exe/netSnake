@@ -1,5 +1,7 @@
-package nsu.manasyan.netsnake;
+package nsu.manasyan.netsnake.network;
 
+import nsu.manasyan.netsnake.util.GameExecutorService;
+import nsu.manasyan.netsnake.controllers.CurrentGameController;
 import nsu.manasyan.netsnake.models.MessageContext;
 import nsu.manasyan.netsnake.out.SnakesProto;
 
@@ -10,7 +12,7 @@ import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 import nsu.manasyan.netsnake.out.SnakesProto.*;
-import nsu.manasyan.netsnake.out.SnakesProto.GameMessage.Type;
+import nsu.manasyan.netsnake.out.SnakesProto.GameMessage.*;
 
 public class Listener {
     private interface Handler{
@@ -23,7 +25,7 @@ public class Listener {
 
     private Map<String, MessageContext> sentMessages;
 
-    private Map<Type, Handler> handlers = new HashMap<>();
+    private Map<TypeCase, Handler> handlers = new HashMap<>();
 
     private byte[] receiveBuf = new byte[BUF_LENGTH];
 
@@ -45,14 +47,15 @@ public class Listener {
 
     public void listen(){
         GameExecutorService.getExecutorService().submit(() -> {
-            SnakesProto.GameMessage message;
-            SnakesProto.GameMessage.Type type;
+            GameMessage message;
+            TypeCase type;
+
             DatagramPacket packetToReceive = new DatagramPacket(receiveBuf, BUF_LENGTH);
             try {
                 while (!isInterrupted) {
                     socket.receive(packetToReceive);
                     message = SnakesProto.GameMessage.parseFrom(packetToReceive.getData());
-                    type = message.getType();
+                    type = message.getTypeCase();
 
 //                if(checkIsDuplicate(type, message.getGUID())){
 //                    continue;
@@ -83,12 +86,8 @@ public class Listener {
         controller.addPlayer(player);
     }
 
-    private void handleSteerUp(GameMessage message, InetSocketAddress address){
-
-    }
-
     private void handleState(GameMessage message, InetSocketAddress address){
-        controller.updateGameState(message.getState());
+        controller.updateGameState(message.getState().getState());
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){
@@ -96,19 +95,17 @@ public class Listener {
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){
-        controller.setAlive(address.getHostName(), address.getPort());
+        controller.setAlive(message.getSenderId());
     }
 
-    private void handleQuit(GameMessage message, InetSocketAddress address){
-        controller.removePlayer(address.getHostName(), address.getPort());
+    private void handleRoleChange(){
+
     }
 
     private void initHandlers(){
-        handlers.put(Type.JOIN_PLAY, this::handleJoinPlay);
-        handlers.put(Type.STEER_UP, this::handleSteerUp);
-        handlers.put(Type.STATE, this::handleState);
-        handlers.put(Type.QUIT, this::handleState);
-        handlers.put(Type.ACK, this::handleAck);
+        handlers.put(TypeCase.JOIN, this::handleJoinPlay);
+        handlers.put(TypeCase.STATE, this::handleState);
+        handlers.put(TypeCase.ACK, this::handleAck);
     }
 
 

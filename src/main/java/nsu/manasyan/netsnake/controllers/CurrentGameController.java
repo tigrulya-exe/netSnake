@@ -1,8 +1,10 @@
-package nsu.manasyan.netsnake;
+package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.util.GameObjectBuilder;
 import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.out.SnakesProto.*;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 public class CurrentGameController {
@@ -24,27 +26,22 @@ public class CurrentGameController {
         GameState.Builder gameStateBuilder = model.getGameState()
                 .toBuilder();
         GamePlayers gamePlayers =  gameStateBuilder.getPlayersBuilder()
-                .addOthers(player)
+                .addPlayers(player)
                 .build();
         model.setGameState(gameStateBuilder.setPlayers(gamePlayers).build());
-        model.getAlivePlayers().put(player.getIpAddress() + ":" + player.getPort(), true);
+        model.getAlivePlayers().put(player.getId(), true);
         addSnake(player.getId());
-    }
-
-    public void removePlayer(String address, int port){
-        model.getAlivePlayers().remove(address + ":" + port);
-        removePlayer(getPlayerId(address,port));
     }
 
     // TODO tmp
     public void removePlayer(int playerId){
         GameState gameState = model.getGameState();
-        List<GamePlayer> otherPlayers = gameState.getPlayers().getOthersList();
+        List<GamePlayer> otherPlayers = gameState.getPlayers().getPlayersList();
         otherPlayers.removeIf(p -> p.getId() == playerId);
 
         GamePlayers players = gameState.getPlayers()
                 .toBuilder()
-                .addAllOthers(otherPlayers)
+                .addAllPlayers(otherPlayers)
                 .build();
 
         model.setGameState(gameState.toBuilder().setPlayers(players).build());
@@ -70,23 +67,19 @@ public class CurrentGameController {
     }
 
     public int getAvailablePlayerId(){
-        return model.getGameState().getPlayers().getOthersCount() + 1;
+        return model.getGameState().getPlayers().getPlayersCount() + 1;
     }
 
     public void updateGameState(GameState gameState){
         model.setGameState(gameState);
     }
 
-    public void setAlive(String address, int port){
-        model.getAlivePlayers().put(address + ":" + port, true);
+    public void setAlive(int playerId){
+        model.getAlivePlayers().put(playerId, true);
     }
 
     private int getPlayerId(String address, int port){
-        GamePlayer master = model.getGameState().getPlayers().getMaster();
-        if(master.getPort() == port && master.getIpAddress().equals(address))
-            return master.getId();
-
-        List<GamePlayer> others = model.getGameState().getPlayers().getOthersList();
+        List<GamePlayer> others = model.getGameState().getPlayers().getPlayersList();
         for(GamePlayer player : others){
             if (player.getPort() == port && player.getIpAddress().equals(address)){
                 return player.getId();
@@ -94,6 +87,18 @@ public class CurrentGameController {
         }
 
         return -1;
+    }
+
+    public InetSocketAddress getMasterAddress(){
+        return model.getMasterAddress();
+    }
+
+    public NodeRole getRole(){
+        return model.getPlayerRole();
+    }
+
+    public void setRole(NodeRole role){
+        model.setPlayerRole(role);
     }
 
 //    public void becomeMaster(){

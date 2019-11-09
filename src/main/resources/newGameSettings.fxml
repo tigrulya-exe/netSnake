@@ -3,7 +3,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@view.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.manasyan.netsnake.controllers.GameSettingsController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@view.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.manasyan.netsnake.gui.GameSettingsController">
    <children>
       <Button fx:id="backButton" layoutX="39.0" layoutY="41.0" mnemonicParsing="false" onAction="#backClicked" text="Back" />
    </children>

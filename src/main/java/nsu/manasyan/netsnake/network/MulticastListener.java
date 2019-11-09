@@ -1,4 +1,4 @@
-package nsu.manasyan.netsnake;
+package nsu.manasyan.netsnake.network;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -7,17 +7,18 @@ import java.net.MulticastSocket;
 import java.util.*;
 
 import nsu.manasyan.netsnake.out.SnakesProto.*;
+import nsu.manasyan.netsnake.out.SnakesProto.GameMessage.*;
 
 public class MulticastListener implements Runnable{
     private static final int TIMER_PERIOD_MS = 1000;
 
     private static final int BUF_LENGTH = 65000;
 
-    private Map<GameAnnouncementMessage, Boolean> availableGames = new HashMap<>();
+    private Map<AnnouncementMsg, Boolean> availableGames = new HashMap<>();
 
     private byte[] receiveBuf = new byte[BUF_LENGTH];
 
-    Timer timer = new Timer();
+    private Timer timer = new Timer();
 
     private InetAddress multicastAddress;
 
@@ -45,14 +46,15 @@ public class MulticastListener implements Runnable{
             socket.joinGroup(multicastAddress);
             while (true) {
                 socket.receive(packetToReceive);
-                handleGameAnnouncement(GameAnnouncementMessage.parseFrom(packetToReceive.getData()));
+                GameMessage message = GameMessage.parseFrom(packetToReceive.getData());
+                handleGameAnnouncement(message.getAnnouncement());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void handleGameAnnouncement(GameAnnouncementMessage message){
+    private void handleGameAnnouncement(AnnouncementMsg message){
         if(!availableGames.containsKey(message)){
             availableGames.put(message,true);
         }
