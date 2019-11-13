@@ -1,6 +1,7 @@
 package nsu.manasyan.netsnake;
 
 import nsu.manasyan.netsnake.controllers.CurrentGameController;
+import nsu.manasyan.netsnake.models.AnnouncementContext;
 import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.models.MessageContext;
 import nsu.manasyan.netsnake.network.Listener;
@@ -50,7 +51,19 @@ public class GameClient {
         listener.listen();
     }
 
-    public void setTimer(){
+    // TODO
+    public void joinGame(AnnouncementContext context) {
+        listener.interrupt();
+        timer.cancel();
+//        GameMessage joinMessage =
+//        sender.sendMessage(context.getMasterAddress(), );
+        setTimer();
+        listener.listen();
+    }
+
+    private void setTimer(){
+        timer = new Timer();
+
         TimerTask masterSendPing  = new TimerTask() {
             @Override
             public void run() {

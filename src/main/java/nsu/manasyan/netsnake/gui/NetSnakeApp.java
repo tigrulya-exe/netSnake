@@ -30,29 +30,35 @@ public class NetSnakeApp extends Application {
     }
 
     private Parent setGraphics(AnchorPane root){
-        Rectangle r = new Rectangle(50, 50, 50, 50);
-        r.setFill(Color.WHITE);
+//        for(int i = 0 ; i < 10 ; ++i){
+//            Rectangle r = new Rectangle(100 * i, (i % 2 == 0) ? 0 : 650, 50, 50);
+//            r.setFill(Color.WHITE);
+//            root.getChildren().addAll(r);
+//            TranslateTransition translate = new TranslateTransition(Duration.millis(1750));
+//            translate.setToX(0);
+//            translate.setToY((i % 2 == 0) ? 350 : -350);
+//            ParallelTransition transition = new ParallelTransition(r,translate);
+//
+//            transition.setCycleCount(Timeline.INDEFINITE);
+//            transition.setAutoReverse(true);
+//            transition.play();
+//        }
 
-        Rectangle r2 = new Rectangle(50, 50, 50, 50);
-        r2.setFill(Color.RED);
+        for(int i = 0 ; i < 10 ; ++i){
+            Rectangle r = new Rectangle(100 * i, (i % 2 == 0) ? 0 : 650, 50, 50);
+            r.setFill(Color.WHITE);
+            root.getChildren().addAll(r);
+            FillTransition translate = new FillTransition(Duration.millis(1950));
+            translate.setShape(r);
+            translate.setToValue(Color.color(0.29,0.29,0.29));
+            ParallelTransition transition = new ParallelTransition(r,translate);
 
-        StackPane stackPane = new StackPane(root, r, r2);
-        stackPane.setAlignment(Pos.TOP_RIGHT);
+            transition.setCycleCount(Timeline.INDEFINITE);
+            transition.setAutoReverse(true);
+            transition.play();
+        }
 
-        TranslateTransition translate = new TranslateTransition(Duration.millis(1750));
-        translate.setToX(0);
-        translate.setToY(400);
-
-        ParallelTransition transition = new ParallelTransition(r,translate);
-        ParallelTransition transition2 = new ParallelTransition(r2,translate);
-
-        transition.setCycleCount(Timeline.INDEFINITE);
-        transition2.setCycleCount(Timeline.INDEFINITE);
-//        transition.setAutoReverse(true);
-        transition.play();
-        transition2.play();
-
-        return stackPane;
+        return root;
     }
 
     @Override
@@ -63,7 +69,6 @@ public class NetSnakeApp extends Application {
         URL xmlUrl = getClass().getResource("/menu.fxml");
         loader.setLocation(xmlUrl);
         AnchorPane root = loader.load();
-//        setGraphics(root);
         Scene scene = new Scene(root);
 //        Scene scene = new Scene(setGraphics(root));
 

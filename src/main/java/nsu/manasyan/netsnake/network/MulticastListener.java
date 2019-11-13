@@ -3,9 +3,11 @@ package nsu.manasyan.netsnake.network;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.util.*;
 
+import nsu.manasyan.netsnake.models.AnnouncementContext;
 import nsu.manasyan.netsnake.out.SnakesProto.*;
 import nsu.manasyan.netsnake.out.SnakesProto.GameMessage.*;
 
@@ -14,7 +16,7 @@ public class MulticastListener implements Runnable{
 
     private static final int BUF_LENGTH = 65000;
 
-    private Map<AnnouncementMsg, Boolean> availableGames = new HashMap<>();
+    private Map<AnnouncementMsg, AnnouncementContext> availableGames = new HashMap<>();
 
     private byte[] receiveBuf = new byte[BUF_LENGTH];
 
@@ -31,8 +33,10 @@ public class MulticastListener implements Runnable{
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                availableGames.entrySet().removeIf(entry -> !entry.getValue());
-                availableGames.forEach((k,v) -> availableGames.put(k,false));
+                availableGames.entrySet().removeIf(entry -> !entry.getValue().isActual());
+                availableGames.forEach((k,v) -> {
+                    v.setActual(false);
+                    availableGames.put(k,v);});
             }
         };
 
@@ -47,16 +51,16 @@ public class MulticastListener implements Runnable{
             while (true) {
                 socket.receive(packetToReceive);
                 GameMessage message = GameMessage.parseFrom(packetToReceive.getData());
-                handleGameAnnouncement(message.getAnnouncement());
+                handleGameAnnouncement(message.getAnnouncement(),(InetSocketAddress) packetToReceive.getSocketAddress());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void handleGameAnnouncement(AnnouncementMsg message){
+    private void handleGameAnnouncement(AnnouncementMsg message, InetSocketAddress socketAddress){
         if(!availableGames.containsKey(message)){
-            availableGames.put(message,true);
+            availableGames.put(message,new AnnouncementContext(true, socketAddress));
         }
     }
 }
