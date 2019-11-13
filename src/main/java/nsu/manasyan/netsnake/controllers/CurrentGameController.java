@@ -1,14 +1,18 @@
 package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.models.MasterGameState;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 import nsu.manasyan.netsnake.models.CurrentGameModel;
-import nsu.manasyan.netsnake.out.SnakesProto.*;
+import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import java.net.InetSocketAddress;
-import java.util.List;
 
 public class CurrentGameController {
+    private static final int MASTER_ID = 0;
+
     private CurrentGameModel model;
+
+    private MasterGameState masterGameState;
 
     public CurrentGameController(CurrentGameModel model) {
         this.model = model;
@@ -23,47 +27,29 @@ public class CurrentGameController {
     }
 
     public void addPlayer(GamePlayer player){
-        GameState.Builder gameStateBuilder = model.getGameState()
-                .toBuilder();
-        GamePlayers gamePlayers =  gameStateBuilder.getPlayersBuilder()
-                .addPlayers(player)
-                .build();
-        model.setGameState(gameStateBuilder.setPlayers(gamePlayers).build());
-        model.getAlivePlayers().put(player.getId(), true);
-        addSnake(player.getId());
+        masterGameState.getPlayers().put(player.getId(), player);
     }
 
-    // TODO tmp
+    public void startNewGame(GameConfig config) {
+        masterGameState = new MasterGameState(GameObjectBuilder.initNewFoods(config), config);
+        model.setGameState(masterGameState.toGameState(config));
+        model.setPlayerId(MASTER_ID);
+        model.setPlayerRole(NodeRole.MASTER);
+    }
+
     public void removePlayer(int playerId){
-        GameState gameState = model.getGameState();
-        List<GamePlayer> otherPlayers = gameState.getPlayers().getPlayersList();
-        otherPlayers.removeIf(p -> p.getId() == playerId);
-
-        GamePlayers players = gameState.getPlayers()
-                .toBuilder()
-                .addAllPlayers(otherPlayers)
-                .build();
-
-        model.setGameState(gameState.toBuilder().setPlayers(players).build());
-        removeSnake(playerId);
+        masterGameState.getPlayers().remove(playerId);
+        masterGameState.getSnakes().remove(playerId);
+        // TODO add some magic to turn snake into food
     }
 
     public void addSnake(int playerId){
-        GameState.Snake snake = GameObjectBuilder.initNewSnake(playerId, model.getGameState());
-        GameState.Builder gameStateBuilder = model.getGameState()
-                .toBuilder();
-        model.setGameState(gameStateBuilder.addSnakes(snake).build());
+        GameState.Snake newSnake = GameObjectBuilder.initNewSnake(playerId,masterGameState.getField());
+        masterGameState.getSnakes().put(playerId, newSnake);
     }
 
     public void removeSnake(int playerId){
-        List<GameState.Snake> snakes = model.getGameState().getSnakesList();
-        snakes.removeIf(s -> s.getPlayerId() == playerId);
-
-        model.setGameState(model.getGameState()
-                .toBuilder()
-                .clearSnakes()
-                .addAllSnakes(snakes)
-                .build());
+        masterGameState.getSnakes().remove(playerId);
     }
 
     public int getAvailablePlayerId(){
@@ -75,22 +61,7 @@ public class CurrentGameController {
     }
 
     public void setAlive(int playerId){
-        model.getAlivePlayers().put(playerId, true);
-    }
-
-    private int getPlayerId(String address, int port){
-        List<GamePlayer> others = model.getGameState().getPlayers().getPlayersList();
-        for(GamePlayer player : others){
-            if (player.getPort() == port && player.getIpAddress().equals(address)){
-                return player.getId();
-            }
-        }
-
-        return -1;
-    }
-
-    public InetSocketAddress getMasterAddress(){
-        return model.getMasterAddress();
+        masterGameState.getAlivePlayers().put(playerId, true);
     }
 
     public NodeRole getRole(){
@@ -101,21 +72,7 @@ public class CurrentGameController {
         model.setPlayerRole(role);
     }
 
-//    public void becomeMaster(){
-//        int playerId = model.getPlayerId();
-//        GamePlayers.Builder gamePlayersBuilder = model.getGameState().getPlayers().toBuilder();
-//
-//
-//        int player = gamePlayersBuilder.getOthersList()
-//                .stream()
-//                .filter(p -> p.getId() == playerId)
-//                .findFirst()
-//                .get();
-//
-//        gamePlayersBuilder.
-//
-//        model.setGameState(model.getGameState().toBuilder().setPlayers(players).build());
-//        removeSnake(playerId);
-//
-//    }
+    public InetSocketAddress getMasterAddress(){
+        return model.getMasterAddress();
+    }
 }

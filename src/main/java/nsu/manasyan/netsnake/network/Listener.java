@@ -2,17 +2,15 @@ package nsu.manasyan.netsnake.network;
 
 import nsu.manasyan.netsnake.util.GameExecutorService;
 import nsu.manasyan.netsnake.controllers.CurrentGameController;
-import nsu.manasyan.netsnake.models.MessageContext;
-import nsu.manasyan.netsnake.out.SnakesProto;
-
-import java.io.IOException;
+import nsu.manasyan.netsnake.contexts.MessageContext;
+import nsu.manasyan.netsnake.proto.SnakesProto;import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
-import nsu.manasyan.netsnake.out.SnakesProto.*;
-import nsu.manasyan.netsnake.out.SnakesProto.GameMessage.*;
+import nsu.manasyan.netsnake.proto.SnakesProto.*;
+import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.*;
 
 public class Listener {
     private interface Handler{

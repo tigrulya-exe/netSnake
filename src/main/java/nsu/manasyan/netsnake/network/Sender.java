@@ -2,8 +2,8 @@ package nsu.manasyan.netsnake.network;
 
 import nsu.manasyan.netsnake.util.GameExecutorService;
 import nsu.manasyan.netsnake.controllers.CurrentGameController;
-import nsu.manasyan.netsnake.models.MessageContext;
-import nsu.manasyan.netsnake.out.SnakesProto.*;
+import nsu.manasyan.netsnake.contexts.MessageContext;
+import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import java.io.IOException;
 import java.net.*;

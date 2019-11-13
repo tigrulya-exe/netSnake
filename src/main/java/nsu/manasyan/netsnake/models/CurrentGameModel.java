@@ -1,13 +1,12 @@
 package nsu.manasyan.netsnake.models;
 
-import nsu.manasyan.netsnake.out.SnakesProto.*;
+import nsu.manasyan.netsnake.proto.SnakesProto.NodeRole;
+import nsu.manasyan.netsnake.proto.SnakesProto.GameConfig;
+import nsu.manasyan.netsnake.proto.SnakesProto.GameState;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CurrentGameModel {
-    private static final int MASTER_INDEX = 0;
 
     private int playerId;
 
@@ -18,9 +17,6 @@ public class CurrentGameModel {
     private GameState gameState;
 
     private InetSocketAddress masterAddress;
-
-    // key - id, value - isAlive
-    private Map<Integer, Boolean> alivePlayers = new HashMap<>();
 
     public CurrentGameModel(){
 
@@ -63,10 +59,6 @@ public class CurrentGameModel {
 
     public void setPlayerId(int playerId) {
         this.playerId = playerId;
-    }
-
-    public Map<Integer, Boolean> getAlivePlayers() {
-        return alivePlayers;
     }
 
     public InetSocketAddress getMasterAddress() {

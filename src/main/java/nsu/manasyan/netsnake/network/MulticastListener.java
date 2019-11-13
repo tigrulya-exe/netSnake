@@ -7,9 +7,9 @@ import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.util.*;
 
-import nsu.manasyan.netsnake.models.AnnouncementContext;
-import nsu.manasyan.netsnake.out.SnakesProto.*;
-import nsu.manasyan.netsnake.out.SnakesProto.GameMessage.*;
+import nsu.manasyan.netsnake.contexts.AnnouncementContext;
+import nsu.manasyan.netsnake.proto.SnakesProto.*;
+import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.*;
 
 public class MulticastListener implements Runnable{
     private static final int TIMER_PERIOD_MS = 1000;

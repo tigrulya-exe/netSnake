@@ -1,12 +1,12 @@
 package nsu.manasyan.netsnake;
 
 import nsu.manasyan.netsnake.controllers.CurrentGameController;
-import nsu.manasyan.netsnake.models.AnnouncementContext;
+import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.models.CurrentGameModel;
-import nsu.manasyan.netsnake.models.MessageContext;
+import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.network.Listener;
 import nsu.manasyan.netsnake.network.Sender;
-import nsu.manasyan.netsnake.out.SnakesProto.*;
+import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.util.TimerTask;
 
 
 public class GameClient {
+    private String name;
 
     private MulticastSocket socket;
 
@@ -44,9 +45,7 @@ public class GameClient {
 
     public void createNewGame(GameConfig config) {
         listener.interrupt();
-        currentGameModel = new CurrentGameModel(0, config,
-                GameObjectBuilder.initNewGameState(config), NodeRole.MASTER);
-        controller.setModel(currentGameModel);
+        controller.startNewGame(config);
         setTimer();
         listener.listen();
     }

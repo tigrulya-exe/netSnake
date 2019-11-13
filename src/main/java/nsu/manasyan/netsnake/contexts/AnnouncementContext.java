@@ -1,4 +1,4 @@
-package nsu.manasyan.netsnake.models;
+package nsu.manasyan.netsnake.contexts;
 
 import java.net.InetSocketAddress;
 
