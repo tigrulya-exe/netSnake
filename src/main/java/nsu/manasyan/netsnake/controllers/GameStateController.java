@@ -6,16 +6,23 @@ import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
-public class CurrentGameController {
+public class GameStateController {
     private static final int MASTER_ID = 0;
 
     private CurrentGameModel model;
 
     private MasterGameState masterGameState;
 
-    public CurrentGameController(CurrentGameModel model) {
-        this.model = model;
+    private GameStateController() {}
+
+    private static class SingletonHelper{
+        private static final GameStateController controller = new GameStateController();
+    }
+
+    public static GameStateController getInstance() {
+        return GameStateController.SingletonHelper.controller;
     }
 
     public CurrentGameModel getModel() {
@@ -74,5 +81,13 @@ public class CurrentGameController {
 
     public InetSocketAddress getMasterAddress(){
         return model.getMasterAddress();
+    }
+
+    public List<GameState.Snake> getSnakes(){
+        return model.getGameState().getSnakesList();
+    }
+
+    public List<GameState.Coord> getFoods(){
+        return model.getGameState().getFoodsList();
     }
 }

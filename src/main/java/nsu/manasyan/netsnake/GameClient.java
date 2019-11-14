@@ -1,6 +1,6 @@
 package nsu.manasyan.netsnake;
 
-import nsu.manasyan.netsnake.controllers.CurrentGameController;
+import nsu.manasyan.netsnake.controllers.GameStateController;
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.contexts.MessageContext;
@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
+// TODO turn to singleton
 public class GameClient {
     private String name;
 
@@ -27,13 +27,15 @@ public class GameClient {
 
     private CurrentGameModel currentGameModel = new CurrentGameModel();
 
-    private CurrentGameController controller = new CurrentGameController(currentGameModel);
+    private GameStateController controller;
 
     private Listener listener;
 
     private Sender sender;
 
     public GameClient() throws IOException {
+        this.controller = GameStateController.getInstance();
+        controller.setModel(currentGameModel);
         this.socket = new MulticastSocket();
         this.sender = new Sender(controller, socket, sentMessages, "UNKNOWN");
         this.listener = new Listener(controller, sender, sentMessages, socket);
@@ -43,11 +45,12 @@ public class GameClient {
 
     }
 
-    public void createNewGame(GameConfig config) {
+    public void startNewGame(GameConfig config) {
         listener.interrupt();
         controller.startNewGame(config);
-        setTimer();
-        listener.listen();
+        //TODO for debug
+//        setTimer();
+//        listener.listen();
     }
 
     // TODO

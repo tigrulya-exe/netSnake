@@ -40,6 +40,15 @@ anchor-pane .column-header, .table-view .filler {
     -fx-border-insets: 0 10 1 0;
 }
 
+.input-label {
+    -fx-font-size: 20pt;
+}
+
+.vbox{
+    -fx-border-color: #e2e2e2;
+    -fx-border-width: 2;
+}
+
 anchor-pane  .column-header .label {
     -fx-font-size: 20pt;
     -fx-font-family: "Segoe UI Light";

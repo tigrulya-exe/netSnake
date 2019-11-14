@@ -37,9 +37,9 @@ public class MasterGameState {
 
     private void initMaster(){
         players.put(MASTER_ID, GameObjectBuilder.initMaster());
-        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, field));
+//        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, field));
         //for master
-        //snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, nulls));
+        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, null));
 
     }
 

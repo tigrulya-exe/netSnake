@@ -1,11 +1,13 @@
-package nsu.manasyan.netsnake.gui;
+package nsu.manasyan.netsnake.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import nsu.manasyan.netsnake.gui.NetSnakeApp;
+import nsu.manasyan.netsnake.gui.SceneFactory;
 
 
-public class MenuController {
+public class MenuViewController {
     @FXML
     private Button newGameButton;
 

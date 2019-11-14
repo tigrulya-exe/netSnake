@@ -5,8 +5,14 @@ import nsu.manasyan.netsnake.proto.SnakesProto.GameConfig;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CurrentGameModel {
+
+    public interface GameStateListener{
+        void onUpdate(GameState gameState);
+    }
 
     private int playerId;
 
@@ -17,6 +23,8 @@ public class CurrentGameModel {
     private GameState gameState;
 
     private InetSocketAddress masterAddress;
+
+    private List<GameStateListener> gameStateListeners = new ArrayList<>();
 
     public CurrentGameModel(){
 
@@ -43,6 +51,7 @@ public class CurrentGameModel {
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
+        notifyAllGameStateListeners();
     }
 
     public NodeRole getPlayerRole() {
@@ -67,5 +76,13 @@ public class CurrentGameModel {
 
     public void setMasterAddress(InetSocketAddress masterAddress) {
         this.masterAddress = masterAddress;
+    }
+
+    public void registerGameStateListener(GameStateListener listener){
+        gameStateListeners.add(listener);
+    }
+
+    public void notifyAllGameStateListeners(){
+        gameStateListeners.forEach(l -> l.onUpdate(gameState));
     }
 }

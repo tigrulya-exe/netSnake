@@ -1,7 +1,7 @@
 package nsu.manasyan.netsnake.network;
 
 import nsu.manasyan.netsnake.util.GameExecutorService;
-import nsu.manasyan.netsnake.controllers.CurrentGameController;
+import nsu.manasyan.netsnake.controllers.GameStateController;
 import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
@@ -15,7 +15,7 @@ public class Sender {
 
     private InetAddress multicastAddress;
 
-    private CurrentGameController controller;
+    private GameStateController controller;
 
     private Map<String, MessageContext> sentMessages;
 
@@ -25,7 +25,7 @@ public class Sender {
 
     private String name;
 
-    public Sender(CurrentGameController controller, MulticastSocket socket, Map<String, MessageContext> sentMessages, String name) {
+    public Sender(GameStateController controller, MulticastSocket socket, Map<String, MessageContext> sentMessages, String name) {
         this.socket = socket;
         this.name = name;
         this.sentMessages = sentMessages;

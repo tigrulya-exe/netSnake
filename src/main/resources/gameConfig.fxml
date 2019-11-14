@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1000.0" styleClass="anchor-pane" stylesheets="@view.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nsu.manasyan.netsnake.controllers.GameConfigViewController">
+   <children>
+      <GridPane layoutX="245.0" layoutY="110.0" prefHeight="424.0" prefWidth="511.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="300.0" minWidth="10.0" prefWidth="267.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="239.0" minWidth="0.0" prefWidth="239.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="51.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="56.0" minHeight="10.0" prefHeight="56.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <TextField fx:id="width" text="40" GridPane.columnIndex="1" />
+            <TextField fx:id="pingDelayMs" text="100" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <TextField fx:id="height" prefHeight="19.0" prefWidth="100.0" text="30" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="foodPerPlayer" text="1" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="stateDelayMs" text="1000" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label styleClass="input-label" text="Height" GridPane.rowIndex="1" />
+            <Label styleClass="input-label" text="Width" />
+            <Label styleClass="input-label" text="Static food" GridPane.rowIndex="2" />
+            <Label styleClass="input-label" text="Food per player" GridPane.rowIndex="3" />
+            <Label styleClass="input-label" text="State delay (ms)" GridPane.rowIndex="4" />
+            <Label styleClass="input-label" text="Dead food prob" GridPane.rowIndex="5" />
+            <Label styleClass="input-label" text="Node timeout (ms)" GridPane.rowIndex="7" />
+            <TextField fx:id="staticFood" prefHeight="19.0" prefWidth="100.0" text="1" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="deadFoodProb" text="0.1" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <TextField fx:id="nodeTimeoutMs" text="800" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <Label styleClass="input-label" text="Ping delay (ms)" GridPane.rowIndex="6" />
+         </children>
+      </GridPane>
+      <Button fx:id="backButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#backClicked" prefHeight="45.0" prefWidth="132.0" text="Back" />
+      <Button fx:id="startButton" layoutX="245.0" layoutY="588.0" mnemonicParsing="false" onAction="#startClicked" prefHeight="45.0" prefWidth="511.0" text="Start" />
+   </children>
+</AnchorPane>

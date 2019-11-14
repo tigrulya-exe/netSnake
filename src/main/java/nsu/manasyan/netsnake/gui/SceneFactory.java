@@ -13,7 +13,9 @@ public class SceneFactory {
 
     private static final String MENU_PATH = "/menu.fxml";
 
-    private static final String NEW_GAME_SETTINGS_PATH = "/newGameSettings.fxml";
+    private static final String NEW_GAME_SETTINGS_PATH = "/gameConfig.fxml";
+
+    private static final String GAME_PATH = "/game.fxml";
 
     public enum SceneType {
         MENU,
@@ -47,6 +49,7 @@ public class SceneFactory {
     private void initSceneTypes() throws IOException {
         scenes.put(SceneType.MENU, initSceneType(MENU_PATH));
         scenes.put(SceneType.NEW_GAME_SETTINGS, initSceneType(NEW_GAME_SETTINGS_PATH));
+        scenes.put(SceneType.GAME, initSceneType(GAME_PATH));
     }
 
     private Scene initSceneType(String path) throws IOException {

@@ -1,7 +1,7 @@
 package nsu.manasyan.netsnake.network;
 
 import nsu.manasyan.netsnake.util.GameExecutorService;
-import nsu.manasyan.netsnake.controllers.CurrentGameController;
+import nsu.manasyan.netsnake.controllers.GameStateController;
 import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.proto.SnakesProto;import java.io.IOException;
 import java.net.DatagramPacket;
@@ -19,7 +19,7 @@ public class Listener {
 
     private static final int BUF_LENGTH = 65000;
 
-    private CurrentGameController controller;
+    private GameStateController controller;
 
     private Map<String, MessageContext> sentMessages;
 
@@ -35,7 +35,7 @@ public class Listener {
 
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
-    public Listener(CurrentGameController controller, Sender sender, Map<String, MessageContext> sentMessages, DatagramSocket socket) {
+    public Listener(GameStateController controller, Sender sender, Map<String, MessageContext> sentMessages, DatagramSocket socket) {
         this.controller = controller;
         this.sender = sender;
         this.sentMessages = sentMessages;

@@ -8,6 +8,7 @@ public class Field {
     public enum Cell{
         SNAKE,
         FOOD,
+        HEAD,
         FREE
     }
 

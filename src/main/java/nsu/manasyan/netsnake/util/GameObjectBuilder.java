@@ -6,9 +6,9 @@ import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import java.util.*;
 
 public class GameObjectBuilder {
-    private static String name;
+    private static String name = "Steve";
 
-    private static int port;
+    private static int port = -1;
 
     private static final int DEFAULT_PORT = 18888;
 
@@ -66,6 +66,8 @@ public class GameObjectBuilder {
                     .setPlayerId(playerId)
                     .addPoints(getCoord(1,0))
                     .addPoints(getCoord(0,0))
+                    .setHeadDirection(Direction.RIGHT)
+                    .setState(GameState.Snake.SnakeState.ALIVE)
                     .build();
         }
 
