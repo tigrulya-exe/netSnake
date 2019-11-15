@@ -1,6 +1,7 @@
 package nsu.manasyan.netsnake.util;
 
 import nsu.manasyan.netsnake.models.Field;
+import nsu.manasyan.netsnake.models.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import java.util.*;
@@ -60,22 +61,16 @@ public class GameObjectBuilder {
                 .build();
     }
 
-    public static GameState.Snake initNewSnake(int playerId, Field field){
+    public static Snake initNewSnake(int playerId, Field field){
         if(field == null){
-            return GameState.Snake.newBuilder()
-                    .setPlayerId(playerId)
-                    .addPoints(getCoord(1,0))
-                    .addPoints(getCoord(0,0))
-                    .setHeadDirection(Direction.RIGHT)
-                    .setState(GameState.Snake.SnakeState.ALIVE)
-                    .build();
+            return new Snake(playerId);
         }
 
         // TODO find free 5x5 to place 2x1 snake (head + tail)
         return null;
     }
 
-    private static GameState.Coord getCoord(int x, int y){
+    public static GameState.Coord getCoord(int x, int y){
         return GameState.Coord.newBuilder().setX(x).setY(y).build();
     }
 
@@ -89,6 +84,21 @@ public class GameObjectBuilder {
                 .setConfig(config)
                 .setStateOrder(stateOrder)
                 .addAllFoods(foods)
+                .build();
+    }
+
+    public static GameMessage initStateMessage(GameState state){
+        GameMessage.StateMsg stateMsg = getStateMsg(state);
+
+        return GameMessage.newBuilder()
+                .setState(stateMsg)
+                .setMsgSeq(currentGameMsgSeq++)
+                .build();
+    }
+
+    private static GameMessage.StateMsg getStateMsg(GameState state){
+        return GameMessage.StateMsg.newBuilder()
+                .setState(state)
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,7 +10,11 @@ import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.gui.RectanglesField;
 import nsu.manasyan.netsnake.gui.SceneFactory;
 import nsu.manasyan.netsnake.models.Field;
+import nsu.manasyan.netsnake.models.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto;
+import nsu.manasyan.netsnake.util.GameObjectBuilder;
+
+import java.util.List;
 
 public class GameConfigViewController {
     private static final int FIELD_BOX_WIDTH = 630;
@@ -58,6 +63,7 @@ public class GameConfigViewController {
 
         Scene game = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
         generateField(game, fieldWidth, fieldHeight);
+        controller.registerGameStateListener(this::onUpdate);
         NetSnakeApp.getStage().setScene(game);
     }
 
@@ -105,5 +111,33 @@ public class GameConfigViewController {
 
     private float getFloat(String str){
         return Float.parseFloat(str);
+    }
+
+    private void onUpdate(SnakesProto.GameState gameState){
+        Platform.runLater( () ->{
+
+        controller.getFoods().forEach(f -> {
+            NetSnakeApp.getRectanglesField().updateGrid(f.getX(), f.getY(), Field.Cell.FOOD);
+        });
+
+        controller.getSnakes().forEach(this::drawSnake);
+        }
+    );
+    }
+
+    private void drawSnake(SnakesProto.GameState.Snake snake){
+        List<SnakesProto.GameState.Coord> points = snake.getPointsList();
+        RectanglesField field =  NetSnakeApp.getRectanglesField();
+        field.flush();
+
+        SnakesProto.GameState.Coord.Builder currentCoord = GameObjectBuilder.getCoord(0,0).toBuilder();
+        for(var point : points){
+            currentCoord.setX(point.getX() + currentCoord.getX());
+            currentCoord.setY(point.getY() + currentCoord.getY());
+
+            field.updateGrid(currentCoord.getX(), currentCoord.getY(), Field.Cell.SNAKE);
+        }
+
+        field.updateGrid(points.get(0).getX(), points.get(0).getY(), Field.Cell.HEAD);
     }
 }

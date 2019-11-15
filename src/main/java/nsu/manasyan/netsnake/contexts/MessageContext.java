@@ -1,6 +1,7 @@
 package nsu.manasyan.netsnake.contexts;
 
-import nsu.manasyan.netsnake.proto.SnakesProto;import java.net.InetSocketAddress;
+import nsu.manasyan.netsnake.proto.SnakesProto;
+import java.net.InetSocketAddress;
 
 public class MessageContext {
     private boolean isFresh;

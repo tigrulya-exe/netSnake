@@ -1,12 +1,15 @@
 package nsu.manasyan.netsnake.controllers;
 
 import nsu.manasyan.netsnake.models.MasterGameState;
+import nsu.manasyan.netsnake.models.Snake;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
+
 
 public class GameStateController {
     private static final int MASTER_ID = 0;
@@ -15,18 +18,26 @@ public class GameStateController {
 
     private MasterGameState masterGameState;
 
+    private SnakesController snakesController = new SnakesController();
+
     private GameStateController() {}
 
     private static class SingletonHelper{
+
         private static final GameStateController controller = new GameStateController();
     }
-
     public static GameStateController getInstance() {
         return GameStateController.SingletonHelper.controller;
     }
 
     public CurrentGameModel getModel() {
         return model;
+    }
+
+    public void newTurn() {
+        Map<Integer, Snake> snakes = masterGameState.getSnakes();
+        snakes.values().forEach(s -> snakesController.snakeStep(s));
+        model.setGameState(masterGameState.toGameState(model.getCurrentConfig()));
     }
 
     public void setModel(CurrentGameModel model) {
@@ -41,6 +52,7 @@ public class GameStateController {
         masterGameState = new MasterGameState(GameObjectBuilder.initNewFoods(config), config);
         model.setGameState(masterGameState.toGameState(config));
         model.setPlayerId(MASTER_ID);
+        model.setCurrentConfig(config);
         model.setPlayerRole(NodeRole.MASTER);
     }
 
@@ -51,7 +63,7 @@ public class GameStateController {
     }
 
     public void addSnake(int playerId){
-        GameState.Snake newSnake = GameObjectBuilder.initNewSnake(playerId,masterGameState.getField());
+        Snake newSnake = GameObjectBuilder.initNewSnake(playerId,masterGameState.getField());
         masterGameState.getSnakes().put(playerId, newSnake);
     }
 
@@ -83,11 +95,23 @@ public class GameStateController {
         return model.getMasterAddress();
     }
 
+    public GameState getGameState(){
+        return model.getGameState();
+    }
+
+    public void setGameState(GameState gameState){
+        model.setGameState(gameState);
+    }
+
     public List<GameState.Snake> getSnakes(){
         return model.getGameState().getSnakesList();
     }
 
     public List<GameState.Coord> getFoods(){
         return model.getGameState().getFoodsList();
+    }
+
+    public void registerGameStateListener(CurrentGameModel.GameStateListener listener){
+        model.registerGameStateListener(listener);
     }
 }

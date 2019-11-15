@@ -7,6 +7,8 @@ import nsu.manasyan.netsnake.util.GameObjectBuilder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class MasterGameState {
     private static final int MASTER_ID = 0;
@@ -31,7 +33,7 @@ public class MasterGameState {
     }
 
     public SnakesProto.GameState toGameState(SnakesProto.GameConfig config){
-        return GameObjectBuilder.getGameState(players.values(), snakes.values(),
+        return GameObjectBuilder.getGameState(players.values(), getProtoSnakes(),
                 config, stateOrder, foods);
     }
 
@@ -39,8 +41,12 @@ public class MasterGameState {
         players.put(MASTER_ID, GameObjectBuilder.initMaster());
 //        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, field));
         //for master
-        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, null));
+        snakes.put(MASTER_ID, new Snake(MASTER_ID));
 
+    }
+
+    private List<SnakesProto.GameState.Snake> getProtoSnakes(){
+        return snakes.values().stream().map(Snake::toProtoSnake).collect(Collectors.toList());
     }
 
     public Map<Integer, Snake> getSnakes() {

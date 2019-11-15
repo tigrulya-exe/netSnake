@@ -48,6 +48,7 @@ public class GameClient {
     public void startNewGame(GameConfig config) {
         listener.interrupt();
         controller.startNewGame(config);
+        scheduleTurns(config.getStateDelayMs());
         //TODO for debug
 //        setTimer();
 //        listener.listen();
@@ -62,6 +63,34 @@ public class GameClient {
         setTimer();
         listener.listen();
     }
+
+//    public void scheduleTurns(int stateDelayMs){
+////        TimerTask broadcastState  = new TimerTask() {
+////            @Override
+////            public void run() {
+////                GameState gameState = controller.getGameState();
+////                GameMessage stateMessage =  GameObjectBuilder.initStateMessage(gameState);
+////                sender.broadcastMessage(stateMessage);
+////                controller.setGameState(gameState);
+////            }
+////        };
+////
+////        timer.schedule(broadcastState, stateDelayMs, stateDelayMs);
+////    }
+
+    public void scheduleTurns(int stateDelayMs){
+        TimerTask newTurn  = new TimerTask() {
+            @Override
+            public void run() {
+                controller.newTurn();
+
+            }
+        };
+
+        timer.schedule(newTurn, stateDelayMs, stateDelayMs);
+    }
+
+
 
     private void setTimer(){
         timer = new Timer();

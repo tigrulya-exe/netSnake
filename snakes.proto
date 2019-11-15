@@ -89,7 +89,7 @@ message GameMessage {
     }
     // Не-центральный игрок просит повернуть голову змеи
     message SteerMsg {
-        required Direction direction = 1; // Куда повернуть на следующем шаге
+        required Direction headDirection = 1; // Куда повернуть на следующем шаге
     }
     // Подтверждение сообщения с таким же seq
     message AckMsg {

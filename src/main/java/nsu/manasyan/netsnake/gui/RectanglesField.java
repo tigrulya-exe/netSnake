@@ -33,6 +33,15 @@ public class RectanglesField {
         return gridPane;
     }
 
+    public void flush(){
+        for(int i = 0; i <  width; ++i){
+            for (int j = 0; j < height; ++j){
+                gridPane.getChildren().forEach(c -> ((Rectangle)c)
+                        .setFill(ColorFactory.getInstance().getColor(Field.Cell.FREE)));
+            }
+        }
+    }
+
     private void initGrid(){
         Color freeColor = ColorFactory.getInstance().getColor(Field.Cell.FREE);
 
