@@ -9,18 +9,24 @@ import java.util.List;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.getCoord;
 
 public class Snake {
+    private static final SnakesProto.Direction DEFAULT_DIRECTION = SnakesProto.Direction.LEFT;
+
     private SnakeState snakeState = SnakeState.ALIVE;
 
     private int playerId;
 
     private List<SnakesProto.GameState.Coord> points = new ArrayList<>();
 
-    private SnakesProto.Direction headDirection = SnakesProto.Direction.RIGHT;
+    private SnakesProto.Direction headDirection = DEFAULT_DIRECTION;
 
     public Snake(int playerId){
         this.playerId = playerId;
-        points.add(getCoord(0,0));
-        points.add(getCoord(1,0));
+        points.add(getCoord(5,4));
+        points.add(getCoord(0,-2));
+    }
+
+    public static SnakesProto.Direction getDefaultDirection() {
+        return DEFAULT_DIRECTION;
     }
 
     public SnakeState getSnakeState() {

@@ -31,4 +31,8 @@ public class Field {
             }
         }
     }
+
+    public void updateField(int x, int y, Cell cell){
+        field[x][y] = cell;
+    }
 }

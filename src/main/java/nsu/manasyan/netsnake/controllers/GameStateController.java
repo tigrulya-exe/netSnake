@@ -7,6 +7,7 @@ import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,16 +37,23 @@ public class GameStateController {
 
     public void newTurn() {
         Map<Integer, Snake> snakes = masterGameState.getSnakes();
-        snakes.values().forEach(s -> snakesController.snakeStep(s));
+        snakes.values().forEach(s -> {
+            Direction direction = masterGameState.getCurrentPlayerDirection(s.getPlayerId());
+            if(direction != null)
+                s.setHeadDirection(direction);
+            snakesController.snakeStep(s);
+        });
         model.setGameState(masterGameState.toGameState(model.getCurrentConfig()));
     }
 
     public void setModel(CurrentGameModel model) {
         this.model = model;
+        snakesController.setModel(model);
     }
 
     public void addPlayer(GamePlayer player){
         masterGameState.getPlayers().put(player.getId(), player);
+        addSnake(player.getId());
     }
 
     public void startNewGame(GameConfig config) {
@@ -113,5 +121,18 @@ public class GameStateController {
 
     public void registerGameStateListener(CurrentGameModel.GameStateListener listener){
         model.registerGameStateListener(listener);
+    }
+
+    public void registerPlayerDirection(int playerId, Direction direction){
+        var directions = masterGameState.getPlayersDirections();
+        directions.computeIfAbsent(playerId, k -> new ArrayList<>());
+        directions.get(playerId).add(direction);
+    }
+
+    public void registerDirection(Direction direction){
+        if(model.getPlayerRole() == NodeRole.MASTER)
+            registerPlayerDirection(MASTER_ID, direction);
+        // else
+        // send direction to master
     }
 }

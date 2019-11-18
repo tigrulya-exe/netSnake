@@ -4,10 +4,10 @@ import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class MasterGameState {
@@ -26,6 +26,8 @@ public class MasterGameState {
 
     private List<Coord> foods;
 
+    private Map<Integer, List<SnakesProto.Direction>> playersDirections = new HashMap<>();
+
     public MasterGameState(List<Coord> foods, SnakesProto.GameConfig config) {
         this.foods = foods;
         this.field = new Field(config.getHeight(), config.getWidth());
@@ -42,7 +44,8 @@ public class MasterGameState {
 //        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, field));
         //for master
         snakes.put(MASTER_ID, new Snake(MASTER_ID));
-
+        playersDirections.put(MASTER_ID, new ArrayList<>());
+        playersDirections.get(MASTER_ID).add(Snake.getDefaultDirection());
     }
 
     private List<SnakesProto.GameState.Snake> getProtoSnakes(){
@@ -65,7 +68,30 @@ public class MasterGameState {
         return field;
     }
 
+    public void updateField(List<Snake> snakes, List<Coord> foods){
+        // TODO get getSnakePart from controller
+        snakes.forEach(s -> {
+        });
+
+        foods.forEach(c -> field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
+    }
+
+    public SnakesProto.Direction getCurrentPlayerDirection(int playerId){
+        List<SnakesProto.Direction> directions = playersDirections.get(playerId);
+
+        if(directions.size() == 0)
+            return null;
+
+        SnakesProto.Direction direction = directions.get(0);
+        directions.remove(0);
+        return direction;
+    }
+
     public Map<Integer, Boolean> getAlivePlayers() {
         return alivePlayers;
+    }
+
+    public Map<Integer, List<SnakesProto.Direction>> getPlayersDirections() {
+        return playersDirections;
     }
 }

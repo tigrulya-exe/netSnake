@@ -3,6 +3,10 @@ package nsu.manasyan.netsnake.gui;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCharacterCombination;
+import javafx.scene.input.KeyCode;
+import nsu.manasyan.netsnake.controllers.GameStateController;
+import nsu.manasyan.netsnake.proto.SnakesProto;
 
 import java.io.IOException;
 import java.net.URL;
@@ -49,7 +53,7 @@ public class SceneFactory {
     private void initSceneTypes() throws IOException {
         scenes.put(SceneType.MENU, initSceneType(MENU_PATH));
         scenes.put(SceneType.NEW_GAME_SETTINGS, initSceneType(NEW_GAME_SETTINGS_PATH));
-        scenes.put(SceneType.GAME, initSceneType(GAME_PATH));
+        scenes.put(SceneType.GAME, initGameScene());
     }
 
     private Scene initSceneType(String path) throws IOException {
@@ -58,5 +62,30 @@ public class SceneFactory {
         loader.setLocation(xmlUrl);
         Parent root = loader.load();
         return new Scene(root);
+    }
+
+    private Scene initGameScene() throws IOException {
+        Scene scene = initSceneType(GAME_PATH);
+        scene.setOnKeyPressed((ke) -> {
+            SnakesProto.Direction direction;
+            if ((direction = getDirection(ke.getCode())) != null)
+                GameStateController.getInstance().registerDirection(direction);
+            });
+        return  scene;
+    }
+
+    private SnakesProto.Direction getDirection(KeyCode keyCode){
+        switch (keyCode){
+            case W:
+                return SnakesProto.Direction.UP;
+            case A:
+                return SnakesProto.Direction.LEFT;
+            case D:
+                return SnakesProto.Direction.RIGHT;
+            case S:
+                return SnakesProto.Direction.DOWN;
+            default:
+                return null;
+        }
     }
 }
