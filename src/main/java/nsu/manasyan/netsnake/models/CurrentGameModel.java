@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.models;
 
+import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.NodeRole;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameConfig;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState;
@@ -23,6 +24,8 @@ public class CurrentGameModel {
     private GameState gameState;
 
     private InetSocketAddress masterAddress;
+
+    private SnakesProto.Direction currentDirection;
 
     private List<GameStateListener> gameStateListeners = new ArrayList<>();
 
@@ -84,5 +87,13 @@ public class CurrentGameModel {
 
     public void notifyAllGameStateListeners(){
         gameStateListeners.forEach(l -> l.onUpdate(gameState));
+    }
+
+    public SnakesProto.Direction getCurrentDirection() {
+        return currentDirection;
+    }
+
+    public void setCurrentDirection(SnakesProto.Direction currentDirection) {
+        this.currentDirection = currentDirection;
     }
 }

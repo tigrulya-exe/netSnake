@@ -18,7 +18,7 @@ public class NetSnakeApp extends Application {
 
     private static Stage stage;
 
-    private static RectanglesField rectanglesField;
+    private static FieldCanvas fieldCanvas;
 
     public static Stage getStage() {
         return stage;
@@ -89,12 +89,13 @@ public class NetSnakeApp extends Application {
         stage.show();
     }
 
-    public static RectanglesField getRectanglesField() {
-        return rectanglesField;
+
+    public static FieldCanvas getFieldCanvas() {
+        return fieldCanvas;
     }
 
-    public static void setRectanglesField(RectanglesField rectanglesField) {
-        NetSnakeApp.rectanglesField = rectanglesField;
+    public static void setFieldCanvas(FieldCanvas fieldCanvas) {
+        NetSnakeApp.fieldCanvas = fieldCanvas;
     }
 
     public static void setScene(SceneFactory.SceneType sceneType){

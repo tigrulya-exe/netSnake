@@ -1,5 +1,10 @@
 package nsu.manasyan.netsnake.models;
 
+import javafx.scene.paint.Color;
+import nsu.manasyan.netsnake.controllers.SnakesController;
+import nsu.manasyan.netsnake.gui.ColorFactory;
+import nsu.manasyan.netsnake.gui.FieldCanvas;
+import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
@@ -9,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
 
 public class MasterGameState {
     private static final int MASTER_ID = 0;
@@ -68,9 +75,10 @@ public class MasterGameState {
         return field;
     }
 
-    public void updateField(List<Snake> snakes, List<Coord> foods){
-        // TODO get getSnakePart from controller
-        snakes.forEach(s -> {
+    public void updateField(){
+        snakes.forEach((k,v) -> {
+            SnakesController.useSnakeCoords( v.getPoints(), this::updateSnakePart);
+            field.updateField(v.getPoints().get(0), HEAD);
         });
 
         foods.forEach(c -> field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
@@ -93,5 +101,17 @@ public class MasterGameState {
 
     public Map<Integer, List<SnakesProto.Direction>> getPlayersDirections() {
         return playersDirections;
+    }
+
+    private void updateSnakePart(int from, int to, int constCoord, boolean isVertical){
+        int min = (from < to) ? from : to;
+        int max = (from > to) ? from : to;
+
+        for(int coord = min; coord <= max; ++coord){
+            if(isVertical)
+                field.updateField(constCoord, coord, Field.Cell.SNAKE);
+            else
+                field.updateField(coord, constCoord, Field.Cell.SNAKE);
+        }
     }
 }

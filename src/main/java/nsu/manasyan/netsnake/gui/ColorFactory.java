@@ -24,7 +24,7 @@ public class ColorFactory {
     private void initColors() {
         colors.put(Field.Cell.FREE, Color.BLACK);
         colors.put(Field.Cell.FOOD, Color.GREEN);
-        colors.put(Field.Cell.SNAKE, Color.BLUE);
+        colors.put(Field.Cell.SNAKE, Color.CORNSILK);
         colors.put(Field.Cell.HEAD, Color.RED);
 
     }

@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.models.MasterGameState;
 import nsu.manasyan.netsnake.models.Snake;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
@@ -44,11 +45,11 @@ public class GameStateController {
             snakesController.snakeStep(s);
         });
         model.setGameState(masterGameState.toGameState(model.getCurrentConfig()));
+        masterGameState.updateField();
     }
 
     public void setModel(CurrentGameModel model) {
         this.model = model;
-        snakesController.setModel(model);
     }
 
     public void addPlayer(GamePlayer player){
@@ -58,6 +59,8 @@ public class GameStateController {
 
     public void startNewGame(GameConfig config) {
         masterGameState = new MasterGameState(GameObjectBuilder.initNewFoods(config), config);
+        snakesController.setMasterGameState(masterGameState);
+        model.setCurrentDirection(masterGameState.getCurrentPlayerDirection(MASTER_ID));
         model.setGameState(masterGameState.toGameState(config));
         model.setPlayerId(MASTER_ID);
         model.setCurrentConfig(config);
@@ -129,10 +132,50 @@ public class GameStateController {
         directions.get(playerId).add(direction);
     }
 
+    public void updateField(){
+        masterGameState.updateField();
+    }
+
     public void registerDirection(Direction direction){
+        if (!isCorrectDirection(direction)){
+            return;
+        }
+
+        model.setCurrentDirection(direction);
         if(model.getPlayerRole() == NodeRole.MASTER)
             registerPlayerDirection(MASTER_ID, direction);
         // else
         // send direction to master
     }
+
+    public Field getField(){
+        return masterGameState.getField();
+    }
+
+    private boolean isCorrectDirection(Direction direction) {
+        Direction currentDirection = model.getCurrentDirection();
+
+        switch (direction){
+            case UP:
+                if(currentDirection == Direction.DOWN)
+                    return false;
+                break;
+            case DOWN:
+                if(currentDirection == Direction.UP)
+                    return false;
+                break;
+            case LEFT:
+                if(currentDirection == Direction.RIGHT)
+                    return false;
+                break;
+            case RIGHT:
+                if(currentDirection == Direction.LEFT)
+                    return false;
+                break;
+        }
+
+        return true;
+    }
+
+
 }
