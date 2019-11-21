@@ -42,7 +42,7 @@ public class GameObjectBuilder {
 
     public static List<GameState.Coord> initNewFoods(GameConfig config){
         Random random = new Random();
-        List<GameState.Coord> foods = new ArrayList<>();
+        List<GameState.Coord> foods = new LinkedList<>();
         int x, y;
 
         for(int i = 0; i < config.getFoodStatic() + config.getFoodPerPlayer(); ++i){

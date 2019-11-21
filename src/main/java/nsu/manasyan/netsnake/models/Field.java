@@ -14,24 +14,24 @@ public class Field {
         FREE
     }
 
-    private Cell[][] field;
+    private Cell[][] cells;
 
     public Field(int height, int width) {
         this.height = height;
         this.width = width;
-        this.field = new Cell[width][height];
+        this.cells = new Cell[width][height];
 
         flush();
     }
 
-    public Cell[][] getField() {
-        return field;
+    public Cell[][] getCells() {
+        return cells;
     }
 
     public void flush(){
         for(int i = 0; i < width; ++i){
             for (int j = 0; j < height; ++j){
-                field[i][j] = Cell.FREE;
+                cells[i][j] = Cell.FREE;
             }
         }
     }
@@ -39,7 +39,7 @@ public class Field {
     public void updateField(int x, int y, Cell cell){
         x = wrapX(x);
         y = wrapY(y);
-        field[x][y] = cell;
+        cells[x][y] = cell;
     }
 
     public void updateField(Coord coord, Cell cell){
@@ -54,7 +54,7 @@ public class Field {
         return (y + height) % height;
     }
 
-    private Coord wrapCoord(Coord coord){
+    public Coord wrap(Coord coord){
         return Coord.newBuilder()
                 .setX(wrapX(coord.getX()))
                 .setY(wrapY(coord.getY()))
@@ -67,5 +67,9 @@ public class Field {
 
     public int getWidth() {
         return width;
+    }
+
+    public Cell getCell(int x, int y){
+        return cells[x][y];
     }
 }

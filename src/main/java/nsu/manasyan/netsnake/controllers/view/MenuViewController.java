@@ -1,4 +1,4 @@
-package nsu.manasyan.netsnake.controllers;
+package nsu.manasyan.netsnake.controllers.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.Scene;

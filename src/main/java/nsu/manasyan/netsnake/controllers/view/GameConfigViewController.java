@@ -1,4 +1,4 @@
-package nsu.manasyan.netsnake.controllers;
+package nsu.manasyan.netsnake.controllers.view;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -7,8 +7,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import nsu.manasyan.netsnake.controllers.GameStateController;
 import nsu.manasyan.netsnake.gui.*;
-import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 
 public class GameConfigViewController {
@@ -78,11 +78,9 @@ public class GameConfigViewController {
 
     private void onUpdate(SnakesProto.GameState gameState) {
         Platform.runLater(() -> {
-            Field field = GameStateController.getInstance().getField();
             FieldCanvas fieldCanvas = NetSnakeApp.getFieldCanvas();
             fieldCanvas.flush();
             ObjectDrawer.drawField(GameStateController.getInstance().getField());
-            field.flush();
 //            controller.getFoods().forEach(ObjectDrawer::drawFood);
 //            controller.getSnakes().forEach(ObjectDrawer::drawSnake);
         });

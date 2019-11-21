@@ -1,8 +1,9 @@
-package nsu.manasyan.netsnake.controllers;
+package nsu.manasyan.netsnake.controllers.view;
 
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import nsu.manasyan.netsnake.controllers.GameStateController;
 import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.gui.SceneFactory;
 

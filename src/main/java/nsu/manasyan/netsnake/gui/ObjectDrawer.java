@@ -38,7 +38,7 @@ public class ObjectDrawer {
     }
 
     public static void drawField(Field field){
-        Field.Cell[][] cells = field.getField();
+        Field.Cell[][] cells = field.getCells();
         FieldCanvas fieldCanvas =  NetSnakeApp.getFieldCanvas();
 
         for(int i = 0; i < field.getWidth(); ++i){

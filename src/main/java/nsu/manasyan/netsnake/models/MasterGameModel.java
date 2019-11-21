@@ -1,10 +1,6 @@
 package nsu.manasyan.netsnake.models;
 
-import javafx.scene.paint.Color;
 import nsu.manasyan.netsnake.controllers.SnakesController;
-import nsu.manasyan.netsnake.gui.ColorFactory;
-import nsu.manasyan.netsnake.gui.FieldCanvas;
-import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
@@ -17,7 +13,7 @@ import java.util.stream.Collectors;
 
 import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
 
-public class MasterGameState {
+public class MasterGameModel {
     private static final int MASTER_ID = 0;
 
     private Field field;
@@ -35,7 +31,7 @@ public class MasterGameState {
 
     private Map<Integer, List<SnakesProto.Direction>> playersDirections = new HashMap<>();
 
-    public MasterGameState(List<Coord> foods, SnakesProto.GameConfig config) {
+    public MasterGameModel(List<Coord> foods, SnakesProto.GameConfig config) {
         this.foods = foods;
         this.field = new Field(config.getHeight(), config.getWidth());
         initMaster();
@@ -76,6 +72,8 @@ public class MasterGameState {
     }
 
     public void updateField(){
+        field.flush();
+
         snakes.forEach((k,v) -> {
             SnakesController.useSnakeCoords( v.getPoints(), this::updateSnakePart);
             field.updateField(v.getPoints().get(0), HEAD);
@@ -84,7 +82,16 @@ public class MasterGameState {
         foods.forEach(c -> field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
 
-    public SnakesProto.Direction getCurrentPlayerDirection(int playerId){
+    public SnakesProto.Direction getPlayerHeadDirection(int playerId){
+        List<SnakesProto.Direction> directions = playersDirections.get(playerId);
+
+        if(directions.size() == 0)
+            return null;
+
+        return directions.get(0);
+    }
+
+    public SnakesProto.Direction popPlayerHeadDirection(int playerId){
         List<SnakesProto.Direction> directions = playersDirections.get(playerId);
 
         if(directions.size() == 0)
