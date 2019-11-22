@@ -40,19 +40,26 @@ public class GameObjectBuilder {
                 .build();
     }
 
-    public static List<GameState.Coord> initNewFoods(GameConfig config){
-        Random random = new Random();
+    public static List<GameState.Coord> initNewFoods(GameConfig config, Field field){
         List<GameState.Coord> foods = new LinkedList<>();
-        int x, y;
 
         for(int i = 0; i < config.getFoodStatic() + config.getFoodPerPlayer(); ++i){
-            x = random.nextInt(config.getWidth());
-            y = random.nextInt(config.getHeight());
-            foods.add(getCoord(x,y));
+            foods.add(getFreeRandomCoord(config, field));
         }
 
         // TODO CHECK
         return foods;
+    }
+
+    public static GameState.Coord getFreeRandomCoord(GameConfig config, Field field){
+        Random random = new Random();
+        int x, y;
+        do {
+            x = random.nextInt(config.getWidth());
+            y = random.nextInt(config.getHeight());
+        } while (field.getCell(x, y) != Field.Cell.FREE);
+
+        return getCoord(x, y);
     }
 
     public static GameMessage initMessage(){

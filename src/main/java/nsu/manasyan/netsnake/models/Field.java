@@ -14,6 +14,14 @@ public class Field {
         FREE
     }
 
+    public enum WallPass{
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN,
+        NOT_PASSED
+    }
+
     private Cell[][] cells;
 
     public Field(int height, int width) {
@@ -71,5 +79,17 @@ public class Field {
 
     public Cell getCell(int x, int y){
         return cells[x][y];
+    }
+
+    public Cell getCell(Coord coord){
+        return cells[coord.getX()][coord.getY()];
+    }
+
+    public WallPass checkIfPassedThroughWallX(int x){
+        return x < 0 ? WallPass.RIGHT : x >= width ? WallPass.LEFT : WallPass.NOT_PASSED;
+    }
+
+    public WallPass checkIfPassedThroughWallY(int y){
+        return y < 0 ? WallPass.UP : y >= height ? WallPass.DOWN : WallPass.NOT_PASSED;
     }
 }

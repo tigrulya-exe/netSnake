@@ -16,7 +16,7 @@ import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
 public class MasterGameModel {
     private static final int MASTER_ID = 0;
 
-    private Field field;
+//    private Field field;
 
     private int stateOrder = 0;
 
@@ -33,7 +33,6 @@ public class MasterGameModel {
 
     public MasterGameModel(List<Coord> foods, SnakesProto.GameConfig config) {
         this.foods = foods;
-        this.field = new Field(config.getHeight(), config.getWidth());
         initMaster();
     }
 
@@ -67,20 +66,6 @@ public class MasterGameModel {
         return foods;
     }
 
-    public Field getField() {
-        return field;
-    }
-
-    public void updateField(){
-        field.flush();
-
-        snakes.forEach((k,v) -> {
-            SnakesController.useSnakeCoords( v.getPoints(), this::updateSnakePart);
-            field.updateField(v.getPoints().get(0), HEAD);
-        });
-
-        foods.forEach(c -> field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
-    }
 
     public SnakesProto.Direction getPlayerHeadDirection(int playerId){
         List<SnakesProto.Direction> directions = playersDirections.get(playerId);
@@ -110,15 +95,5 @@ public class MasterGameModel {
         return playersDirections;
     }
 
-    private void updateSnakePart(int from, int to, int constCoord, boolean isVertical){
-        int min = (from < to) ? from : to;
-        int max = (from > to) ? from : to;
 
-        for(int coord = min; coord <= max; ++coord){
-            if(isVertical)
-                field.updateField(constCoord, coord, Field.Cell.SNAKE);
-            else
-                field.updateField(coord, constCoord, Field.Cell.SNAKE);
-        }
-    }
 }

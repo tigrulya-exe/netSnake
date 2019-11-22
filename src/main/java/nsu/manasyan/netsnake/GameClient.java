@@ -83,7 +83,6 @@ public class GameClient {
             @Override
             public void run() {
                 controller.newTurn();
-
             }
         };
 

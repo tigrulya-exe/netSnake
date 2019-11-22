@@ -30,8 +30,8 @@ public class Snake {
 
     public Snake(int playerId){
         this.playerId = playerId;
-        points.add(getCoord(4,4));
-        points.add(getCoord(0,-3));
+        points.add(getCoord(0,0));
+        points.add(getCoord(3,0));
     }
 
     public static SnakesProto.Direction getDefaultDirection() {

@@ -1,94 +1,66 @@
 package nsu.manasyan.netsnake.controllers;
 
 import nsu.manasyan.netsnake.models.Field;
-import nsu.manasyan.netsnake.models.MasterGameModel;
 import nsu.manasyan.netsnake.models.Snake;
-import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.Direction;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Coord;
-import nsu.manasyan.netsnake.util.GameObjectBuilder;
-import nsu.manasyan.netsnake.util.SnakeManipulator;
 
 import java.util.List;
 
+import static nsu.manasyan.netsnake.models.Field.Cell.FREE;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.getCoord;
 
 public class SnakesController {
 
-    private MasterGameModel masterGameModel;
+    private GameStateController controller;
 
     private Field field;
 
-    public void setMasterGameModel(MasterGameModel masterGameModel) {
-        this.masterGameModel = masterGameModel;
-        this.field = masterGameModel.getField();
-    }
-
-//    public static void useSnakeCoords(List<SnakesProto.GameState.Coord> points, SnakeManipulator manipulator) {
-//        int currentX = points.get(0).getX();
-//        int currentY = points.get(0).getY();
-//        Field field = GameStateController.getInstance().getField();
-//
-//        for (int i = 1; i < points.size(); ++i) {
-//            var point = points.get(i);
-//            currentX = field.wrapX(currentX + point.getX());
-//            currentY = field.wrapY(currentY + point.getY());
-//
-//            if (point.getX() == 0)
-//                manipulator.manipulate(field.wrapY(currentY - point.getY()), currentY, currentX, true);
-//            else
-//                manipulator.manipulate(field.wrapX(currentX - point.getX()), currentX, currentY, false);
-//        }
-//
-//    }
-
-    public static void useSnakeCoords(List<SnakesProto.GameState.Coord> points, SnakeManipulator manipulator) {
-        int currentX = points.get(0).getX();
-        int currentY = points.get(0).getY();
-        Field field = GameStateController.getInstance().getField();
-
-        for (int i = 1; i < points.size(); ++i) {
-            var point = points.get(i);
-            currentX = currentX + point.getX();
-            currentY = currentY + point.getY();
-
-            if (point.getX() == 0)
-                manipulator.manipulate(currentY - point.getY(), currentY, currentX, true);
-            else
-                manipulator.manipulate(currentX - point.getX(), currentX, currentY, false);
-        }
-
+    public void setField(Field field) {
+        this.field = field;
     }
 
     public void moveSnake(Snake snake){
-        Coord oldSecondCoord = snake.getPoints().get(1);
-        switch (moveHead(snake) ){
+        Coord oldPointAfterHead = snake.getPoints().get(1);
+        Coord newHead = getNewHeadCoord(snake);
+
+        snake.getPoints().set(0, newHead);
+        checkPointAfterHead(snake, oldPointAfterHead);
+
+        switch (getNewHeadCell(newHead, snake.getPoints())){
             case FOOD:
                 eatFood(snake);
                 break;
-            case HEAD:
-            case SNAKE:
-                setDead(snake);
-                return;
             case FREE:
                 moveTail(snake);
+                break;
+            default:
+                setDead(snake);
         }
-
-        checkHead(snake, oldSecondCoord);
     }
 
-    private Field.Cell moveHead(Snake snake) {
+    private Field.Cell getNewHeadCell (Coord newHead, List<Coord> points){
+        return newHead.equals(getTailCoord(points)) ? FREE : field.getCell(newHead);
+    }
+
+    private Coord getTailCoord(List<Coord> points){
+        int x = 0, y = 0;
+
+        for(var point : points) {
+            x += point.getX();
+            y += point.getY();
+        }
+
+        return getCoord(field.wrapX(x), field.wrapY(y));
+    }
+
+    private Coord getNewHeadCoord(Snake snake){
         Coord head = snake.getPoints().get(0);
 
-        int headX = head.getX() + snake.getdX();
-        int headY = head.getY() + snake.getdY();
+        int headX = field.wrapX(head.getX() + snake.getdX());
+        int headY = field.wrapY(head.getY() + snake.getdY());
 
-        //TODO check field cell in (x,y)
-        Field.Cell cettToReturn = field.getCell(field.wrapX(headX), field.wrapY(headY));
-
-        snake.getPoints().set(0, getCoord(headX, headY));
-        // TODO if new coord = tail coord -> return = FREE
-        return cettToReturn;
+        return getCoord(headX, headY);
     }
 
     private void moveTail(Snake snake) {
@@ -97,41 +69,37 @@ public class SnakesController {
         int coordsSize = points.size();
         Coord oldTale = points.get(coordsSize - 1);
 
-        int tailX = oldTale.getX();
-        int tailY = oldTale.getY();
-
-        tailX -= getOffsetDiff(tailX);
-        tailY -= getOffsetDiff(tailY);
+        field.updateField(oldTale.getX(), oldTale.getY(), FREE);
+        int tailX = getNewTailOffset(oldTale.getX());
+        int tailY = getNewTailOffset(oldTale.getY());
 
         points.set(coordsSize - 1, getCoord(tailX, tailY));
 
-        if(coordsSize != 2 && tailX + tailY == 0){
-            points.remove(coordsSize - 1);
+        if(tailX + tailY == 0){
+            points.remove(points.size() - 1);
         }
     }
 
-    private int getOffsetDiff(int Offset){
-        return Integer.compare(Offset, 0);
+    private int getNewTailOffset(int oldOffset){
+        return oldOffset - Integer.compare(oldOffset, 0);
     }
 
-    private void checkHead(Snake snake, Coord oldSecondCoord){
+    private void checkPointAfterHead(Snake snake, Coord oldSecondCoord){
         List<Coord> points = snake.getPoints();
         Direction direction = snake.getHeadDirection();
 
         if(isRotateY(direction, oldSecondCoord.getX())){
-            points.add(1, GameObjectBuilder.getCoord(0, -snake.getdY()));
+            points.add(1, getCoord(0, -snake.getdY()));
             return;
         }
 
         if(isRotateX(direction, oldSecondCoord.getY())){
-            points.add(1, GameObjectBuilder.getCoord(-snake.getdX(), 0));
+            points.add(1, getCoord(-snake.getdX(), 0));
             return;
         }
 
-        int x = points.get(1).getX();
-        int y = points.get(1).getY();
-
-        points.set(1, GameObjectBuilder.getCoord(x - snake.getdX(), y - snake.getdY()));
+        points.set(1, getCoord(points.get(1).getX() - snake.getdX(),
+                points.get(1).getY() - snake.getdY()));
     }
 
     private boolean isRotateY(Direction direction, int xOffset){
@@ -143,7 +111,7 @@ public class SnakesController {
     }
 
     private void setDead(Snake snake){
-        GameStateController.getInstance().gameOver(snake.getPlayerId());
+        controller.gameOver(snake.getPlayerId());
     }
 
     private void eatFood(Snake snake){
@@ -151,8 +119,11 @@ public class SnakesController {
         int x = head.getX();
         int y = head.getY();
 
-        field.updateField(x, y, Field.Cell.FREE);
-        GameStateController.getInstance().getModifiableFoods().removeIf(f -> f.getY() == y && f.getX() == x);
+        field.updateField(x, y, FREE);
+        controller.getModifiableFoods().removeIf(f -> f.getY() == y && f.getX() == x);
     }
 
+    public void setController(GameStateController gameStateController) {
+        this.controller = gameStateController;
+    }
 }
