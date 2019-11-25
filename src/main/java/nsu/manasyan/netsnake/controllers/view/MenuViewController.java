@@ -20,6 +20,7 @@ public class MenuViewController {
     }
 
     public void exitClicked(){
+        NetSnakeApp.getGameClient().stopCurrentGame();
         NetSnakeApp.getStage().close();
     }
 }

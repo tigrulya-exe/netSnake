@@ -3,9 +3,8 @@ package nsu.manasyan.netsnake.gui;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCharacterCombination;
 import javafx.scene.input.KeyCode;
-import nsu.manasyan.netsnake.controllers.GameStateController;
+import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 
 import java.io.IOException;
@@ -56,8 +55,12 @@ public class SceneFactory {
         scenes.put(SceneType.GAME, initGameScene());
     }
 
+
     private Scene initSceneType(String path) throws IOException {
         FXMLLoader loader = new FXMLLoader();
+        loader.setController(null);
+        loader.setRoot(null);
+
         URL xmlUrl = getClass().getResource(path);
         loader.setLocation(xmlUrl);
         Parent root = loader.load();
@@ -69,7 +72,7 @@ public class SceneFactory {
         scene.setOnKeyPressed((ke) -> {
             SnakesProto.Direction direction;
             if ((direction = getDirection(ke.getCode())) != null)
-                GameStateController.getInstance().registerDirection(direction);
+                ClientController.getInstance().registerDirection(direction);
             });
         return  scene;
     }

@@ -1,28 +1,23 @@
 package nsu.manasyan.netsnake.models;
 
-import nsu.manasyan.netsnake.controllers.SnakesController;
+import nsu.manasyan.netsnake.Wrappers.Player;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
 
 public class MasterGameModel {
     private static final int MASTER_ID = 0;
 
-//    private Field field;
-
     private int stateOrder = 0;
 
-    private Map<Integer, Snake> snakes = new HashMap<>();
+    private SnakesProto.GameConfig config;
 
-    private Map<Integer, SnakesProto.GamePlayer> players = new HashMap<>();
+    private Map<Integer, nsu.manasyan.netsnake.Wrappers.Snake> snakes = new HashMap<>();
+
+    private Map<Integer, Player> players = new HashMap<>();
 
     // key - id, value - isAlive
     private Map<Integer, Boolean> alivePlayers = new HashMap<>();
@@ -33,11 +28,13 @@ public class MasterGameModel {
 
     public MasterGameModel(List<Coord> foods, SnakesProto.GameConfig config) {
         this.foods = foods;
+        this.config = config;
         initMaster();
     }
 
-    public SnakesProto.GameState toGameState(SnakesProto.GameConfig config){
-        return GameObjectBuilder.getGameState(players.values(), getProtoSnakes(),
+    public SnakesProto.GameState toGameState(){
+        Collection <SnakesProto.GamePlayer> protoPlayers = players.values().stream().map(Player::toProto).collect(Collectors.toList());
+        return GameObjectBuilder.getGameState(protoPlayers, getProtoSnakes(),
                 config, stateOrder, foods);
     }
 
@@ -45,20 +42,20 @@ public class MasterGameModel {
         players.put(MASTER_ID, GameObjectBuilder.initMaster());
 //        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, field));
         //for master
-        snakes.put(MASTER_ID, new Snake(MASTER_ID));
+        snakes.put(MASTER_ID, new nsu.manasyan.netsnake.Wrappers.Snake(MASTER_ID));
         playersDirections.put(MASTER_ID, new ArrayList<>());
-        playersDirections.get(MASTER_ID).add(Snake.getDefaultDirection());
+        playersDirections.get(MASTER_ID).add(nsu.manasyan.netsnake.Wrappers.Snake.getDefaultDirection());
     }
 
     private List<SnakesProto.GameState.Snake> getProtoSnakes(){
-        return snakes.values().stream().map(Snake::toProtoSnake).collect(Collectors.toList());
+        return snakes.values().stream().map(nsu.manasyan.netsnake.Wrappers.Snake::toProtoSnake).collect(Collectors.toList());
     }
 
-    public Map<Integer, Snake> getSnakes() {
+    public Map<Integer, nsu.manasyan.netsnake.Wrappers.Snake> getSnakes() {
         return snakes;
     }
 
-    public Map<Integer, SnakesProto.GamePlayer> getPlayers() {
+    public Map<Integer, Player> getPlayers() {
         return players;
     }
 
@@ -66,6 +63,9 @@ public class MasterGameModel {
         return foods;
     }
 
+    public SnakesProto.GameConfig getConfig(){
+        return config;
+    }
 
     public SnakesProto.Direction getPlayerHeadDirection(int playerId){
         List<SnakesProto.Direction> directions = playersDirections.get(playerId);
@@ -94,6 +94,5 @@ public class MasterGameModel {
     public Map<Integer, List<SnakesProto.Direction>> getPlayersDirections() {
         return playersDirections;
     }
-
 
 }

@@ -2,11 +2,11 @@ package nsu.manasyan.netsnake.gui;
 
 import javafx.scene.paint.Color;
 import nsu.manasyan.netsnake.models.Field;
-import nsu.manasyan.netsnake.models.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
 import java.util.List;
+import java.util.Map;
 
 
 public class ObjectDrawer {
@@ -58,5 +58,9 @@ public class ObjectDrawer {
     public static void drawFood(SnakesProto.GameState.Coord food){
         FieldCanvas fieldCanvas =  NetSnakeApp.getFieldCanvas();
         fieldCanvas.drawPoint(food.getX(), food.getY(), Field.Cell.FOOD);
+    }
+
+    public static void drawScores(Map.Entry<Integer, Integer> score) {
+
     }
 }

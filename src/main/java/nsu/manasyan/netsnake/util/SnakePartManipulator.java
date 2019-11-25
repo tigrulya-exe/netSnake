@@ -1,6 +1,6 @@
 package nsu.manasyan.netsnake.util;
 
-import nsu.manasyan.netsnake.controllers.GameStateController;
+import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Coord;
@@ -52,7 +52,7 @@ public class SnakePartManipulator {
 
         Field.WallPass wallPass;
 
-        Field field = GameStateController.getInstance().getField();
+        Field field = MasterController.getInstance().getField();
 
         for (int i = 1; i < points.size(); ++i) {
             var point = points.get(i);

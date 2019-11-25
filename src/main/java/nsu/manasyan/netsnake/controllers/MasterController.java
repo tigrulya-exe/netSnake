@@ -1,25 +1,23 @@
 package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.Wrappers.Player;
+import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.models.MasterGameModel;
-import nsu.manasyan.netsnake.models.Snake;
+import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
-import nsu.manasyan.netsnake.models.CurrentGameModel;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
-import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
+import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 
-
-public class GameStateController {
+public class MasterController{
     private static final int MASTER_ID = 0;
 
-    private CurrentGameModel model;
+    private ClientGameModel model;
 
     private Field field;
 
@@ -29,20 +27,46 @@ public class GameStateController {
 
     private SnakePartManipulator manipulator = SnakePartManipulator.getInstance();
 
-    private GameStateController() {
+    private Timer timer = new Timer();
+
+    private MasterController() {
         snakesController.setController(this);
     }
 
+    public static MasterController getInstance() {
+        return MasterController.SingletonHelper.controller;
+    }
+
     private static class SingletonHelper{
-
-        private static final GameStateController controller = new GameStateController();
-    }
-    public static GameStateController getInstance() {
-        return GameStateController.SingletonHelper.controller;
+        private static final MasterController controller = new MasterController();
     }
 
-    public CurrentGameModel getModel() {
-        return model;
+    public void init(GameConfig config, ClientGameModel currModel ){
+        model = currModel;
+        field = new Field(config.getHeight(), config.getWidth());
+        masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
+
+        manipulator.setField(field);
+        model.setGameState(masterGameModel.toGameState());
+        model.setCurrentDirection(masterGameModel.getPlayerHeadDirection(MASTER_ID));
+        snakesController.setField(field);
+        scheduleTurns(config.getStateDelayMs());
+    }
+
+    public void scheduleTurns(int stateDelayMs){
+        TimerTask newTurn  = new TimerTask() {
+            @Override
+            public void run() {
+                newTurn();
+            }
+        };
+        timer.schedule(newTurn, stateDelayMs, stateDelayMs);
+    }
+
+
+    public void addScore(int playerId, int newPoints){
+        String playerName = masterGameModel.getPlayers().get(playerId).getName();
+        model.addScore(playerId, playerName, newPoints);
     }
 
     public void newTurn() {
@@ -56,7 +80,7 @@ public class GameStateController {
             snakesController.moveSnake(snake);
         }
 
-        model.setGameState(masterGameModel.toGameState(model.getCurrentConfig()));
+        model.setGameState(masterGameModel.toGameState());
         generateFood();
         updateField();
     }
@@ -71,53 +95,21 @@ public class GameStateController {
         }
     }
 
-    private void updateSnakePart(int from, int to, int constCoord, boolean isVertical){
-        int min = (from < to) ? from : to;
-        int max = (from > to) ? from : to;
-
-        for(int coord = min; coord <= max; ++coord){
-            if(isVertical)
-                field.updateField(constCoord, coord, Field.Cell.SNAKE);
-            else
-                field.updateField(coord, constCoord, Field.Cell.SNAKE);
-        }
-    }
-
     public void updateField(){
         field.flush();
 
         masterGameModel.getSnakes().forEach((k,v) -> {
-            manipulator.useSnakeCoords( v.getPoints(), this::updateSnakePart);
+            manipulator.useSnakeCoords( v.getPoints(), snakesController::updateSnakePart);
             field.updateField(v.getPoints().get(0), HEAD);
         });
 
         masterGameModel.getFoods().forEach(c -> field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
 
-    public void updateSnake(Snake snake){
-        manipulator.useSnakeCoords( snake.getPoints(), this::updateSnakePart);
-        field.updateField(snake.getPoints().get(0), HEAD);
-    }
-
-    public void setModel(CurrentGameModel model) {
-        this.model = model;
-    }
-
-    public void addPlayer(GamePlayer player){
+    public void addPlayer(Player player){
         masterGameModel.getPlayers().put(player.getId(), player);
+        model.addScore(player.getId(), player.getName(), 0);
         addSnake(player.getId());
-    }
-
-    public void startNewGame(GameConfig config) {
-        this.field = new Field(config.getHeight(), config.getWidth());
-        masterGameModel = new MasterGameModel(GameObjectBuilder.initNewFoods(config, field), config);
-        snakesController.setField(field);
-        manipulator.setField(field);
-        model.setCurrentDirection(masterGameModel.getPlayerHeadDirection(MASTER_ID));
-        model.setGameState(masterGameModel.toGameState(config));
-        model.setPlayerId(MASTER_ID);
-        model.setCurrentConfig(config);
-        model.setPlayerRole(NodeRole.MASTER);
     }
 
     public void removePlayer(int playerId){
@@ -126,61 +118,25 @@ public class GameStateController {
         // TODO add some magic to turn snake into food
     }
 
+    public void removeSnake(int playerId){
+        masterGameModel.getSnakes().remove(playerId);
+    }
+
     public void addSnake(int playerId){
         Snake newSnake = GameObjectBuilder.initNewSnake(playerId, field);
         masterGameModel.getSnakes().put(playerId, newSnake);
-    }
-
-    public void removeSnake(int playerId){
-        masterGameModel.getSnakes().remove(playerId);
     }
 
     public int getAvailablePlayerId(){
         return model.getGameState().getPlayers().getPlayersCount() + 1;
     }
 
-    public void updateGameState(GameState gameState){
-        model.setGameState(gameState);
-    }
-
     public void setAlive(int playerId){
         masterGameModel.getAlivePlayers().put(playerId, true);
     }
 
-    public NodeRole getRole(){
-        return model.getPlayerRole();
-    }
-
-    public void setRole(NodeRole role){
-        model.setPlayerRole(role);
-    }
-
-    public InetSocketAddress getMasterAddress(){
-        return model.getMasterAddress();
-    }
-
-    public GameState getGameState(){
-        return model.getGameState();
-    }
-
-    public void setGameState(GameState gameState){
-        model.setGameState(gameState);
-    }
-
-    public List<GameState.Snake> getSnakes(){
-        return model.getGameState().getSnakesList();
-    }
-
-    public List<GameState.Coord> getFoods(){
-        return model.getGameState().getFoodsList();
-    }
-
     public List<GameState.Coord> getModifiableFoods(){
         return masterGameModel.getFoods();
-    }
-
-    public void registerGameStateListener(CurrentGameModel.GameStateListener listener){
-        model.registerGameStateListener(listener);
     }
 
     public void registerPlayerDirection(int playerId, Direction direction){
@@ -189,22 +145,47 @@ public class GameStateController {
         directions.get(playerId).add(direction);
     }
 
-
     public void registerDirection(Direction direction){
         if (!isCorrectDirection(direction)){
             return;
         }
-
         model.setCurrentDirection(direction);
-        if(model.getPlayerRole() == NodeRole.MASTER)
-            registerPlayerDirection(MASTER_ID, direction);
-        // else
-        // send direction to master
+        registerPlayerDirection(MASTER_ID, direction);
     }
 
     public void gameOver(int playerId){
-        removePlayer(playerId);
-        System.out.println("DEAD");
+        setPlayerAsViewer(playerId);
+        Snake deadSnake = masterGameModel.getSnakes().get(playerId);
+        turnDeadSnakeIntoFood(deadSnake);
+        masterGameModel.getSnakes().remove(playerId);
+    }
+
+    private void turnDeadSnakeIntoFood(Snake snake) {
+        manipulator.useSnakeCoords(snake.getPoints(),this::turnDeadSnakePartIntoFood);
+    }
+
+    private void turnDeadSnakePartIntoFood(int from, int to, int constCoord, boolean isVertical){
+        GameConfig config = masterGameModel.getConfig();
+        Random random = new Random();
+        List<GameState.Coord> foods = masterGameModel.getFoods();
+
+        int min = (from < to) ? from : to;
+        int max = (from > to) ? from : to;
+
+        for(int coord = min; coord <= max; ++coord){
+            if(random.nextInt(100) > config.getDeadFoodProb() * 100)
+                continue;
+
+            if(isVertical)
+                foods.add(GameObjectBuilder.getCoord(constCoord, coord));
+            else
+                foods.add(GameObjectBuilder.getCoord(coord, constCoord));
+        }
+    }
+
+    private void setPlayerAsViewer(int playerId) {
+        Map<Integer, Player> players = masterGameModel.getPlayers();
+        players.get(playerId).setRole(NodeRole.VIEWER);
     }
 
     public Field getField(){
@@ -232,9 +213,6 @@ public class GameStateController {
                     return false;
                 break;
         }
-
         return true;
     }
-
-
 }

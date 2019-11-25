@@ -7,17 +7,21 @@ import nsu.manasyan.netsnake.proto.SnakesProto.GameState;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class CurrentGameModel {
+public class ClientGameModel {
 
     public interface GameStateListener{
-        void onUpdate(GameState gameState);
+        void onUpdate(Map<Integer, Integer> scores);
     }
 
     private int playerId;
 
     private NodeRole playerRole;
+
+    private Map<Integer, Integer> scores = new HashMap<>();
 
     private GameConfig currentConfig;
 
@@ -29,11 +33,11 @@ public class CurrentGameModel {
 
     private List<GameStateListener> gameStateListeners = new ArrayList<>();
 
-    public CurrentGameModel(){
+    public ClientGameModel(){
 
     }
 
-    public CurrentGameModel(int playerId, GameConfig currentConfig, GameState gameState, NodeRole playerRole) {
+    public ClientGameModel(int playerId, GameConfig currentConfig, GameState gameState, NodeRole playerRole) {
         this.playerId = playerId;
         this.currentConfig = currentConfig;
         this.gameState = gameState;
@@ -86,7 +90,7 @@ public class CurrentGameModel {
     }
 
     public void notifyAllGameStateListeners(){
-        gameStateListeners.forEach(l -> l.onUpdate(gameState));
+        gameStateListeners.forEach(l -> l.onUpdate(scores));
     }
 
     public SnakesProto.Direction getCurrentDirection() {
@@ -95,5 +99,15 @@ public class CurrentGameModel {
 
     public void setCurrentDirection(SnakesProto.Direction currentDirection) {
         this.currentDirection = currentDirection;
+    }
+
+    public void addScore(int playerId, String playerName, int newPoints){
+        Integer oldScore = scores.get(playerId);
+        if(oldScore == null){
+            scores.put(playerId, 0);
+            oldScore = 0;
+        }
+        // TODO add name to map))
+        scores.put(playerId,oldScore + newPoints);
     }
 }

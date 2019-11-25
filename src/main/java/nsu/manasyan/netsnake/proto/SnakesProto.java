@@ -563,6 +563,25 @@ public final class SnakesProto {
      * @return The type.
      */
     nsu.manasyan.netsnake.proto.SnakesProto.PlayerType getType();
+
+    /**
+     * <pre>
+     * Число очков, которые набрал игрок
+     * </pre>
+     *
+     * <code>required int32 score = 7;</code>
+     * @return Whether the score field is set.
+     */
+    boolean hasScore();
+    /**
+     * <pre>
+     * Число очков, которые набрал игрок
+     * </pre>
+     *
+     * <code>required int32 score = 7;</code>
+     * @return The score.
+     */
+    int getScore();
   }
   /**
    * <pre>
@@ -662,6 +681,11 @@ public final class SnakesProto {
                 bitField0_ |= 0x00000020;
                 type_ = rawValue;
               }
+              break;
+            }
+            case 56: {
+              bitField0_ |= 0x00000040;
+              score_ = input.readInt32();
               break;
             }
             default: {
@@ -915,6 +939,31 @@ public final class SnakesProto {
       return result == null ? nsu.manasyan.netsnake.proto.SnakesProto.PlayerType.HUMAN : result;
     }
 
+    public static final int SCORE_FIELD_NUMBER = 7;
+    private int score_;
+    /**
+     * <pre>
+     * Число очков, которые набрал игрок
+     * </pre>
+     *
+     * <code>required int32 score = 7;</code>
+     * @return Whether the score field is set.
+     */
+    public boolean hasScore() {
+      return ((bitField0_ & 0x00000040) != 0);
+    }
+    /**
+     * <pre>
+     * Число очков, которые набрал игрок
+     * </pre>
+     *
+     * <code>required int32 score = 7;</code>
+     * @return The score.
+     */
+    public int getScore() {
+      return score_;
+    }
+
     private byte memoizedIsInitialized = -1;
     @java.lang.Override
     public final boolean isInitialized() {
@@ -942,6 +991,10 @@ public final class SnakesProto {
         memoizedIsInitialized = 0;
         return false;
       }
+      if (!hasScore()) {
+        memoizedIsInitialized = 0;
+        return false;
+      }
       memoizedIsInitialized = 1;
       return true;
     }
@@ -966,6 +1019,9 @@ public final class SnakesProto {
       }
       if (((bitField0_ & 0x00000020) != 0)) {
         output.writeEnum(6, type_);
+      }
+      if (((bitField0_ & 0x00000040) != 0)) {
+        output.writeInt32(7, score_);
       }
       unknownFields.writeTo(output);
     }
@@ -997,6 +1053,10 @@ public final class SnakesProto {
       if (((bitField0_ & 0x00000020) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeEnumSize(6, type_);
+      }
+      if (((bitField0_ & 0x00000040) != 0)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(7, score_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -1041,6 +1101,11 @@ public final class SnakesProto {
       if (hasType()) {
         if (type_ != other.type_) return false;
       }
+      if (hasScore() != other.hasScore()) return false;
+      if (hasScore()) {
+        if (getScore()
+            != other.getScore()) return false;
+      }
       if (!unknownFields.equals(other.unknownFields)) return false;
       return true;
     }
@@ -1075,6 +1140,10 @@ public final class SnakesProto {
       if (hasType()) {
         hash = (37 * hash) + TYPE_FIELD_NUMBER;
         hash = (53 * hash) + type_;
+      }
+      if (hasScore()) {
+        hash = (37 * hash) + SCORE_FIELD_NUMBER;
+        hash = (53 * hash) + getScore();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
@@ -1225,6 +1294,8 @@ public final class SnakesProto {
         bitField0_ = (bitField0_ & ~0x00000010);
         type_ = 0;
         bitField0_ = (bitField0_ & ~0x00000020);
+        score_ = 0;
+        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -1277,6 +1348,10 @@ public final class SnakesProto {
           to_bitField0_ |= 0x00000020;
         }
         result.type_ = type_;
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.score_ = score_;
+          to_bitField0_ |= 0x00000040;
+        }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -1348,6 +1423,9 @@ public final class SnakesProto {
         if (other.hasType()) {
           setType(other.getType());
         }
+        if (other.hasScore()) {
+          setScore(other.getScore());
+        }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
@@ -1368,6 +1446,9 @@ public final class SnakesProto {
           return false;
         }
         if (!hasRole()) {
+          return false;
+        }
+        if (!hasScore()) {
           return false;
         }
         return true;
@@ -1827,6 +1908,59 @@ public final class SnakesProto {
       public Builder clearType() {
         bitField0_ = (bitField0_ & ~0x00000020);
         type_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private int score_ ;
+      /**
+       * <pre>
+       * Число очков, которые набрал игрок
+       * </pre>
+       *
+       * <code>required int32 score = 7;</code>
+       * @return Whether the score field is set.
+       */
+      public boolean hasScore() {
+        return ((bitField0_ & 0x00000040) != 0);
+      }
+      /**
+       * <pre>
+       * Число очков, которые набрал игрок
+       * </pre>
+       *
+       * <code>required int32 score = 7;</code>
+       * @return The score.
+       */
+      public int getScore() {
+        return score_;
+      }
+      /**
+       * <pre>
+       * Число очков, которые набрал игрок
+       * </pre>
+       *
+       * <code>required int32 score = 7;</code>
+       * @param value The score to set.
+       * @return This builder for chaining.
+       */
+      public Builder setScore(int value) {
+        bitField0_ |= 0x00000040;
+        score_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <pre>
+       * Число очков, которые набрал игрок
+       * </pre>
+       *
+       * <code>required int32 score = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearScore() {
+        bitField0_ = (bitField0_ & ~0x00000040);
+        score_ = 0;
         onChanged();
         return this;
       }
@@ -12239,6 +12373,35 @@ public final class SnakesProto {
        * @return The onlyView.
        */
       boolean getOnlyView();
+
+      /**
+       * <pre>
+       * Имя игрока
+       * </pre>
+       *
+       * <code>required string name = 3;</code>
+       * @return Whether the name field is set.
+       */
+      boolean hasName();
+      /**
+       * <pre>
+       * Имя игрока
+       * </pre>
+       *
+       * <code>required string name = 3;</code>
+       * @return The name.
+       */
+      java.lang.String getName();
+      /**
+       * <pre>
+       * Имя игрока
+       * </pre>
+       *
+       * <code>required string name = 3;</code>
+       * @return The bytes for name.
+       */
+      com.google.protobuf.ByteString
+          getNameBytes();
     }
     /**
      * <pre>
@@ -12258,6 +12421,7 @@ public final class SnakesProto {
       }
       private JoinMsg() {
         playerType_ = 0;
+        name_ = "";
       }
 
       @java.lang.Override
@@ -12306,6 +12470,12 @@ public final class SnakesProto {
               case 16: {
                 bitField0_ |= 0x00000002;
                 onlyView_ = input.readBool();
+                break;
+              }
+              case 26: {
+                com.google.protobuf.ByteString bs = input.readBytes();
+                bitField0_ |= 0x00000004;
+                name_ = bs;
                 break;
               }
               default: {
@@ -12393,6 +12563,63 @@ public final class SnakesProto {
         return onlyView_;
       }
 
+      public static final int NAME_FIELD_NUMBER = 3;
+      private volatile java.lang.Object name_;
+      /**
+       * <pre>
+       * Имя игрока
+       * </pre>
+       *
+       * <code>required string name = 3;</code>
+       * @return Whether the name field is set.
+       */
+      public boolean hasName() {
+        return ((bitField0_ & 0x00000004) != 0);
+      }
+      /**
+       * <pre>
+       * Имя игрока
+       * </pre>
+       *
+       * <code>required string name = 3;</code>
+       * @return The name.
+       */
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (ref instanceof java.lang.String) {
+          return (java.lang.String) ref;
+        } else {
+          com.google.protobuf.ByteString bs = 
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          if (bs.isValidUtf8()) {
+            name_ = s;
+          }
+          return s;
+        }
+      }
+      /**
+       * <pre>
+       * Имя игрока
+       * </pre>
+       *
+       * <code>required string name = 3;</code>
+       * @return The bytes for name.
+       */
+      public com.google.protobuf.ByteString
+          getNameBytes() {
+        java.lang.Object ref = name_;
+        if (ref instanceof java.lang.String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          name_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+
       private byte memoizedIsInitialized = -1;
       @java.lang.Override
       public final boolean isInitialized() {
@@ -12400,6 +12627,10 @@ public final class SnakesProto {
         if (isInitialized == 1) return true;
         if (isInitialized == 0) return false;
 
+        if (!hasName()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
         memoizedIsInitialized = 1;
         return true;
       }
@@ -12412,6 +12643,9 @@ public final class SnakesProto {
         }
         if (((bitField0_ & 0x00000002) != 0)) {
           output.writeBool(2, onlyView_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          com.google.protobuf.GeneratedMessageV3.writeString(output, 3, name_);
         }
         unknownFields.writeTo(output);
       }
@@ -12429,6 +12663,9 @@ public final class SnakesProto {
         if (((bitField0_ & 0x00000002) != 0)) {
           size += com.google.protobuf.CodedOutputStream
             .computeBoolSize(2, onlyView_);
+        }
+        if (((bitField0_ & 0x00000004) != 0)) {
+          size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, name_);
         }
         size += unknownFields.getSerializedSize();
         memoizedSize = size;
@@ -12454,6 +12691,11 @@ public final class SnakesProto {
           if (getOnlyView()
               != other.getOnlyView()) return false;
         }
+        if (hasName() != other.hasName()) return false;
+        if (hasName()) {
+          if (!getName()
+              .equals(other.getName())) return false;
+        }
         if (!unknownFields.equals(other.unknownFields)) return false;
         return true;
       }
@@ -12473,6 +12715,10 @@ public final class SnakesProto {
           hash = (37 * hash) + ONLY_VIEW_FIELD_NUMBER;
           hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
               getOnlyView());
+        }
+        if (hasName()) {
+          hash = (37 * hash) + NAME_FIELD_NUMBER;
+          hash = (53 * hash) + getName().hashCode();
         }
         hash = (29 * hash) + unknownFields.hashCode();
         memoizedHashCode = hash;
@@ -12615,6 +12861,8 @@ public final class SnakesProto {
           bitField0_ = (bitField0_ & ~0x00000001);
           onlyView_ = false;
           bitField0_ = (bitField0_ & ~0x00000002);
+          name_ = "";
+          bitField0_ = (bitField0_ & ~0x00000004);
           return this;
         }
 
@@ -12651,6 +12899,10 @@ public final class SnakesProto {
             result.onlyView_ = onlyView_;
             to_bitField0_ |= 0x00000002;
           }
+          if (((from_bitField0_ & 0x00000004) != 0)) {
+            to_bitField0_ |= 0x00000004;
+          }
+          result.name_ = name_;
           result.bitField0_ = to_bitField0_;
           onBuilt();
           return result;
@@ -12706,6 +12958,11 @@ public final class SnakesProto {
           if (other.hasOnlyView()) {
             setOnlyView(other.getOnlyView());
           }
+          if (other.hasName()) {
+            bitField0_ |= 0x00000004;
+            name_ = other.name_;
+            onChanged();
+          }
           this.mergeUnknownFields(other.unknownFields);
           onChanged();
           return this;
@@ -12713,6 +12970,9 @@ public final class SnakesProto {
 
         @java.lang.Override
         public final boolean isInitialized() {
+          if (!hasName()) {
+            return false;
+          }
           return true;
         }
 
@@ -12843,6 +13103,114 @@ public final class SnakesProto {
         public Builder clearOnlyView() {
           bitField0_ = (bitField0_ & ~0x00000002);
           onlyView_ = false;
+          onChanged();
+          return this;
+        }
+
+        private java.lang.Object name_ = "";
+        /**
+         * <pre>
+         * Имя игрока
+         * </pre>
+         *
+         * <code>required string name = 3;</code>
+         * @return Whether the name field is set.
+         */
+        public boolean hasName() {
+          return ((bitField0_ & 0x00000004) != 0);
+        }
+        /**
+         * <pre>
+         * Имя игрока
+         * </pre>
+         *
+         * <code>required string name = 3;</code>
+         * @return The name.
+         */
+        public java.lang.String getName() {
+          java.lang.Object ref = name_;
+          if (!(ref instanceof java.lang.String)) {
+            com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
+            java.lang.String s = bs.toStringUtf8();
+            if (bs.isValidUtf8()) {
+              name_ = s;
+            }
+            return s;
+          } else {
+            return (java.lang.String) ref;
+          }
+        }
+        /**
+         * <pre>
+         * Имя игрока
+         * </pre>
+         *
+         * <code>required string name = 3;</code>
+         * @return The bytes for name.
+         */
+        public com.google.protobuf.ByteString
+            getNameBytes() {
+          java.lang.Object ref = name_;
+          if (ref instanceof String) {
+            com.google.protobuf.ByteString b = 
+                com.google.protobuf.ByteString.copyFromUtf8(
+                    (java.lang.String) ref);
+            name_ = b;
+            return b;
+          } else {
+            return (com.google.protobuf.ByteString) ref;
+          }
+        }
+        /**
+         * <pre>
+         * Имя игрока
+         * </pre>
+         *
+         * <code>required string name = 3;</code>
+         * @param value The name to set.
+         * @return This builder for chaining.
+         */
+        public Builder setName(
+            java.lang.String value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          name_ = value;
+          onChanged();
+          return this;
+        }
+        /**
+         * <pre>
+         * Имя игрока
+         * </pre>
+         *
+         * <code>required string name = 3;</code>
+         * @return This builder for chaining.
+         */
+        public Builder clearName() {
+          bitField0_ = (bitField0_ & ~0x00000004);
+          name_ = getDefaultInstance().getName();
+          onChanged();
+          return this;
+        }
+        /**
+         * <pre>
+         * Имя игрока
+         * </pre>
+         *
+         * <code>required string name = 3;</code>
+         * @param value The bytes for name to set.
+         * @return This builder for chaining.
+         */
+        public Builder setNameBytes(
+            com.google.protobuf.ByteString value) {
+          if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000004;
+          name_ = value;
           onChanged();
           return this;
         }
@@ -14607,6 +14975,12 @@ public final class SnakesProto {
           return false;
         }
       }
+      if (hasJoin()) {
+        if (!getJoin().isInitialized()) {
+          memoizedIsInitialized = 0;
+          return false;
+        }
+      }
       if (hasError()) {
         if (!getError().isInitialized()) {
           memoizedIsInitialized = 0;
@@ -15192,6 +15566,11 @@ public final class SnakesProto {
         }
         if (hasAnnouncement()) {
           if (!getAnnouncement().isInitialized()) {
+            return false;
+          }
+        }
+        if (hasJoin()) {
+          if (!getJoin().isInitialized()) {
             return false;
           }
         }
@@ -16637,56 +17016,57 @@ public final class SnakesProto {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\014snakes.proto\022\006snakes\"\221\001\n\nGamePlayer\022\014\n" +
+      "\n\014snakes.proto\022\006snakes\"\240\001\n\nGamePlayer\022\014\n" +
       "\004name\030\001 \002(\t\022\n\n\002id\030\002 \002(\005\022\022\n\nip_address\030\003 " +
       "\002(\t\022\014\n\004port\030\004 \002(\005\022\036\n\004role\030\005 \002(\0162\020.snakes" +
       ".NodeRole\022\'\n\004type\030\006 \001(\0162\022.snakes.PlayerT" +
-      "ype:\005HUMAN\"\334\001\n\nGameConfig\022\021\n\005width\030\001 \001(\005" +
-      ":\00240\022\022\n\006height\030\002 \001(\005:\00230\022\026\n\013food_static\030" +
-      "\003 \001(\005:\0011\022\032\n\017food_per_player\030\004 \001(\002:\0011\022\034\n\016" +
-      "state_delay_ms\030\005 \001(\005:\0041000\022\033\n\016dead_food_" +
-      "prob\030\006 \001(\002:\0030.1\022\032\n\rping_delay_ms\030\007 \001(\005:\003" +
-      "100\022\034\n\017node_timeout_ms\030\010 \001(\005:\003800\"2\n\013Gam" +
-      "ePlayers\022#\n\007players\030\001 \003(\0132\022.snakes.GameP" +
-      "layer\"\260\003\n\tGameState\022\023\n\013state_order\030\001 \002(\005" +
-      "\022\'\n\006snakes\030\002 \003(\0132\027.snakes.GameState.Snak" +
-      "e\022&\n\005foods\030\003 \003(\0132\027.snakes.GameState.Coor" +
-      "d\022$\n\007players\030\004 \002(\0132\023.snakes.GamePlayers\022" +
-      "\"\n\006config\030\005 \002(\0132\022.snakes.GameConfig\032#\n\005C" +
-      "oord\022\014\n\001x\030\001 \001(\021:\0010\022\014\n\001y\030\002 \001(\021:\0010\032\315\001\n\005Sna" +
-      "ke\022\021\n\tplayer_id\030\001 \002(\005\022\'\n\006points\030\002 \003(\0132\027." +
-      "snakes.GameState.Coord\0228\n\005state\030\003 \002(\0162\"." +
-      "snakes.GameState.Snake.SnakeState:\005ALIVE" +
-      "\022)\n\016head_direction\030\004 \002(\0162\021.snakes.Direct" +
-      "ion\"#\n\nSnakeState\022\t\n\005ALIVE\020\000\022\n\n\006ZOMBIE\020\001" +
-      "\"\232\007\n\013GameMessage\022\017\n\007msg_seq\030\001 \002(\003\022\021\n\tsen" +
-      "der_id\030\n \001(\005\022\023\n\013receiver_id\030\013 \001(\005\022+\n\004pin" +
-      "g\030\002 \001(\0132\033.snakes.GameMessage.PingMsgH\000\022-" +
-      "\n\005steer\030\003 \001(\0132\034.snakes.GameMessage.Steer" +
-      "MsgH\000\022)\n\003ack\030\004 \001(\0132\032.snakes.GameMessage." +
-      "AckMsgH\000\022-\n\005state\030\005 \001(\0132\034.snakes.GameMes" +
-      "sage.StateMsgH\000\022;\n\014announcement\030\006 \001(\0132#." +
-      "snakes.GameMessage.AnnouncementMsgH\000\022+\n\004" +
-      "join\030\007 \001(\0132\033.snakes.GameMessage.JoinMsgH" +
-      "\000\022-\n\005error\030\010 \001(\0132\034.snakes.GameMessage.Er" +
-      "rorMsgH\000\0228\n\013role_change\030\t \001(\0132!.snakes.G" +
-      "ameMessage.RoleChangeMsgH\000\032\t\n\007PingMsg\0320\n" +
-      "\010SteerMsg\022$\n\tdirection\030\001 \002(\0162\021.snakes.Di" +
-      "rection\032\010\n\006AckMsg\032,\n\010StateMsg\022 \n\005state\030\001" +
-      " \002(\0132\021.snakes.GameState\032s\n\017AnnouncementM" +
-      "sg\022$\n\007players\030\001 \002(\0132\023.snakes.GamePlayers" +
-      "\022\"\n\006config\030\002 \002(\0132\022.snakes.GameConfig\022\026\n\010" +
-      "can_join\030\003 \001(\010:\004true\032S\n\007JoinMsg\022.\n\013playe" +
-      "r_type\030\001 \001(\0162\022.snakes.PlayerType:\005HUMAN\022" +
-      "\030\n\tonly_view\030\002 \001(\010:\005false\032!\n\010ErrorMsg\022\025\n" +
-      "\rerror_message\030\001 \002(\t\032_\n\rRoleChangeMsg\022%\n" +
-      "\013sender_role\030\001 \001(\0162\020.snakes.NodeRole\022\'\n\r" +
-      "receiver_role\030\002 \001(\0162\020.snakes.NodeRoleB\006\n" +
-      "\004Type*:\n\010NodeRole\022\n\n\006NORMAL\020\000\022\n\n\006MASTER\020" +
-      "\001\022\n\n\006DEPUTY\020\002\022\n\n\006VIEWER\020\003*\"\n\nPlayerType\022" +
-      "\t\n\005HUMAN\020\000\022\t\n\005ROBOT\020\001*2\n\tDirection\022\006\n\002UP" +
-      "\020\001\022\010\n\004DOWN\020\002\022\010\n\004LEFT\020\003\022\t\n\005RIGHT\020\004B*\n\033nsu" +
-      ".manasyan.netsnake.protoB\013SnakesProto"
+      "ype:\005HUMAN\022\r\n\005score\030\007 \002(\005\"\334\001\n\nGameConfig" +
+      "\022\021\n\005width\030\001 \001(\005:\00240\022\022\n\006height\030\002 \001(\005:\00230\022" +
+      "\026\n\013food_static\030\003 \001(\005:\0011\022\032\n\017food_per_play" +
+      "er\030\004 \001(\002:\0011\022\034\n\016state_delay_ms\030\005 \001(\005:\004100" +
+      "0\022\033\n\016dead_food_prob\030\006 \001(\002:\0030.1\022\032\n\rping_d" +
+      "elay_ms\030\007 \001(\005:\003100\022\034\n\017node_timeout_ms\030\010 " +
+      "\001(\005:\003800\"2\n\013GamePlayers\022#\n\007players\030\001 \003(\013" +
+      "2\022.snakes.GamePlayer\"\260\003\n\tGameState\022\023\n\013st" +
+      "ate_order\030\001 \002(\005\022\'\n\006snakes\030\002 \003(\0132\027.snakes" +
+      ".GameState.Snake\022&\n\005foods\030\003 \003(\0132\027.snakes" +
+      ".GameState.Coord\022$\n\007players\030\004 \002(\0132\023.snak" +
+      "es.GamePlayers\022\"\n\006config\030\005 \002(\0132\022.snakes." +
+      "GameConfig\032#\n\005Coord\022\014\n\001x\030\001 \001(\021:\0010\022\014\n\001y\030\002" +
+      " \001(\021:\0010\032\315\001\n\005Snake\022\021\n\tplayer_id\030\001 \002(\005\022\'\n\006" +
+      "points\030\002 \003(\0132\027.snakes.GameState.Coord\0228\n" +
+      "\005state\030\003 \002(\0162\".snakes.GameState.Snake.Sn" +
+      "akeState:\005ALIVE\022)\n\016head_direction\030\004 \002(\0162" +
+      "\021.snakes.Direction\"#\n\nSnakeState\022\t\n\005ALIV" +
+      "E\020\000\022\n\n\006ZOMBIE\020\001\"\250\007\n\013GameMessage\022\017\n\007msg_s" +
+      "eq\030\001 \002(\003\022\021\n\tsender_id\030\n \001(\005\022\023\n\013receiver_" +
+      "id\030\013 \001(\005\022+\n\004ping\030\002 \001(\0132\033.snakes.GameMess" +
+      "age.PingMsgH\000\022-\n\005steer\030\003 \001(\0132\034.snakes.Ga" +
+      "meMessage.SteerMsgH\000\022)\n\003ack\030\004 \001(\0132\032.snak" +
+      "es.GameMessage.AckMsgH\000\022-\n\005state\030\005 \001(\0132\034" +
+      ".snakes.GameMessage.StateMsgH\000\022;\n\014announ" +
+      "cement\030\006 \001(\0132#.snakes.GameMessage.Announ" +
+      "cementMsgH\000\022+\n\004join\030\007 \001(\0132\033.snakes.GameM" +
+      "essage.JoinMsgH\000\022-\n\005error\030\010 \001(\0132\034.snakes" +
+      ".GameMessage.ErrorMsgH\000\0228\n\013role_change\030\t" +
+      " \001(\0132!.snakes.GameMessage.RoleChangeMsgH" +
+      "\000\032\t\n\007PingMsg\0320\n\010SteerMsg\022$\n\tdirection\030\001 " +
+      "\002(\0162\021.snakes.Direction\032\010\n\006AckMsg\032,\n\010Stat" +
+      "eMsg\022 \n\005state\030\001 \002(\0132\021.snakes.GameState\032s" +
+      "\n\017AnnouncementMsg\022$\n\007players\030\001 \002(\0132\023.sna" +
+      "kes.GamePlayers\022\"\n\006config\030\002 \002(\0132\022.snakes" +
+      ".GameConfig\022\026\n\010can_join\030\003 \001(\010:\004true\032a\n\007J" +
+      "oinMsg\022.\n\013player_type\030\001 \001(\0162\022.snakes.Pla" +
+      "yerType:\005HUMAN\022\030\n\tonly_view\030\002 \001(\010:\005false" +
+      "\022\014\n\004name\030\003 \002(\t\032!\n\010ErrorMsg\022\025\n\rerror_mess" +
+      "age\030\001 \002(\t\032_\n\rRoleChangeMsg\022%\n\013sender_rol" +
+      "e\030\001 \001(\0162\020.snakes.NodeRole\022\'\n\rreceiver_ro" +
+      "le\030\002 \001(\0162\020.snakes.NodeRoleB\006\n\004Type*:\n\010No" +
+      "deRole\022\n\n\006NORMAL\020\000\022\n\n\006MASTER\020\001\022\n\n\006DEPUTY" +
+      "\020\002\022\n\n\006VIEWER\020\003*\"\n\nPlayerType\022\t\n\005HUMAN\020\000\022" +
+      "\t\n\005ROBOT\020\001*2\n\tDirection\022\006\n\002UP\020\001\022\010\n\004DOWN\020" +
+      "\002\022\010\n\004LEFT\020\003\022\t\n\005RIGHT\020\004B*\n\033nsu.manasyan.n" +
+      "etsnake.protoB\013SnakesProto"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -16697,7 +17077,7 @@ public final class SnakesProto {
     internal_static_snakes_GamePlayer_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_snakes_GamePlayer_descriptor,
-        new java.lang.String[] { "Name", "Id", "IpAddress", "Port", "Role", "Type", });
+        new java.lang.String[] { "Name", "Id", "IpAddress", "Port", "Role", "Type", "Score", });
     internal_static_snakes_GameConfig_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_snakes_GameConfig_fieldAccessorTable = new
@@ -16769,7 +17149,7 @@ public final class SnakesProto {
     internal_static_snakes_GameMessage_JoinMsg_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_snakes_GameMessage_JoinMsg_descriptor,
-        new java.lang.String[] { "PlayerType", "OnlyView", });
+        new java.lang.String[] { "PlayerType", "OnlyView", "Name", });
     internal_static_snakes_GameMessage_ErrorMsg_descriptor =
       internal_static_snakes_GameMessage_descriptor.getNestedTypes().get(6);
     internal_static_snakes_GameMessage_ErrorMsg_fieldAccessorTable = new

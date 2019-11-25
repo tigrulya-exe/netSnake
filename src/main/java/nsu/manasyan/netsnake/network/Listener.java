@@ -1,9 +1,12 @@
 package nsu.manasyan.netsnake.network;
 
+import nsu.manasyan.netsnake.Wrappers.Player;
+import nsu.manasyan.netsnake.controllers.ClientController;
+import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.util.GameExecutorService;
-import nsu.manasyan.netsnake.controllers.GameStateController;
 import nsu.manasyan.netsnake.contexts.MessageContext;
-import nsu.manasyan.netsnake.proto.SnakesProto;import java.io.IOException;
+import nsu.manasyan.netsnake.proto.SnakesProto;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -19,7 +22,9 @@ public class Listener {
 
     private static final int BUF_LENGTH = 65000;
 
-    private GameStateController controller;
+    private MasterController masterController = MasterController.getInstance();
+
+    private ClientController clientController = ClientController.getInstance();
 
     private Map<String, MessageContext> sentMessages;
 
@@ -35,8 +40,8 @@ public class Listener {
 
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
-    public Listener(GameStateController controller, Sender sender, Map<String, MessageContext> sentMessages, DatagramSocket socket) {
-        this.controller = controller;
+    public Listener( Sender sender, Map<String, MessageContext> sentMessages, DatagramSocket socket) {
+//        this.controller = controller;
         this.sender = sender;
         this.sentMessages = sentMessages;
         this.socket = socket;
@@ -73,19 +78,17 @@ public class Listener {
     }
 
     private void handleJoinPlay(GameMessage message, InetSocketAddress address){
-        // TODO we don't know name(why)
-        GamePlayer player = GamePlayer.newBuilder()
-                .setId(controller.getAvailablePlayerId())
-                .setName("UNKNOWN")
-                // TODO
-                .setIpAddress(address.getHostName())
-                .setPort(address.getPort())
-                .build();
-        controller.addPlayer(player);
+        JoinMsg joinMsg = message.getJoin();
+        NodeRole role = (!joinMsg.hasOnlyView() || !joinMsg.getOnlyView()) ? NodeRole.NORMAL : NodeRole.VIEWER;
+
+        Player player = new Player(joinMsg.getName(), message.getSenderId(),
+                address.getHostName(), address.getPort(), role, 0);
+
+        masterController.addPlayer(player);
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
-        controller.updateGameState(message.getState().getState());
+        clientController.setGameState(message.getState().getState());
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){
@@ -93,17 +96,46 @@ public class Listener {
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){
-        controller.setAlive(message.getSenderId());
+        masterController.setAlive(message.getSenderId());
     }
 
-    private void handleRoleChange(){
+    private void handleSteer(GameMessage message, InetSocketAddress address){
+        Direction direction = message.getSteer().getDirection();
+        masterController.registerPlayerDirection(message.getSenderId(), direction);
+    }
 
+    private void handleError(GameMessage message, InetSocketAddress address){
+        String errorMessage = message.getError().getErrorMessage();
+        clientController.error(errorMessage);
+    }
+
+    private void handleRoleChange(GameMessage message, InetSocketAddress address){
+        RoleChangeMsg roleChangeMsg = message.getRoleChange();
+        if(roleChangeMsg.getSenderRole() == NodeRole.MASTER){
+            clientController.setMasterAddress(address);
+        }
+
+        if(roleChangeMsg.getSenderRole() == NodeRole.VIEWER){
+            masterController.removePlayer(message.getSenderId());
+        }
+
+        if(roleChangeMsg.getReceiverRole() == NodeRole.DEPUTY){
+            clientController.setRole(NodeRole.DEPUTY);
+        }
+
+        if(roleChangeMsg.getReceiverRole() == NodeRole.MASTER){
+            clientController.becomeMaster();
+        }
     }
 
     private void initHandlers(){
-        handlers.put(TypeCase.JOIN, this::handleJoinPlay);
-        handlers.put(TypeCase.STATE, this::handleState);
         handlers.put(TypeCase.ACK, this::handleAck);
+        handlers.put(TypeCase.JOIN, this::handleJoinPlay);
+        handlers.put(TypeCase.PING, this::handlePing);
+        handlers.put(TypeCase.STATE, this::handleState);
+        handlers.put(TypeCase.ERROR, this::handleError);
+        handlers.put(TypeCase.STEER, this::handleSteer);
+        handlers.put(TypeCase.ROLE_CHANGE, this::handleRoleChange);
     }
 
 

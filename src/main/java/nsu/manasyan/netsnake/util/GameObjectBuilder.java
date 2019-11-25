@@ -1,7 +1,8 @@
 package nsu.manasyan.netsnake.util;
 
+import nsu.manasyan.netsnake.Wrappers.Player;
 import nsu.manasyan.netsnake.models.Field;
-import nsu.manasyan.netsnake.models.Snake;
+import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import java.util.*;
@@ -29,15 +30,10 @@ public class GameObjectBuilder {
         return message;
     }
 
-    public static GamePlayer initMaster() {
-        return GamePlayer
-                .newBuilder()
-                .setId(DEFAULT_MASTER_ID)
-                .setIpAddress(DEFAULT_MASTER_ADDRESS_STR)
-                .setPort(port)
-                .setName(name)
-                .setRole(NodeRole.MASTER)
-                .build();
+    public static Player initMaster() {
+
+        return new Player(name, DEFAULT_MASTER_ID, DEFAULT_MASTER_ADDRESS_STR, port, NodeRole.MASTER, 0);
+
     }
 
     public static List<GameState.Coord> initNewFoods(GameConfig config, Field field){
@@ -50,6 +46,8 @@ public class GameObjectBuilder {
         // TODO CHECK
         return foods;
     }
+
+
 
     public static GameState.Coord getFreeRandomCoord(GameConfig config, Field field){
         Random random = new Random();
@@ -72,6 +70,7 @@ public class GameObjectBuilder {
         if(field == null){
             return new Snake(playerId);
         }
+
 
         // TODO find free 5x5 to place 2x1 snake (head + tail)
         return null;

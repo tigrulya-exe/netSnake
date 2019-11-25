@@ -2,20 +2,31 @@ package nsu.manasyan.netsnake.controllers.view;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import nsu.manasyan.netsnake.controllers.GameStateController;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.gui.*;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 
+import java.util.List;
+import java.util.Map;
+
 public class GameConfigViewController {
-    private static final int FIELD_BOX_WIDTH = 630;
+    private static final int FIELD_BOX_WIDTH = 600;
 
     @FXML
     private Button backButton;
+
+    @FXML
+    private GridPane scoreGrid;
 
     @FXML
     private Button startButton;
@@ -44,7 +55,7 @@ public class GameConfigViewController {
     @FXML
     private TextField nodeTimeoutMs;
 
-    private GameStateController controller = GameStateController.getInstance();
+    private ClientController clientController = ClientController.getInstance();
 
     public void backClicked(){
         NetSnakeApp.setScene(SceneFactory.SceneType.MENU);
@@ -57,10 +68,9 @@ public class GameConfigViewController {
         NetSnakeApp.getGameClient().startNewGame(initConfig());
 
         Scene game = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
-        initField();
         initFieldCanvas(game, fieldWidth, fieldHeight);
-        controller.registerGameStateListener(this::onUpdate);
         NetSnakeApp.getStage().setScene(game);
+
     }
 
     private SnakesProto.GameConfig initConfig(){
@@ -76,37 +86,30 @@ public class GameConfigViewController {
                 .build();
     }
 
-    private void onUpdate(SnakesProto.GameState gameState) {
-        Platform.runLater(() -> {
-            FieldCanvas fieldCanvas = NetSnakeApp.getFieldCanvas();
-            fieldCanvas.flush();
-            ObjectDrawer.drawField(GameStateController.getInstance().getField());
-//            controller.getFoods().forEach(ObjectDrawer::drawFood);
-//            controller.getSnakes().forEach(ObjectDrawer::drawSnake);
-        });
-    }
-
-
-    private void initField(){
-        controller.updateField();
-    }
 
     private void initFieldCanvas(Scene scene, int fieldWidth, int fieldHeight){
+
         Canvas canvas = new Canvas();
-        canvas.setWidth(625);
-        canvas.setHeight(625);
-        canvas.setLayoutX(52);
-        canvas.setLayoutY(18);
+        canvas.setWidth(600);
+        canvas.setHeight(600);
+//        canvas.setLayoutX(52);
+//        canvas.setLayoutY(18);
 
         FieldCanvas fieldCanvas = new FieldCanvas(canvas, fieldHeight, fieldWidth, getCellSize());
 
         NetSnakeApp.setFieldCanvas(fieldCanvas);
 
-        ObjectDrawer.drawField(GameStateController.getInstance().getField());
-//        controller.getFoods().forEach(ObjectDrawer::drawFood);
-//        controller.getSnakes().forEach(ObjectDrawer::drawSnake);
+//        ObjectDrawer.drawField(MainController.getInstance().getField());
+        clientController.getFoods().forEach(ObjectDrawer::drawFood);
+        clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
 
-        ((AnchorPane) scene.getRoot()).getChildren().addAll(canvas);
+        List<Node> children =  ((AnchorPane) scene.getRoot()).getChildren();
+        VBox gameBox = (VBox) children.get(3);
+        gameBox.getChildren().add(canvas);
+        gameBox.setAlignment(Pos.CENTER);
+
+
+//        ((AnchorPane) scene.getRoot()).getChildren().addAll(canvas);
     }
 
     private int getCellSize(){
@@ -124,6 +127,5 @@ public class GameConfigViewController {
     private float getFloat(String str){
         return Float.parseFloat(str);
     }
-
 
 }

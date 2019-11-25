@@ -2,11 +2,19 @@ package nsu.manasyan.netsnake.gui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import nsu.manasyan.netsnake.GameClient;
+import nsu.manasyan.netsnake.controllers.view.GameConfigViewController;
+import nsu.manasyan.netsnake.controllers.view.GameViewController;
+import nsu.manasyan.netsnake.controllers.view.MenuViewController;
+import nsu.manasyan.netsnake.util.ErrorListener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,6 +28,8 @@ public class NetSnakeApp extends Application {
 
     private static FieldCanvas fieldCanvas;
 
+    private static GridPane scoreGrid;
+
     public static Stage getStage() {
         return stage;
     }
@@ -31,6 +41,8 @@ public class NetSnakeApp extends Application {
     public static GameClient getGameClient() {
         return gameClient;
     }
+
+
 
 //    private Parent setGraphics(AnchorPane root){
 ////        for(int i = 0 ; i < 10 ; ++i){
@@ -64,18 +76,20 @@ public class NetSnakeApp extends Application {
 //        return root;
 //    }
 
+
     @Override
     public void start(Stage stage) throws IOException {
         setStage(stage);
-        gameClient = new GameClient();
+
+        initGameClient();
 //        Scene scene = SceneFactory.getInstance().getScene(SceneFactory.SceneType.MENU);
         FXMLLoader loader = new FXMLLoader();
         URL xmlUrl = getClass().getResource("/menu.fxml");
         loader.setLocation(xmlUrl);
         AnchorPane root = loader.load();
+
         Scene scene = new Scene(root);
 //        Scene scene = new Scene(setGraphics(root));
-
 
         InputStream iconStream = getClass().getResourceAsStream("/snake.png");
         Image image = new Image(iconStream);
@@ -89,6 +103,19 @@ public class NetSnakeApp extends Application {
         stage.show();
     }
 
+    private void initGameClient() throws IOException {
+        gameClient = new GameClient();
+        gameClient.registerErrorListener(erMsg -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Error");
+
+            // Header Text: null
+            alert.setHeaderText(null);
+            alert.setContentText(erMsg);
+
+            alert.showAndWait();
+        });
+    }
 
     public static FieldCanvas getFieldCanvas() {
         return fieldCanvas;

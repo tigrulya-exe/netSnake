@@ -1,12 +1,13 @@
 package nsu.manasyan.netsnake;
 
-import nsu.manasyan.netsnake.controllers.GameStateController;
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
-import nsu.manasyan.netsnake.models.CurrentGameModel;
+import nsu.manasyan.netsnake.controllers.ClientController;
+import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.network.Listener;
 import nsu.manasyan.netsnake.network.Sender;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
+import nsu.manasyan.netsnake.util.ErrorListener;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
@@ -25,34 +26,48 @@ public class GameClient {
     private Timer timer = new Timer();
     private Map<String, MessageContext> sentMessages = new HashMap<>();
 
-    private CurrentGameModel currentGameModel = new CurrentGameModel();
+    private ClientGameModel clientGameModel = new ClientGameModel();
 
-    private GameStateController controller;
+//    private MainController controller;
+
+    private ClientController clientController;
 
     private Listener listener;
 
     private Sender sender;
 
     public GameClient() throws IOException {
-        this.controller = GameStateController.getInstance();
-        controller.setModel(currentGameModel);
+        this.clientController = ClientController.getInstance();
+        clientController.setModel(clientGameModel);
         this.socket = new MulticastSocket();
-        this.sender = new Sender(controller, socket, sentMessages, "UNKNOWN");
-        this.listener = new Listener(controller, sender, sentMessages, socket);
+        this.sender = new Sender( socket, sentMessages, "UNKNOWN");
+        this.listener = new Listener( sender, sentMessages, socket);
     }
 
     public void start(String multicastAddressStr) throws IOException {
 
     }
 
+    public void registerErrorListener(ErrorListener errorListener){
+        clientController.registerErrorListener(errorListener);
+    }
+
     public void startNewGame(GameConfig config) {
+//        timer = new Timer();
         listener.interrupt();
-        controller.startNewGame(config);
-        scheduleTurns(config.getStateDelayMs());
+//        controller.setGameClient(this);
+        clientController.startNewGame(config);
+//        becomeMaster();
+//        scheduleTurns(config.getStateDelayMs());
         //TODO for debug
 //        setTimer();
 //        listener.listen();
     }
+//
+//    public void becomeMaster(){
+//        timer = new Timer();
+//        scheduleTurns(clientGameModel.getCurrentConfig().getStateDelayMs());
+//    }
 
     // TODO
     public void joinGame(AnnouncementContext context) {
@@ -77,19 +92,20 @@ public class GameClient {
 ////
 ////        timer.schedule(broadcastState, stateDelayMs, stateDelayMs);
 ////    }
+//
+//    public void scheduleTurns(int stateDelayMs){
+//        TimerTask newTurn  = new TimerTask() {
+//            @Override
+//            public void run() {
+//                controller.newTurn();
+//            }
+//        };
+//        timer.schedule(newTurn, stateDelayMs, stateDelayMs);
+//    }
 
-    public void scheduleTurns(int stateDelayMs){
-        TimerTask newTurn  = new TimerTask() {
-            @Override
-            public void run() {
-                controller.newTurn();
-            }
-        };
-
-        timer.schedule(newTurn, stateDelayMs, stateDelayMs);
+    public void stopCurrentGame(){
+        timer.cancel();
     }
-
-
 
     private void setTimer(){
         timer = new Timer();
@@ -106,11 +122,11 @@ public class GameClient {
             @Override
             public void run() {
                 GameMessage ping = GameObjectBuilder.initPingMessage();
-                sender.sendMessage(controller.getMasterAddress(), ping);
+                sender.sendMessage(clientController.getMasterAddress(), ping);
             }
         };
 
-        timer.schedule((controller.getRole() == NodeRole.MASTER) ? masterSendPing : playerSendPing, 100,100);
+        timer.schedule((clientController.getRole() == NodeRole.MASTER) ? masterSendPing : playerSendPing, 100,100);
     }
 
 }

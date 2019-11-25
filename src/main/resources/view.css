@@ -44,6 +44,10 @@ anchor-pane .column-header, .table-view .filler {
     -fx-font-size: 20pt;
 }
 
+.score-label {
+    -fx-font-size: 20pt;
+}
+
 .vbox{
     -fx-border-color: #e2e2e2;
     -fx-border-width: 2;

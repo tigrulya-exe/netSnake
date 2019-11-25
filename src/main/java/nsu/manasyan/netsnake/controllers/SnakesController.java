@@ -1,7 +1,7 @@
 package nsu.manasyan.netsnake.controllers;
 
 import nsu.manasyan.netsnake.models.Field;
-import nsu.manasyan.netsnake.models.Snake;
+import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto.Direction;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Coord;
 
@@ -12,7 +12,7 @@ import static nsu.manasyan.netsnake.util.GameObjectBuilder.getCoord;
 
 public class SnakesController {
 
-    private GameStateController controller;
+    private MasterController controller;
 
     private Field field;
 
@@ -121,9 +121,22 @@ public class SnakesController {
 
         field.updateField(x, y, FREE);
         controller.getModifiableFoods().removeIf(f -> f.getY() == y && f.getX() == x);
+        controller.addScore(snake.getPlayerId(), 1);
     }
 
-    public void setController(GameStateController gameStateController) {
-        this.controller = gameStateController;
+    public void setController(MasterController mainController) {
+        this.controller = mainController;
+    }
+
+    public void updateSnakePart(int from, int to, int constCoord, boolean isVertical){
+        int min = (from < to) ? from : to;
+        int max = (from > to) ? from : to;
+
+        for(int coord = min; coord <= max; ++coord){
+            if(isVertical)
+                field.updateField(constCoord, coord, Field.Cell.SNAKE);
+            else
+                field.updateField(coord, constCoord, Field.Cell.SNAKE);
+        }
     }
 }

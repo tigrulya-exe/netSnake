@@ -1,4 +1,4 @@
-package nsu.manasyan.netsnake.models;
+package nsu.manasyan.netsnake.Wrappers;
 
 import nsu.manasyan.netsnake.proto.SnakesProto;
 
