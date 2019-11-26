@@ -5,6 +5,7 @@ import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.models.MasterGameModel;
 import nsu.manasyan.netsnake.Wrappers.Snake;
+import nsu.manasyan.netsnake.network.Sender;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.SnakePartManipulator;
@@ -27,6 +28,8 @@ public class MasterController{
 
     private SnakePartManipulator manipulator = SnakePartManipulator.getInstance();
 
+    private Sender sender;
+
     private Timer timer;
 
     private MasterController() {
@@ -41,9 +44,10 @@ public class MasterController{
         private static final MasterController controller = new MasterController();
     }
 
-    public void init(GameConfig config, ClientGameModel currModel ){
+    public void init(GameConfig config, ClientGameModel currModel, Sender senderIn){
         timer = new Timer();
         model = currModel;
+        sender = senderIn;
         field = new Field(config.getHeight(), config.getWidth());
         masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
 
@@ -57,8 +61,11 @@ public class MasterController{
     public void scheduleTurns(int stateDelayMs){
         TimerTask newTurn  = new TimerTask() {
             @Override
-            public void run() {
+            public void run(){
                 newTurn();
+                GameState gameState = model.getGameState();
+                GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
+                sender.broadcastMessage(stateMessage);
             }
         };
         timer.schedule(newTurn, stateDelayMs, stateDelayMs);
@@ -114,11 +121,10 @@ public class MasterController{
         addSnake(player.getId());
     }
 
-    public void removePlayer(int playerId){
-        masterGameModel.getPlayers().remove(playerId);
-        masterGameModel.getSnakes().remove(playerId);
-        // TODO add some magic to turn snake into food
+    public Collection<Player> getPlayers(){
+        return masterGameModel.getPlayers().values();
     }
+
 
     public void removeSnake(int playerId){
         masterGameModel.getSnakes().remove(playerId);
@@ -159,8 +165,8 @@ public class MasterController{
         setPlayerAsViewer(playerId);
         Snake deadSnake = masterGameModel.getSnakes().get(playerId);
         turnDeadSnakeIntoFood(deadSnake);
-        masterGameModel.getSnakes().remove(playerId);
-        model.clear();
+        removeSnake(playerId);
+        model.removeScore(playerId);
     }
 
     public Field getField(){
@@ -195,7 +201,7 @@ public class MasterController{
         }
     }
 
-    private void setPlayerAsViewer(int playerId) {
+    public void setPlayerAsViewer(int playerId) {
         Map<Integer, Player> players = masterGameModel.getPlayers();
         players.get(playerId).setRole(NodeRole.VIEWER);
     }

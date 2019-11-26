@@ -61,7 +61,7 @@ public class ClientController {
 
     public void becomeMaster() {
         GameConfig config = model.getCurrentConfig();
-        masterController.init(config, model);
+        masterController.init(config, model, sender);
     }
 
     public void startNewGame(GameConfig config) {
@@ -140,7 +140,6 @@ public class ClientController {
 
     public void joinGame(GameConfig gameConfig, InetSocketAddress masterAddress, boolean onlyView){
         model.setMasterAddress(masterAddress);
-
         sender.sendMessage(masterAddress, getJoinMessage("TMP", onlyView));
     }
 

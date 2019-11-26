@@ -57,6 +57,14 @@ public class Player {
         return name;
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
     public SnakesProto.NodeRole getRole() {
         return role;
     }

@@ -116,7 +116,7 @@ public class Listener {
         }
 
         if(roleChangeMsg.getSenderRole() == NodeRole.VIEWER){
-            masterController.removePlayer(message.getSenderId());
+            masterController.setPlayerAsViewer(message.getSenderId());
         }
 
         if(roleChangeMsg.getReceiverRole() == NodeRole.DEPUTY){

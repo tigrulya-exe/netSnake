@@ -41,12 +41,14 @@ public class GameClient {
     private MulticastListener multicastListener;
 
     public GameClient() throws IOException {
-        this.clientController = ClientController.getInstance();
-        clientController.setModel(clientGameModel);
+
         this.socket = new MulticastSocket(9192);
         this.sender = new Sender( socket, sentMessages);
-        this.multicastListener = new MulticastListener(socket, InetAddress.getByName("239.192.0.4"));
+//        this.multicastListener = new MulticastListener(socket, InetAddress.getByName("239.192.0.4"));
         this.listener = new Listener( sender, sentMessages, socket);
+        this.clientController = ClientController.getInstance();
+        clientController.setModel(clientGameModel);
+        clientController.setSender(sender);
     }
 
     public void start(String multicastAddressStr) throws IOException {
@@ -85,24 +87,24 @@ public class GameClient {
     }
 
 //    public void scheduleTurns(int stateDelayMs){
-////        TimerTask broadcastState  = new TimerTask() {
-////            @Override
-////            public void run() {
-////                GameState gameState = controller.getGameState();
-////                GameMessage stateMessage =  GameObjectBuilder.initStateMessage(gameState);
-////                sender.broadcastMessage(stateMessage);
-////                controller.setGameState(gameState);
-////            }
-////        };
-////
-////        timer.schedule(broadcastState, stateDelayMs, stateDelayMs);
-////    }
+//        TimerTask broadcastState  = new TimerTask() {
+//            @Override
+//            public void run() {
+//                GameState gameState = controller.getGameState();
+//                GameMessage stateMessage =  GameObjectBuilder.initStateMessage(gameState);
+//                sender.broadcastMessage(stateMessage);
+//                controller.setGameState(gameState);
+//            }
+//        };
 //
+//        timer.schedule(broadcastState, stateDelayMs, stateDelayMs);
+//    }
+////
 //    public void scheduleTurns(int stateDelayMs){
 //        TimerTask newTurn  = new TimerTask() {
 //            @Override
 //            public void run() {
-//                controller.newTurn();
+//                clientController.newTurn();
 //            }
 //        };
 //        timer.schedule(newTurn, stateDelayMs, stateDelayMs);

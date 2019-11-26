@@ -141,6 +141,10 @@ public class ClientGameModel {
         }
     }
 
+    public void removeScore(int playerId){
+        scores.remove(playerId);
+    }
+
     public void clear(){
         scores.clear();
     }
