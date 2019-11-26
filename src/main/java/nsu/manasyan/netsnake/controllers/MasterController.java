@@ -27,7 +27,7 @@ public class MasterController{
 
     private SnakePartManipulator manipulator = SnakePartManipulator.getInstance();
 
-    private Timer timer = new Timer();
+    private Timer timer;
 
     private MasterController() {
         snakesController.setController(this);
@@ -42,6 +42,7 @@ public class MasterController{
     }
 
     public void init(GameConfig config, ClientGameModel currModel ){
+        timer = new Timer();
         model = currModel;
         field = new Field(config.getHeight(), config.getWidth());
         masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
@@ -62,7 +63,6 @@ public class MasterController{
         };
         timer.schedule(newTurn, stateDelayMs, stateDelayMs);
     }
-
 
     public void addScore(int playerId, int newPoints){
         String playerName = masterGameModel.getPlayers().get(playerId).getName();
@@ -103,7 +103,9 @@ public class MasterController{
             field.updateField(v.getPoints().get(0), HEAD);
         });
 
-        masterGameModel.getFoods().forEach(c -> field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
+        masterGameModel.getFoods().forEach(c ->
+                field.updateField(c.getX(), c.getY(), Field.Cell.FOOD
+                ));
     }
 
     public void addPlayer(Player player){
@@ -158,6 +160,16 @@ public class MasterController{
         Snake deadSnake = masterGameModel.getSnakes().get(playerId);
         turnDeadSnakeIntoFood(deadSnake);
         masterGameModel.getSnakes().remove(playerId);
+        model.clear();
+    }
+
+    public Field getField(){
+        return field;
+    }
+
+    public void stopCurrentGame(){
+        timer.cancel();
+        masterGameModel.clear();
     }
 
     private void turnDeadSnakeIntoFood(Snake snake) {
@@ -186,10 +198,6 @@ public class MasterController{
     private void setPlayerAsViewer(int playerId) {
         Map<Integer, Player> players = masterGameModel.getPlayers();
         players.get(playerId).setRole(NodeRole.VIEWER);
-    }
-
-    public Field getField(){
-        return field;
     }
 
     private boolean isCorrectDirection(Direction direction) {

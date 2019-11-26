@@ -1,11 +1,16 @@
 package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.models.ClientGameModel;
+import nsu.manasyan.netsnake.network.Sender;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.ErrorListener;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+import java.util.Map;
+
+import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 
 public class ClientController {
     private static final int MASTER_ID = 0;
@@ -15,6 +20,8 @@ public class ClientController {
     private MasterController masterController;
 
     private ErrorListener errorListener;
+
+    private Sender sender;
 
     private ClientController() {
 
@@ -34,6 +41,10 @@ public class ClientController {
 
     public ClientGameModel getModel() {
         return model;
+    }
+
+    public void setSender(Sender sender) {
+        this.sender = sender;
     }
 
     public void registerErrorListener(ErrorListener errorListener){
@@ -95,15 +106,43 @@ public class ClientController {
         model.registerGameStateListener(listener);
     }
 
+    public Map<GameMessage.AnnouncementMsg, AnnouncementContext> getAvailableGames() {
+        return model.getAvailableGames();
+    }
+
+    public void addAvailableGame(GameMessage.AnnouncementMsg announcementMsg, InetSocketAddress masterAddress){
+        model.addAvailableGame(announcementMsg, new AnnouncementContext(masterAddress));
+    }
+
+    public void registerAnnouncementListener(ClientGameModel.AnnouncementListener announcementListener){
+        model.registerAnnouncementListener(announcementListener);
+    }
+
     public void registerDirection(Direction direction){
         if(model.getPlayerRole() == NodeRole.MASTER){
             masterController.registerDirection(direction);
             return;
         }
+
         model.setCurrentDirection(direction);
-        // send direction to master
+        sender.sendMessage(model.getMasterAddress(), getSteerMessage(direction,model.getPlayerId()));
     }
 
+    public void stopCurrentGame() {
+        if (model.getPlayerRole() == NodeRole.MASTER) {
+            masterController.stopCurrentGame();
+            return;
+        }
+
+        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
+//        sender.sendMessage(model.getMasterAddress(), roleChange);
+    }
+
+    public void joinGame(GameConfig gameConfig, InetSocketAddress masterAddress, boolean onlyView){
+        model.setMasterAddress(masterAddress);
+
+        sender.sendMessage(masterAddress, getJoinMessage("TMP", onlyView));
+    }
 
     public MasterController getMasterController() {
         return masterController;

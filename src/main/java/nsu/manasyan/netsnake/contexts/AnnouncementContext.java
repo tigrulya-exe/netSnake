@@ -7,8 +7,8 @@ public class AnnouncementContext {
 
     private InetSocketAddress masterAddress;
 
-    public AnnouncementContext(boolean isActual, InetSocketAddress masterAddress) {
-        this.isActual = isActual;
+    public AnnouncementContext(InetSocketAddress masterAddress) {
+        this.isActual = true;
         this.masterAddress = masterAddress;
     }
 

@@ -20,6 +20,8 @@ public class SceneFactory {
 
     private static final String GAME_PATH = "/game.fxml";
 
+    private static final String  GAME_SEARCH_PATH = "/availableGames.fxml";
+
     public enum SceneType {
         MENU,
         NEW_GAME_SETTINGS,
@@ -51,6 +53,7 @@ public class SceneFactory {
 
     private void initSceneTypes() throws IOException {
         scenes.put(SceneType.MENU, initSceneType(MENU_PATH));
+        scenes.put(SceneType.GAME_SEARCH, initSceneType(GAME_SEARCH_PATH));
         scenes.put(SceneType.NEW_GAME_SETTINGS, initSceneType(NEW_GAME_SETTINGS_PATH));
         scenes.put(SceneType.GAME, initGameScene());
     }

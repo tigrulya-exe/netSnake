@@ -102,6 +102,45 @@ public class GameObjectBuilder {
                 .build();
     }
 
+    public static GameMessage getSteerMessage(Direction direction, int playerId){
+        GameMessage.SteerMsg steerMsg = GameMessage.SteerMsg.newBuilder()
+                .setDirection(direction)
+                .build();
+
+        return GameMessage.newBuilder()
+                .setSteer(steerMsg)
+                .setSenderId(playerId)
+                .setMsgSeq(currentGameMsgSeq++)
+                .build();
+    }
+
+    public static GameMessage getRoleChangeMessage(NodeRole senderRole, NodeRole receiverRole, int playerId) {
+        GameMessage.RoleChangeMsg.Builder roleChangeBuilder = GameMessage.RoleChangeMsg.newBuilder();
+        if (senderRole != null)
+            roleChangeBuilder.setSenderRole(senderRole);
+        if (receiverRole != null)
+            roleChangeBuilder.setSenderRole(receiverRole);
+
+        return GameMessage.newBuilder()
+                .setRoleChange(roleChangeBuilder.build())
+                .setSenderId(playerId)
+                .setMsgSeq(currentGameMsgSeq++)
+                .build();
+    }
+
+    public static GameMessage getJoinMessage(String name, boolean onlyView) {
+        GameMessage.JoinMsg joinMsg = GameMessage.JoinMsg.newBuilder()
+                .setName(name)
+                .setOnlyView(onlyView)
+                .build();
+
+        return GameMessage.newBuilder()
+                .setMsgSeq(currentGameMsgSeq++)
+                .setJoin(joinMsg)
+                .build();
+    }
+
+
     private static GameMessage.StateMsg getStateMsg(GameState state){
         return GameMessage.StateMsg.newBuilder()
                 .setState(state)

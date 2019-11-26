@@ -95,4 +95,11 @@ public class MasterGameModel {
         return playersDirections;
     }
 
+    public void clear(){
+        snakes.clear();
+        players.clear();
+        foods.clear();
+        playersDirections.clear();
+    }
+
 }

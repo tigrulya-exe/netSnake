@@ -1,27 +1,34 @@
 package nsu.manasyan.netsnake.models;
 
+import nsu.manasyan.netsnake.contexts.AnnouncementContext;
+import nsu.manasyan.netsnake.contexts.ScoreContext;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.NodeRole;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameConfig;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState;
+import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.AnnouncementMsg;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientGameModel {
 
     public interface GameStateListener{
-        void onUpdate(Map<Integer, Integer> scores);
+        void onUpdate(List<ScoreContext> scores);
+    }
+
+    public interface AnnouncementListener{
+        void onUpdate(List<AnnouncementMsg> announcements);
     }
 
     private int playerId;
 
     private NodeRole playerRole;
 
-    private Map<Integer, Integer> scores = new HashMap<>();
+    private Map<Integer, ScoreContext> scores = new TreeMap<>();
+
+    private Map<AnnouncementMsg, AnnouncementContext> availableGames = new ConcurrentHashMap<>();
 
     private GameConfig currentConfig;
 
@@ -32,6 +39,9 @@ public class ClientGameModel {
     private SnakesProto.Direction currentDirection;
 
     private List<GameStateListener> gameStateListeners = new ArrayList<>();
+
+    // incapsulate it in announcement wrapper
+    private List<AnnouncementListener> announcementListeners = new ArrayList<>();
 
     public ClientGameModel(){
 
@@ -89,8 +99,19 @@ public class ClientGameModel {
         gameStateListeners.add(listener);
     }
 
+    public void registerAnnouncementListener(AnnouncementListener announcementListener){
+        announcementListeners.add(announcementListener);
+    }
+
+    public void notifyAllAnnouncementListeners(){
+        List<AnnouncementMsg> announcements = new ArrayList<>(availableGames.keySet());
+        announcementListeners.forEach(l -> l.onUpdate(announcements));
+    }
+
     public void notifyAllGameStateListeners(){
-        gameStateListeners.forEach(l -> l.onUpdate(scores));
+        List<ScoreContext> scoresList = new ArrayList<>(scores.values());
+        scoresList.sort(Comparator.comparingInt(ScoreContext::getPoints));
+        gameStateListeners.forEach(l -> l.onUpdate(scoresList));
     }
 
     public SnakesProto.Direction getCurrentDirection() {
@@ -101,13 +122,26 @@ public class ClientGameModel {
         this.currentDirection = currentDirection;
     }
 
-    public void addScore(int playerId, String playerName, int newPoints){
-        Integer oldScore = scores.get(playerId);
-        if(oldScore == null){
-            scores.put(playerId, 0);
-            oldScore = 0;
+    public Map<AnnouncementMsg, AnnouncementContext> getAvailableGames() {
+        return availableGames;
+    }
+
+    public void addAvailableGame(AnnouncementMsg announcementMsg, AnnouncementContext context){
+        availableGames.put(announcementMsg, context);
+        notifyAllAnnouncementListeners();
+    }
+
+    public void addScore(int playerId, String playerName, int newPoints) {
+        ScoreContext oldScore = scores.get(playerId);
+
+        if (oldScore == null) {
+            scores.put(playerId, new ScoreContext(playerName, newPoints));
+        } else {
+            oldScore.addPoints(newPoints);
         }
-        // TODO add name to map))
-        scores.put(playerId,oldScore + newPoints);
+    }
+
+    public void clear(){
+        scores.clear();
     }
 }

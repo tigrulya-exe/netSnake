@@ -128,6 +128,10 @@ public class Listener {
         }
     }
 
+    private void handleAnnouncement(GameMessage message, InetSocketAddress address){
+        clientController.addAvailableGame(message.getAnnouncement(), address);
+    }
+
     private void initHandlers(){
         handlers.put(TypeCase.ACK, this::handleAck);
         handlers.put(TypeCase.JOIN, this::handleJoinPlay);
@@ -135,6 +139,7 @@ public class Listener {
         handlers.put(TypeCase.STATE, this::handleState);
         handlers.put(TypeCase.ERROR, this::handleError);
         handlers.put(TypeCase.STEER, this::handleSteer);
+        handlers.put(TypeCase.ANNOUNCEMENT, this::handleAnnouncement);
         handlers.put(TypeCase.ROLE_CHANGE, this::handleRoleChange);
     }
 

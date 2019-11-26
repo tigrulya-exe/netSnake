@@ -2,17 +2,20 @@ package nsu.manasyan.netsnake.controllers.view;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import nsu.manasyan.netsnake.contexts.ScoreContext;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.gui.FieldCanvas;
 import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.gui.ObjectDrawer;
 import nsu.manasyan.netsnake.gui.SceneFactory;
 
-import java.util.Map;
+import java.util.List;
 
 public class GameViewController {
     @FXML
@@ -55,7 +58,7 @@ public class GameViewController {
 
     }
 
-    private void onUpdate(Map<Integer, Integer> scores) {
+    private void onUpdate(List<ScoreContext> scores) {
         Platform.runLater(() -> {
             FieldCanvas fieldCanvas = NetSnakeApp.getFieldCanvas();
             fieldCanvas.flush();
@@ -63,17 +66,28 @@ public class GameViewController {
             clientController.getFoods().forEach(ObjectDrawer::drawFood);
             clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
 
-            scores.forEach(this::setScore);
+            for (int i = 0; i < scores.size(); i++) {
+                setScore(i, scores.get(i));
+            }
         });
     }
 
-    public void setScore(int id, int score){
+    public void setScore(int rank, ScoreContext score){
         scoreGrid.getChildren().clear();
 
-        setGridCell(new Label(Integer.toString(id)), 0, id );
-        setGridCell(new Label("MASTER"), 1, id );
-        setGridCell(new Label(Integer.toString(score)), 2, id );
+        Label rankLabel = new Label(Integer.toString(rank));
+        rankLabel.setUserData(score);
+        rankLabel.setOnMouseClicked(this::onTick);
 
+//        setGridCell(new Label(Integer.toString(rank)), 0, rank );
+        setGridCell(rankLabel, 0, rank );
+        setGridCell(new Label(score.getPlayerName()), 1, rank );
+        setGridCell(new Label(Integer.toString(score.getPoints())), 2, rank );
+    }
+
+    public void onTick(MouseEvent event){
+        Node source = (Node)event.getSource();
+        System.out.println(((ScoreContext)source.getUserData()).getPoints());
     }
 
     private void setGridCell(Label label, int x, int y){

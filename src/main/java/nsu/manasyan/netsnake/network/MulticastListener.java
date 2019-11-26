@@ -6,8 +6,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MulticastSocket;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
+import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.*;
 
@@ -16,15 +18,19 @@ public class MulticastListener implements Runnable{
 
     private static final int BUF_LENGTH = 65000;
 
-    private Map<AnnouncementMsg, AnnouncementContext> availableGames = new HashMap<>();
-
     private byte[] receiveBuf = new byte[BUF_LENGTH];
 
     private Timer timer = new Timer();
 
+    private Map<AnnouncementMsg, AnnouncementContext> availableGames = new ConcurrentHashMap<>();
+
     private InetAddress multicastAddress;
 
-    public MulticastListener(InetAddress multicastAddress) {
+    private MulticastSocket socket;
+
+    private ClientController controller = ClientController.getInstance();
+
+    public MulticastListener(MulticastSocket socket, InetAddress multicastAddress) {
         this.multicastAddress = multicastAddress;
         setTimer();
     }
@@ -46,7 +52,7 @@ public class MulticastListener implements Runnable{
     @Override
     public void run() {
         DatagramPacket packetToReceive = new DatagramPacket(receiveBuf, BUF_LENGTH);
-        try(MulticastSocket socket = new MulticastSocket()){
+        try{
             socket.joinGroup(multicastAddress);
             while (true) {
                 socket.receive(packetToReceive);
@@ -60,7 +66,7 @@ public class MulticastListener implements Runnable{
 
     private void handleGameAnnouncement(AnnouncementMsg message, InetSocketAddress socketAddress){
         if(!availableGames.containsKey(message)){
-            availableGames.put(message,new AnnouncementContext(true, socketAddress));
+            availableGames.put(message,new AnnouncementContext(socketAddress));
         }
     }
 }

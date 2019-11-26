@@ -1,13 +1,11 @@
 package nsu.manasyan.netsnake.controllers.view;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -17,16 +15,12 @@ import nsu.manasyan.netsnake.gui.*;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 
 import java.util.List;
-import java.util.Map;
 
 public class GameConfigViewController {
     private static final int FIELD_BOX_WIDTH = 600;
 
     @FXML
     private Button backButton;
-
-    @FXML
-    private GridPane scoreGrid;
 
     @FXML
     private Button startButton;
@@ -92,8 +86,6 @@ public class GameConfigViewController {
         Canvas canvas = new Canvas();
         canvas.setWidth(600);
         canvas.setHeight(600);
-//        canvas.setLayoutX(52);
-//        canvas.setLayoutY(18);
 
         FieldCanvas fieldCanvas = new FieldCanvas(canvas, fieldHeight, fieldWidth, getCellSize());
 
@@ -105,11 +97,10 @@ public class GameConfigViewController {
 
         List<Node> children =  ((AnchorPane) scene.getRoot()).getChildren();
         VBox gameBox = (VBox) children.get(3);
+        gameBox.getChildren().clear();
         gameBox.getChildren().add(canvas);
         gameBox.setAlignment(Pos.CENTER);
 
-
-//        ((AnchorPane) scene.getRoot()).getChildren().addAll(canvas);
     }
 
     private int getCellSize(){

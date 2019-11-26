@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.gui;
 
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.proto.SnakesProto;

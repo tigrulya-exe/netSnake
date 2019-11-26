@@ -22,11 +22,8 @@ public class Sender {
 
     private int port;
 
-    private String name;
-
-    public Sender( MulticastSocket socket, Map<String, MessageContext> sentMessages, String name) {
+    public Sender( MulticastSocket socket, Map<String, MessageContext> sentMessages) {
         this.socket = socket;
-        this.name = name;
         this.sentMessages = sentMessages;
     }
 
@@ -65,9 +62,6 @@ public class Sender {
         }
     }
 
-    public String getName() {
-        return name;
-    }
 
     public Map<String, MessageContext> getSentMessages() {
         return sentMessages;

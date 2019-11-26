@@ -44,6 +44,10 @@ public class FieldCanvas {
         x = (x + fieldWidth) % fieldWidth;
         y = (y + fieldHeight) % fieldHeight;
 
+//        if (color == Color.CORNSILK)
+//            context.drawImage(new Image(ObjectDrawer.class.getResourceAsStream("/1.png")), x * squareSize, y  * squareSize);
+
+
         context.fillRect(x * squareSize, y  * squareSize, squareSize, squareSize);
     }
 
