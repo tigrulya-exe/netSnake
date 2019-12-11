@@ -42,13 +42,15 @@ public class GameClient {
 
     public GameClient() throws IOException {
 
-        this.socket = new MulticastSocket(9192);
+//        this.socket = new MulticastSocket(9192);
+        this.socket = new MulticastSocket(7777);
         this.sender = new Sender( socket, sentMessages);
 //        this.multicastListener = new MulticastListener(socket, InetAddress.getByName("239.192.0.4"));
-        this.listener = new Listener( sender, sentMessages, socket);
         this.clientController = ClientController.getInstance();
         clientController.setModel(clientGameModel);
         clientController.setSender(sender);
+        this.listener = new Listener( sender, sentMessages, socket);
+        listener.listen();
     }
 
     public void start(String multicastAddressStr) throws IOException {

@@ -36,18 +36,18 @@ public class GameViewController {
 
     private ClientController controller = ClientController.getInstance();
 
-    public void menuClicked(){
-        NetSnakeApp.getGameClient().stopCurrentGame();
+    public void menuClicked() {
+        stopGame();
         setScene(SceneFactory.SceneType.MENU);
     }
 
     public void newGameClicked(){
-        NetSnakeApp.getGameClient().stopCurrentGame();
+        stopGame();
         setScene(SceneFactory.SceneType.NEW_GAME_SETTINGS);
     }
 
     public void exitClicked(){
-        NetSnakeApp.getGameClient().stopCurrentGame();
+        stopGame();
         NetSnakeApp.getStage().close();
     }
 
@@ -55,7 +55,6 @@ public class GameViewController {
 
     public void initialize() {
         clientController.registerGameStateListener(this::onUpdate);
-
     }
 
     private void onUpdate(List<ScoreContext> scores) {
@@ -88,6 +87,11 @@ public class GameViewController {
     public void onTick(MouseEvent event){
         Node source = (Node)event.getSource();
         System.out.println(((ScoreContext)source.getUserData()).getPoints());
+    }
+
+    private void stopGame(){
+        NetSnakeApp.getGameClient().stopCurrentGame();
+        scoreGrid.getChildren().clear();
     }
 
     private void setGridCell(Label label, int x, int y){

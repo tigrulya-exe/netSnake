@@ -28,6 +28,9 @@ public class Sender {
     }
 
     public void broadcastMessage(GameMessage message) {
+        System.out.println("Broadcast: ");
+        System.out.println(message);
+
         GameExecutorService.getExecutorService().submit(() ->
                 masterController.getPlayers().forEach(player -> {
 //                  putIntoSentMessages(message.getMsgSeq(), new MessageContext(message, ia));
@@ -48,6 +51,8 @@ public class Sender {
 
 
     public void sendMessage(InetSocketAddress receiverAddress, GameMessage message) {
+        System.out.println("Send to " + receiverAddress + ": ");
+        System.out.println(message);
         try {
             byte[] buf = message.toByteArray();
             socket.send(new DatagramPacket(buf, buf.length, receiverAddress));

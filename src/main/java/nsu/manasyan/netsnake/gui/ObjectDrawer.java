@@ -1,6 +1,5 @@
 package nsu.manasyan.netsnake.gui;
 
-import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.proto.SnakesProto;
@@ -32,13 +31,11 @@ public class ObjectDrawer {
 
     public static void drawSnake(SnakesProto.GameState.Snake snake) {
         List<SnakesProto.GameState.Coord> points = snake.getPointsList();
-        FieldCanvas fieldCanvas =  NetSnakeApp.getFieldCanvas();
+        FieldCanvas fieldCanvas = NetSnakeApp.getFieldCanvas();
         Color headColor = ColorFactory.getInstance().getColor(Field.Cell.HEAD);
 
 //        for(SnakesProto.GameState.Coord coord = )
-
         manipulator.useSnakeCoords(snake.getPointsList(), ObjectDrawer::drawSnakePart);
-
         fieldCanvas.drawPoint(points.get(0).getX(), points.get(0).getY(), headColor);
     }
 

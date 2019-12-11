@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.controllers.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -92,8 +93,10 @@ public class GameConfigViewController {
         NetSnakeApp.setFieldCanvas(fieldCanvas);
 
 //        ObjectDrawer.drawField(MainController.getInstance().getField());
-        clientController.getFoods().forEach(ObjectDrawer::drawFood);
-        clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
+        Platform.runLater(() -> {
+            clientController.getFoods().forEach(ObjectDrawer::drawFood);
+            clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
+        });
 
         List<Node> children =  ((AnchorPane) scene.getRoot()).getChildren();
         VBox gameBox = (VBox) children.get(3);

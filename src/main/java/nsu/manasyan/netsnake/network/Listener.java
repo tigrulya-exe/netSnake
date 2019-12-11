@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
@@ -57,7 +58,11 @@ public class Listener {
             try {
                 while (!isInterrupted) {
                     socket.receive(packetToReceive);
-                    message = SnakesProto.GameMessage.parseFrom(packetToReceive.getData());
+                    message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
+
+                    System.out.println("Received: ");
+                    System.out.println(message);
+
                     type = message.getTypeCase();
 
 //                if(checkIsDuplicate(type, message.getGUID())){
@@ -81,7 +86,10 @@ public class Listener {
         JoinMsg joinMsg = message.getJoin();
         NodeRole role = (!joinMsg.hasOnlyView() || !joinMsg.getOnlyView()) ? NodeRole.NORMAL : NodeRole.VIEWER;
 
-        Player player = new Player(joinMsg.getName(), message.getSenderId(),
+//        Player player = new Player(joinMsg.getName(), message.getSenderId(),
+//                address.getHostName(), address.getPort(), role, 0);
+
+        Player player = new Player(joinMsg.getName(), 1,
                 address.getHostName(), address.getPort(), role, 0);
 
         masterController.addPlayer(player);

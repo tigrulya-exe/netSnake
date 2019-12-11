@@ -3,8 +3,13 @@ package nsu.manasyan.netsnake.controllers.view;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.gui.SceneFactory;
+
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 
 public class MenuViewController {
     @FXML
@@ -23,8 +28,15 @@ public class MenuViewController {
 
     // TODO
     public void searchGamesClicked(){
-        Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME_SEARCH);
-        NetSnakeApp.getStage().setScene(gameSearch);
+//        Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME_SEARCH);
+//        NetSnakeApp.getStage().setScene(gameSearch);
+        try {
+            Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
+            ClientController.getInstance().joinGame(null, new InetSocketAddress(InetAddress.getByName("192.168.0.102"), 9192), false);
+            NetSnakeApp.getStage().setScene(gameSearch);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     public void exitClicked(){

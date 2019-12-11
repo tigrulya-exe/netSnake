@@ -129,6 +129,8 @@ public class ClientController {
     }
 
     public void stopCurrentGame() {
+        model.clear();
+
         if (model.getPlayerRole() == NodeRole.MASTER) {
             masterController.stopCurrentGame();
             return;
