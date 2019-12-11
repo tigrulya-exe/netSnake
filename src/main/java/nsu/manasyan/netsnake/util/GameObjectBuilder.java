@@ -68,12 +68,41 @@ public class GameObjectBuilder {
 
     public static Snake initNewSnake(int playerId, Field field){
         if(field == null){
-            return new Snake(playerId);
+            return new  Snake(playerId);
         }
 
+//         TODO find free 5x5 to place 2x1 snake (head + tail)
+        for(int x = 0; x < field.getWidth(); ){
+            outer: for(int y = 0; y < field.getHeight(); ++y){
+                for(int i  = 0; i < 5; ++i){
+                    if(!checkLine(field, x, y + i)){
+                        continue outer;
+                    }
+                }
 
-        // TODO find free 5x5 to place 2x1 snake (head + tail)
+                List<GameState.Coord> points = new ArrayList<>();
+                points.add(getCoord(x + 2, y + 2));
+                points.add(getCoord(1, 0));
+                return new Snake(playerId, points);
+            }
+        }
+
         return null;
+    }
+
+//    private Snake getNewSnake(Field field, int int startX, int startY){
+//        return new Snake()
+//    }
+
+    private static boolean checkLine(Field field, int startX, int y){
+        for(int x = startX; x  < startX + 5; ++x){
+//            if(field.getCell(x, y) != Field.Cell.FREE || field.getCell(x, y) != Field.Cell.FOOD){
+            if(field.getCell(x, y) != Field.Cell.FREE) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static GameState.Coord getCoord(int x, int y){

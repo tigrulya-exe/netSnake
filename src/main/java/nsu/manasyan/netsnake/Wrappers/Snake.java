@@ -4,14 +4,13 @@ import nsu.manasyan.netsnake.proto.SnakesProto;
 
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Snake.*;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Coord;
-import nsu.manasyan.netsnake.util.GameObjectBuilder;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static nsu.manasyan.netsnake.proto.SnakesProto.Direction;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.getCoord;
+import static nsu.manasyan.netsnake.util.GameObjectBuilder.getGameState;
 
 public class Snake {
     private static final SnakesProto.Direction DEFAULT_DIRECTION = Direction.LEFT;
@@ -32,6 +31,11 @@ public class Snake {
         this.playerId = playerId;
         points.add(getCoord(0,0));
         points.add(getCoord(3,0));
+    }
+
+    public Snake(int playerId, List<Coord> points){
+        this.playerId = playerId;
+        this.points = points;
     }
 
     public static SnakesProto.Direction getDefaultDirection() {

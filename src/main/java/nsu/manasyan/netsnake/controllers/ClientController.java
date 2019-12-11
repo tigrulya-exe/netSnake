@@ -140,7 +140,7 @@ public class ClientController {
 //        sender.sendMessage(model.getMasterAddress(), roleChange);
     }
 
-    public void joinGame(GameConfig gameConfig, InetSocketAddress masterAddress, boolean onlyView){
+    public void joinGame(InetSocketAddress masterAddress, boolean onlyView){
         model.setMasterAddress(masterAddress);
         sender.sendMessage(masterAddress, getJoinMessage("TMP", onlyView));
     }
