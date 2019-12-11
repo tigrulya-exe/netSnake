@@ -44,11 +44,11 @@ public class MasterController{
         private static final MasterController controller = new MasterController();
     }
 
-    public void init(GameConfig config, ClientGameModel currModel, Sender senderIn){
+    public void init(GameConfig config, ClientGameModel currModel, Sender senderIn, Field field){
         timer = new Timer();
         model = currModel;
         sender = senderIn;
-        field = new Field(config.getHeight(), config.getWidth());
+        this.field = field;
         masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
 
         manipulator.setField(field);
@@ -118,6 +118,7 @@ public class MasterController{
     public void addPlayer(Player player){
         masterGameModel.getPlayers().put(player.getId(), player);
         model.addScore(player.getId(), player.getName(), 0);
+        masterGameModel.initPlayerHeadDirections(player.getId());
         addSnake(player.getId());
     }
 

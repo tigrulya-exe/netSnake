@@ -91,6 +91,7 @@ public class Listener {
 
         Player player = new Player(joinMsg.getName(), 1,
                 address.getHostName(), address.getPort(), role, 0);
+        System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
         masterController.addPlayer(player);
     }

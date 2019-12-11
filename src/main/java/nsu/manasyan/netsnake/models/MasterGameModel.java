@@ -6,6 +6,7 @@ import nsu.manasyan.netsnake.proto.SnakesProto.GameState.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class MasterGameModel {
@@ -15,7 +16,7 @@ public class MasterGameModel {
 
     private SnakesProto.GameConfig config;
 
-    private Map<Integer, nsu.manasyan.netsnake.Wrappers.Snake> snakes = new HashMap<>();
+    private Map<Integer, nsu.manasyan.netsnake.Wrappers.Snake> snakes = new ConcurrentHashMap<>();
 
     private Map<Integer, Player> players = new HashMap<>();
 
@@ -79,7 +80,7 @@ public class MasterGameModel {
     public SnakesProto.Direction popPlayerHeadDirection(int playerId){
         List<SnakesProto.Direction> directions = playersDirections.get(playerId);
 
-        if(directions.size() == 0)
+        if(directions.size() == 0 )
             return null;
 
         SnakesProto.Direction direction = directions.get(0);
@@ -102,4 +103,8 @@ public class MasterGameModel {
         playersDirections.clear();
     }
 
+    public void initPlayerHeadDirections(int id) {
+        playersDirections.put(id, new ArrayList<>());
+        playersDirections.get(id).add(nsu.manasyan.netsnake.Wrappers.Snake.getDefaultDirection());
+    }
 }

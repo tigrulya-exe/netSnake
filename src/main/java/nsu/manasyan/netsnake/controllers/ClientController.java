@@ -2,6 +2,7 @@ package nsu.manasyan.netsnake.controllers;
 
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.models.ClientGameModel;
+import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.network.Sender;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.ErrorListener;
@@ -23,8 +24,11 @@ public class ClientController {
 
     private Sender sender;
 
-    private ClientController() {
+    private Field field;
 
+    private boolean isFirstGameState = false;
+
+    private ClientController() {
     }
 
     public static ClientController getInstance() {
@@ -61,7 +65,8 @@ public class ClientController {
 
     public void becomeMaster() {
         GameConfig config = model.getCurrentConfig();
-        masterController.init(config, model, sender);
+        field = new Field(config.getHeight(), config.getWidth());
+        masterController.init(config, model, sender, field);
     }
 
     public void startNewGame(GameConfig config) {
@@ -91,6 +96,8 @@ public class ClientController {
     }
 
     public void setGameState(GameState gameState){
+        if(isFirstGameState)
+            field = new Field(gameState.getConfig().getHeight(), gameState.getConfig().getWidth());
         model.setGameState(gameState);
     }
 

@@ -65,6 +65,11 @@ public class Player {
         return port;
     }
 
+    @Override
+    public String toString(){
+        return "[" + name + " , " + id + " , " + ipAddress + ":" + port + "]";
+    }
+
     public SnakesProto.NodeRole getRole() {
         return role;
     }

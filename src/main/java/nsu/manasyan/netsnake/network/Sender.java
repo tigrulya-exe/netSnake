@@ -29,19 +29,28 @@ public class Sender {
 
     public void broadcastMessage(GameMessage message) {
         System.out.println("Broadcast: ");
-        System.out.println(message);
+//        System.out.println(message);
 
-        GameExecutorService.getExecutorService().submit(() ->
+        GameExecutorService.getExecutorService().submit(() ->{
+                masterController.getPlayers().forEach(System.out::println);
                 masterController.getPlayers().forEach(player -> {
 //                  putIntoSentMessages(message.getMsgSeq(), new MessageContext(message, ia));
                     try {
+                        System.out.println("addr: " + player.getIpAddress());
                         byte[] buf = message.toByteArray();
+
+                        if(player.getIpAddress().equals(""))
+                            return;
+
                         socket.send(new DatagramPacket(buf, buf.length,
                                 new InetSocketAddress(player.getIpAddress(), player.getPort())));
-                    } catch (IOException e) {
+                    } catch (IOException | IllegalArgumentException  e) {
+                        System.out.println("EXCEPTION: " + e.getLocalizedMessage());
                         e.printStackTrace();
                     }
-                }));
+
+                    });
+                });
     }
 
     public void broadcastState(GameMessage.StateMsg state) throws IOException {
