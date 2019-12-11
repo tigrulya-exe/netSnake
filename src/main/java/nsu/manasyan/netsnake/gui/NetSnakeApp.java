@@ -120,8 +120,8 @@ public class NetSnakeApp extends Application {
     }
 
     public static void setScene(SceneFactory.SceneType sceneType){
-        Scene menu = SceneFactory.getInstance().getScene(sceneType);
-        stage.setScene(menu);
+        Scene scene = SceneFactory.getInstance().getScene(sceneType);
+        stage.setScene(scene);
     }
 
     public void go(String[] args){

@@ -19,7 +19,7 @@ public class ClientGameModel {
     }
 
     public interface AnnouncementListener{
-        void onUpdate(List<AnnouncementMsg> announcements);
+        void onUpdate(Map<AnnouncementMsg, AnnouncementContext> announcements);
     }
 
     private int playerId;
@@ -104,8 +104,7 @@ public class ClientGameModel {
     }
 
     public void notifyAllAnnouncementListeners(){
-        List<AnnouncementMsg> announcements = new ArrayList<>(availableGames.keySet());
-        announcementListeners.forEach(l -> l.onUpdate(announcements));
+        announcementListeners.forEach(l -> l.onUpdate(availableGames));
     }
 
     public void notifyAllGameStateListeners(){
