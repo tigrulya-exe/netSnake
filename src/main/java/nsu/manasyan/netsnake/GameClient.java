@@ -63,7 +63,7 @@ public class GameClient {
 
     public void startNewGame(GameConfig config) {
 //        timer = new Timer();
-        listener.interrupt();
+//        listener.interrupt();
 //        controller.setGameClient(this);
         clientController.startNewGame(config);
 //        becomeMaster();
@@ -79,9 +79,11 @@ public class GameClient {
 //    }
 
     // TODO
-    public void joinGame(AnnouncementContext context) {
+    public void joinGame(GameMessage.AnnouncementMsg msg, AnnouncementContext context) {
         listener.interrupt();
         timer.cancel();
+        sender.sendMessage(context.getMasterAddress(), GameObjectBuilder.getJoinMessage(name, false));
+        clientController.setConfigurations(msg.getConfig(), context.getMasterAddress());
 //        GameMessage joinMessage =
 //        sender.sendMessage(context.getMasterAddress(), );
         setTimer();

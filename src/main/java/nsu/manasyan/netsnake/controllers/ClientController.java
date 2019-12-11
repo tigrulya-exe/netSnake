@@ -6,6 +6,7 @@ import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.network.Sender;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.ErrorListener;
+import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
 import java.net.InetSocketAddress;
 import java.util.List;
@@ -96,9 +97,6 @@ public class ClientController {
     }
 
     public void setGameState(GameState gameState){
-        if(isFirstGameState) {
-            setField(gameState.getConfig());
-        }
         model.setGameState(gameState);
     }
 
@@ -127,12 +125,15 @@ public class ClientController {
     }
 
     public void registerDirection(Direction direction){
+        if(!isCorrectDirection(direction))
+            return;
+
+        model.setCurrentDirection(direction);
         if(model.getPlayerRole() == NodeRole.MASTER){
             masterController.registerDirection(direction);
             return;
         }
 
-        model.setCurrentDirection(direction);
         sender.sendMessage(model.getMasterAddress(), getSteerMessage(direction,model.getPlayerId()));
     }
 
@@ -148,17 +149,47 @@ public class ClientController {
 //        sender.sendMessage(model.getMasterAddress(), roleChange);
     }
 
+    public void setConfigurations(GameConfig config, InetSocketAddress masterAddress){
+        field = new Field(config.getHeight(), config.getWidth());
+        SnakePartManipulator.getInstance().setField(field);
+        model.setMasterAddress(masterAddress);
+        isFirstGameState = false;
+    }
+
     public void joinGame(InetSocketAddress masterAddress, boolean onlyView){
         model.setMasterAddress(masterAddress);
         sender.sendMessage(masterAddress, getJoinMessage("TMP", onlyView));
+    }
+
+    public void setPlayerId(int id){
+        model.setPlayerId(id);
     }
 
     public MasterController getMasterController() {
         return masterController;
     }
 
-    private void setField(GameConfig config){
-        field = new Field(config.getHeight(), config.getWidth());
-        isFirstGameState = false;
+    private boolean isCorrectDirection(Direction direction) {
+        Direction currentDirection = model.getCurrentDirection();
+
+        switch (direction){
+            case UP:
+                if(currentDirection == Direction.DOWN)
+                    return false;
+                break;
+            case DOWN:
+                if(currentDirection == Direction.UP)
+                    return false;
+                break;
+            case LEFT:
+                if(currentDirection == Direction.RIGHT)
+                    return false;
+                break;
+            case RIGHT:
+                if(currentDirection == Direction.LEFT)
+                    return false;
+                break;
+        }
+        return true;
     }
 }

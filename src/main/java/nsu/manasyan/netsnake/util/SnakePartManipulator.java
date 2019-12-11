@@ -52,7 +52,7 @@ public class SnakePartManipulator {
 
         Field.WallPass wallPass;
 
-        Field field = MasterController.getInstance().getField();
+//        Field field = MasterController.getInstance().getField();
 
         for (int i = 1; i < points.size(); ++i) {
             var point = points.get(i);
@@ -106,5 +106,4 @@ public class SnakePartManipulator {
         manipulators.put(Field.WallPass.RIGHT, this::rightPass);
         manipulators.put(Field.WallPass.NOT_PASSED, this::noPass);
     }
-
 }

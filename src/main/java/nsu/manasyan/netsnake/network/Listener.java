@@ -39,6 +39,8 @@ public class Listener {
 
     private volatile boolean isInterrupted = false;
 
+    private boolean isFirstGamestate = true;
+
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
     public Listener( Sender sender, Map<String, MessageContext> sentMessages, DatagramSocket socket) {
@@ -55,6 +57,7 @@ public class Listener {
             TypeCase type;
 
             DatagramPacket packetToReceive = new DatagramPacket(receiveBuf, BUF_LENGTH);
+            isInterrupted = false;
             try {
                 while (!isInterrupted) {
                     socket.receive(packetToReceive);
@@ -98,6 +101,7 @@ public class Listener {
 
     private void handleState(GameMessage message, InetSocketAddress address){
         clientController.setGameState(message.getState().getState());
+        isFirstGamestate = false;
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){

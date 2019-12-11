@@ -155,10 +155,6 @@ public class MasterController{
     }
 
     public void registerDirection(Direction direction){
-        if (!isCorrectDirection(direction)){
-            return;
-        }
-        model.setCurrentDirection(direction);
         registerPlayerDirection(MASTER_ID, direction);
     }
 
@@ -205,29 +201,5 @@ public class MasterController{
     public void setPlayerAsViewer(int playerId) {
         Map<Integer, Player> players = masterGameModel.getPlayers();
         players.get(playerId).setRole(NodeRole.VIEWER);
-    }
-
-    private boolean isCorrectDirection(Direction direction) {
-        Direction currentDirection = model.getCurrentDirection();
-
-        switch (direction){
-            case UP:
-                if(currentDirection == Direction.DOWN)
-                    return false;
-                break;
-            case DOWN:
-                if(currentDirection == Direction.UP)
-                    return false;
-                break;
-            case LEFT:
-                if(currentDirection == Direction.RIGHT)
-                    return false;
-                break;
-            case RIGHT:
-                if(currentDirection == Direction.LEFT)
-                    return false;
-                break;
-        }
-        return true;
     }
 }
