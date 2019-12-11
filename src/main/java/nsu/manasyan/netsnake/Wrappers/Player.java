@@ -49,6 +49,10 @@ public class Player {
         this.role = role;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public int getId() {
         return id;
     }
@@ -63,6 +67,14 @@ public class Player {
 
     public int getPort() {
         return port;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     @Override

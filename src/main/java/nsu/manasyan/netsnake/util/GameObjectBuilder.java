@@ -16,11 +16,7 @@ public class GameObjectBuilder {
 
     private static final int DEFAULT_MASTER_ID = 0;
 
-    private static final String DEFAULT_ADDRESS_STR = "127.0.0.1";
-
     private static final String DEFAULT_MASTER_ADDRESS_STR = "";
-
-    private static final String DEFAULT_NAME = "Steve";
 
     private static int currentGameMsgSeq = 0;
 
@@ -46,8 +42,6 @@ public class GameObjectBuilder {
         // TODO CHECK
         return foods;
     }
-
-
 
     public static GameState.Coord getFreeRandomCoord(GameConfig config, Field field){
         Random random = new Random();

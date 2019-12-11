@@ -27,7 +27,7 @@ public class Listener {
 
     private ClientController clientController = ClientController.getInstance();
 
-    private Map<String, MessageContext> sentMessages;
+    private Map<Long, MessageContext> sentMessages;
 
     private Map<TypeCase, Handler> handlers = new HashMap<>();
 
@@ -43,7 +43,7 @@ public class Listener {
 
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
-    public Listener( Sender sender, Map<String, MessageContext> sentMessages, DatagramSocket socket) {
+    public Listener( Sender sender, Map<Long, MessageContext> sentMessages, DatagramSocket socket) {
 //        this.controller = controller;
         this.sender = sender;
         this.sentMessages = sentMessages;
@@ -89,6 +89,7 @@ public class Listener {
         JoinMsg joinMsg = message.getJoin();
         NodeRole role = (!joinMsg.hasOnlyView() || !joinMsg.getOnlyView()) ? NodeRole.NORMAL : NodeRole.VIEWER;
 
+        // todo
 //        Player player = new Player(joinMsg.getName(), message.getSenderId(),
 //                address.getHostName(), address.getPort(), role, 0);
 
@@ -105,7 +106,7 @@ public class Listener {
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){
-        sentMessages.entrySet().removeIf(m -> message.getMsgSeq() == m.getValue().getMessage().getMsgSeq());
+        sentMessages.remove(message.getMsgSeq());
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){
@@ -155,6 +156,7 @@ public class Listener {
         handlers.put(TypeCase.ANNOUNCEMENT, this::handleAnnouncement);
         handlers.put(TypeCase.ROLE_CHANGE, this::handleRoleChange);
     }
+
 
 
 //    private boolean checkIsDuplicate(MessageType messageType, String GUID){

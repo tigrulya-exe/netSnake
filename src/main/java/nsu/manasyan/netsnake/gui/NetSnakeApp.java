@@ -2,19 +2,13 @@ package nsu.manasyan.netsnake.gui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import nsu.manasyan.netsnake.GameClient;
-import nsu.manasyan.netsnake.controllers.view.GameConfigViewController;
-import nsu.manasyan.netsnake.controllers.view.GameViewController;
-import nsu.manasyan.netsnake.controllers.view.MenuViewController;
-import nsu.manasyan.netsnake.util.ErrorListener;
+import nsu.manasyan.netsnake.NetworkControllerBridge;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +16,7 @@ import java.net.URL;
 
 public class NetSnakeApp extends Application {
 
-    private static GameClient gameClient;
+    private static NetworkControllerBridge networkControllerBridge;
 
     private static Stage stage;
 
@@ -38,8 +32,8 @@ public class NetSnakeApp extends Application {
         NetSnakeApp.stage = stage;
     }
 
-    public static GameClient getGameClient() {
-        return gameClient;
+    public static NetworkControllerBridge getNetworkControllerBridge() {
+        return networkControllerBridge;
     }
 
 
@@ -95,7 +89,7 @@ public class NetSnakeApp extends Application {
         Image image = new Image(iconStream);
         stage.getIcons().add(image);
 
-        stage.setTitle("NACHALO");
+        stage.setTitle("ZMiYKA");
         stage.setWidth(1000);
         stage.setHeight(700);
         stage.setResizable(false);
@@ -104,8 +98,8 @@ public class NetSnakeApp extends Application {
     }
 
     private void initGameClient() throws IOException {
-        gameClient = new GameClient();
-        gameClient.registerErrorListener(erMsg -> {
+        networkControllerBridge = new NetworkControllerBridge();
+        networkControllerBridge.registerErrorListener(erMsg -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Error");
 

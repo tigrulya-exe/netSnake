@@ -19,7 +19,7 @@ import java.util.List;
 
 public class GameViewController {
     @FXML
-    private Button exitButton;
+    private Button restartButton;
 
     @FXML
     private GridPane scoreGrid;
@@ -46,9 +46,9 @@ public class GameViewController {
         setScene(SceneFactory.SceneType.NEW_GAME_SETTINGS);
     }
 
-    public void exitClicked(){
-        stopGame();
-        NetSnakeApp.getStage().close();
+    public void restartClicked(){
+        scoreGrid.getChildren().clear();
+        NetSnakeApp.getNetworkControllerBridge().restartCurrentGame();
     }
 
     private static int counter = 0;
@@ -90,7 +90,7 @@ public class GameViewController {
     }
 
     private void stopGame(){
-        NetSnakeApp.getGameClient().stopCurrentGame();
+        NetSnakeApp.getNetworkControllerBridge().stopCurrentGame();
         scoreGrid.getChildren().clear();
     }
 

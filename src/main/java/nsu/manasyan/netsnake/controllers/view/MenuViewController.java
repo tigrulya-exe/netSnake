@@ -6,6 +6,8 @@ import javafx.scene.control.Button;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.gui.SceneFactory;
+import nsu.manasyan.netsnake.proto.SnakesProto;
+import nsu.manasyan.netsnake.util.GameExecutorService;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -32,7 +34,7 @@ public class MenuViewController {
 //        NetSnakeApp.getStage().setScene(gameSearch);
         try {
             Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
-            ClientController.getInstance().joinGame( new InetSocketAddress(InetAddress.getByName("192.168.0.102"), 9192), false);
+            ClientController.getInstance().joinGame( new InetSocketAddress(InetAddress.getByName("192.168.0.102"), 9192), false, SnakesProto.GameConfig.getDefaultInstance());
             NetSnakeApp.getStage().setScene(gameSearch);
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -40,7 +42,9 @@ public class MenuViewController {
     }
 
     public void exitClicked(){
-        NetSnakeApp.getGameClient().stopCurrentGame();
+        NetSnakeApp.getNetworkControllerBridge().stopCurrentGame();
+        GameExecutorService.getExecutorService().shutdownNow();
         NetSnakeApp.getStage().close();
+//        System.exit(0);
     }
 }

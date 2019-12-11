@@ -13,4 +13,8 @@ public final class GameExecutorService {
     public static ExecutorService getExecutorService() {
         return SingletonHelper.executorService;
     }
+
+    public void stop(){
+        SingletonHelper.executorService.shutdownNow();
+    }
 }

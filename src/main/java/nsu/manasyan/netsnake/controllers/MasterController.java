@@ -32,6 +32,8 @@ public class MasterController{
 
     private Timer timer;
 
+    private int availablePlayerId = 1;
+
     private MasterController() {
         snakesController.setController(this);
     }
@@ -45,7 +47,6 @@ public class MasterController{
     }
 
     public void init(GameConfig config, ClientGameModel currModel, Sender senderIn, Field field){
-        timer = new Timer();
         model = currModel;
         sender = senderIn;
         this.field = field;
@@ -59,6 +60,8 @@ public class MasterController{
     }
 
     public void scheduleTurns(int stateDelayMs){
+        timer = new Timer();
+
         TimerTask newTurn  = new TimerTask() {
             @Override
             public void run(){
@@ -73,6 +76,7 @@ public class MasterController{
 
     public void addScore(int playerId, int newPoints){
         String playerName = masterGameModel.getPlayers().get(playerId).getName();
+        masterGameModel.getPlayers().get(playerId).setScore(newPoints);
         model.addScore(playerId, playerName, newPoints);
     }
 
@@ -111,11 +115,11 @@ public class MasterController{
         });
 
         masterGameModel.getFoods().forEach(c ->
-                field.updateField(c.getX(), c.getY(), Field.Cell.FOOD
-                ));
+                field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
 
     public void addPlayer(Player player){
+        player.setId(availablePlayerId++);
         masterGameModel.getPlayers().put(player.getId(), player);
         model.addScore(player.getId(), player.getName(), 0);
         masterGameModel.initPlayerHeadDirections(player.getId());
@@ -126,7 +130,6 @@ public class MasterController{
         return masterGameModel.getPlayers().values();
     }
 
-
     public void removeSnake(int playerId){
         masterGameModel.getSnakes().remove(playerId);
     }
@@ -134,10 +137,6 @@ public class MasterController{
     public void addSnake(int playerId){
         Snake newSnake = GameObjectBuilder.initNewSnake(playerId, field);
         masterGameModel.getSnakes().put(playerId, newSnake);
-    }
-
-    public int getAvailablePlayerId(){
-        return model.getGameState().getPlayers().getPlayersCount() + 1;
     }
 
     public void setAlive(int playerId){
@@ -160,10 +159,13 @@ public class MasterController{
 
     public void gameOver(int playerId){
         setPlayerAsViewer(playerId);
+
         Snake deadSnake = masterGameModel.getSnakes().get(playerId);
         turnDeadSnakeIntoFood(deadSnake);
         removeSnake(playerId);
+
         model.removeScore(playerId);
+        setPlayerAsViewer(playerId);
     }
 
     public Field getField(){
@@ -171,6 +173,7 @@ public class MasterController{
     }
 
     public void stopCurrentGame(){
+        availablePlayerId = 1;
         timer.cancel();
         masterGameModel.clear();
     }

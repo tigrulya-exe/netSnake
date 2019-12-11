@@ -25,11 +25,18 @@ public class ClientController {
 
     private Sender sender;
 
+    private String name = "TIGRULYA";
+
     private Field field;
 
     private boolean isFirstGameState = true;
 
+    private static class SingletonHelper{
+        private static final ClientController controller = new ClientController();
+    }
+
     private ClientController() {
+        model = new ClientGameModel();
     }
 
     public static ClientController getInstance() {
@@ -40,28 +47,16 @@ public class ClientController {
         errorListener.onError(errorMessage);
     }
 
-    private static class SingletonHelper{
-        private static final ClientController controller = new ClientController();
-    }
-
-    public ClientGameModel getModel() {
-        return model;
+    public void registerErrorListener(ErrorListener errorListener){
+        this.errorListener = errorListener;
     }
 
     public void setSender(Sender sender) {
         this.sender = sender;
     }
 
-    public void registerErrorListener(ErrorListener errorListener){
-        this.errorListener = errorListener;
-    }
-
     public void setMasterAddress(InetSocketAddress address){
         model.setMasterAddress(address);
-    }
-
-    public void setModel(ClientGameModel model) {
-        this.model = model;
     }
 
     public void becomeMaster() {
@@ -70,33 +65,45 @@ public class ClientController {
         masterController.init(config, model, sender, field);
     }
 
+    public void restart() {
+        model.clear();
+
+        if(model.getPlayerRole() == NodeRole.MASTER) {
+            masterController.stopCurrentGame();
+            startNewGame(model.getCurrentConfig());
+        } else
+            joinGame(model.getMasterAddress(), false, model.getCurrentConfig());
+    }
+
     public void startNewGame(GameConfig config) {
         model.setCurrentConfig(config);
         model.setPlayerId(MASTER_ID);
         model.setPlayerRole(NodeRole.MASTER);
 
         masterController = MasterController.getInstance();
+        sender.setMasterTimer(config.getPingDelayMs());
         becomeMaster();
-//        masterController.init(config);
     }
 
-    public NodeRole getRole(){
-        return model.getPlayerRole();
+    public void stopCurrentGame() {
+        model.clear();
+
+        if (model.getPlayerRole() == NodeRole.MASTER) {
+            masterController.stopCurrentGame();
+            return;
+        }
+
+        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
+//        sender.sendMessage(model.getMasterAddress(), roleChange);
     }
 
     public void setRole(NodeRole role){
         model.setPlayerRole(role);
     }
 
-    public InetSocketAddress getMasterAddress(){
-        return model.getMasterAddress();
-    }
-
-    public GameState getGameState(){
-        return model.getGameState();
-    }
-
     public void setGameState(GameState gameState){
+        if(gameState.getStateOrder() <= model.getGameState().getStateOrder())
+            return;
         model.setGameState(gameState);
     }
 
@@ -137,36 +144,22 @@ public class ClientController {
         sender.sendMessage(model.getMasterAddress(), getSteerMessage(direction,model.getPlayerId()));
     }
 
-    public void stopCurrentGame() {
-        model.clear();
-
-        if (model.getPlayerRole() == NodeRole.MASTER) {
-            masterController.stopCurrentGame();
-            return;
-        }
-
-        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
-//        sender.sendMessage(model.getMasterAddress(), roleChange);
-    }
-
-    public void setConfigurations(GameConfig config, InetSocketAddress masterAddress){
+    public void setStartConfigurations(GameConfig config, InetSocketAddress masterAddress){
         field = new Field(config.getHeight(), config.getWidth());
         SnakePartManipulator.getInstance().setField(field);
         model.setMasterAddress(masterAddress);
         isFirstGameState = false;
     }
 
-    public void joinGame(InetSocketAddress masterAddress, boolean onlyView){
+    public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameConfig config){
         model.setMasterAddress(masterAddress);
-        sender.sendMessage(masterAddress, getJoinMessage("TMP", onlyView));
+        sender.sendMessage(masterAddress, getJoinMessage(name, onlyView));
+        sender.setClientTimer(masterAddress, config.getPingDelayMs());
+        setStartConfigurations(config, masterAddress);
     }
 
     public void setPlayerId(int id){
         model.setPlayerId(id);
-    }
-
-    public MasterController getMasterController() {
-        return masterController;
     }
 
     private boolean isCorrectDirection(Direction direction) {

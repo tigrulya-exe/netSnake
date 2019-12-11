@@ -4,62 +4,72 @@ import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.GameExecutorService;
+import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
 import java.net.*;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Sender {
     private static final int MAX_MSG_BUF_SIZE = 4096;
+
+    private static final int MASTER_ID = 0;
 
     private InetAddress multicastAddress;
 
     private MasterController masterController = MasterController.getInstance();
 
-    private Map<String, MessageContext> sentMessages;
+    private Map<Long, MessageContext> sentMessages;
 
     private MulticastSocket socket;
 
-    private int port;
+    private int multicastPort;
 
-    public Sender( MulticastSocket socket, Map<String, MessageContext> sentMessages) {
+    private volatile boolean needToSendPing = true;
+
+    private Timer timer;
+
+    public Sender( MulticastSocket socket, Map<Long, MessageContext> sentMessages) {
         this.socket = socket;
         this.sentMessages = sentMessages;
     }
 
     public void broadcastMessage(GameMessage message) {
+        needToSendPing = false;
         System.out.println("Broadcast: ");
 //        System.out.println(message);
 
-        GameExecutorService.getExecutorService().submit(() ->{
-                masterController.getPlayers().forEach(System.out::println);
+//        GameExecutorService.getExecutorService().submit(() ->
                 masterController.getPlayers().forEach(player -> {
-//                  putIntoSentMessages(message.getMsgSeq(), new MessageContext(message, ia));
                     try {
+                        if (player.getId() == MASTER_ID) {
+                            return;
+                        }
                         System.out.println("addr: " + player.getIpAddress());
                         byte[] buf = message.toByteArray();
 
-                        if(player.getIpAddress().equals(""))
-                            return;
-
-                        socket.send(new DatagramPacket(buf, buf.length,
-                                new InetSocketAddress(player.getIpAddress(), player.getPort())));
-                    } catch (IOException | IllegalArgumentException  e) {
+                        InetSocketAddress socketAddress = new InetSocketAddress(player.getIpAddress(), player.getPort());
+                        socket.send(new DatagramPacket(buf, buf.length, socketAddress));
+                        putIntoSentMessages(message.getMsgSeq(), new MessageContext(message, socketAddress));
+                    } catch (IOException | IllegalArgumentException e) {
                         System.out.println("EXCEPTION: " + e.getLocalizedMessage());
                         e.printStackTrace();
                     }
 
-                    });
                 });
+    //);
     }
 
-    public void broadcastState(GameMessage.StateMsg state) throws IOException {
-        byte[] buf = state.toByteArray();
-        socket.send(new DatagramPacket(buf, buf.length,multicastAddress, port));
+    public void broadcastAnnouncement(GameMessage.AnnouncementMsg announcementMsg) throws IOException {
+        byte[] buf = announcementMsg.toByteArray();
+        socket.send(new DatagramPacket(buf, buf.length,multicastAddress, multicastPort));
     }
-
 
     public void sendMessage(InetSocketAddress receiverAddress, GameMessage message) {
+        needToSendPing = false;
+
         System.out.println("Send to " + receiverAddress + ": ");
         System.out.println(message);
         try {
@@ -70,15 +80,55 @@ public class Sender {
         }
     }
 
-    public Map<String, MessageContext> getSentMessages() {
+    public Map<Long, MessageContext> getSentMessages() {
         return sentMessages;
     }
 
-    private void putIntoSentMessages(String GUID, MessageContext context){
+    public void setMasterTimer(int pingDelayMs){
+        timer = new Timer();
+
+        TimerTask masterSendPing  = new TimerTask() {
+            @Override
+            public void run() {
+                if(!needToSendPing){
+                    needToSendPing = true;
+                    return;
+                }
+                GameMessage ping =  GameObjectBuilder.initPingMessage();
+                broadcastMessage(ping);
+            }
+        };
+
+        timer.schedule(masterSendPing, pingDelayMs, pingDelayMs);
+    }
+
+    public void setClientTimer(InetSocketAddress masterAddress, int pingDelayMs){
+        timer = new Timer();
+        TimerTask playerSendPing  = new TimerTask() {
+            @Override
+            public void run() {
+                if(!needToSendPing){
+                    needToSendPing = true;
+                    return;
+                }
+                GameMessage ping = GameObjectBuilder.initPingMessage();
+                sendMessage(masterAddress, ping);
+            }
+        };
+
+        timer.schedule(playerSendPing, pingDelayMs, pingDelayMs);
+    }
+
+    public void stop(){
+        if(timer != null)
+            timer.cancel();
+    }
+
+    private void putIntoSentMessages(long msgId, MessageContext context){
         if(sentMessages.size() >= MAX_MSG_BUF_SIZE){
             return;
         }
 
-        sentMessages.put(GUID, context);
+        sentMessages.put(msgId, context);
     }
 }

@@ -36,7 +36,7 @@ public class MasterGameModel {
     public SnakesProto.GameState toGameState(){
         Collection <SnakesProto.GamePlayer> protoPlayers = players.values().stream().map(Player::toProto).collect(Collectors.toList());
         return GameObjectBuilder.getGameState(protoPlayers, getProtoSnakes(),
-                config, stateOrder, foods);
+                config, stateOrder++, foods);
     }
 
     private void initMaster(){
@@ -97,6 +97,7 @@ public class MasterGameModel {
     }
 
     public void clear(){
+        stateOrder = 0;
         snakes.clear();
         players.clear();
         foods.clear();

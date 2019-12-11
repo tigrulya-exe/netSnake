@@ -9,7 +9,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.gui.*;
@@ -60,7 +59,7 @@ public class GameConfigViewController {
         int fieldWidth = getInt(width.getText());
         int fieldHeight = getInt(height.getText());
 
-        NetSnakeApp.getGameClient().startNewGame(initConfig());
+        clientController.startNewGame(initConfig());
 
         Scene game = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
         initFieldCanvas(game, fieldWidth, fieldHeight);
