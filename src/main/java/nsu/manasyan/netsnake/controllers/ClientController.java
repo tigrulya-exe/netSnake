@@ -26,7 +26,7 @@ public class ClientController {
 
     private Field field;
 
-    private boolean isFirstGameState = false;
+    private boolean isFirstGameState = true;
 
     private ClientController() {
     }
@@ -96,8 +96,9 @@ public class ClientController {
     }
 
     public void setGameState(GameState gameState){
-        if(isFirstGameState)
-            field = new Field(gameState.getConfig().getHeight(), gameState.getConfig().getWidth());
+        if(isFirstGameState) {
+            setField(gameState.getConfig());
+        }
         model.setGameState(gameState);
     }
 
@@ -154,5 +155,10 @@ public class ClientController {
 
     public MasterController getMasterController() {
         return masterController;
+    }
+
+    private void setField(GameConfig config){
+        field = new Field(config.getHeight(), config.getWidth());
+        isFirstGameState = false;
     }
 }
