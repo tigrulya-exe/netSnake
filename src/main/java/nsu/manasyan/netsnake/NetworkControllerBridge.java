@@ -1,12 +1,10 @@
 package nsu.manasyan.netsnake;
 
-import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.network.Listener;
 import nsu.manasyan.netsnake.network.Sender;
-import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.ErrorListener;
 
 import java.io.IOException;
@@ -41,29 +39,20 @@ public class NetworkControllerBridge {
         listener.listen();
     }
 
-    public void start(String multicastAddressStr) throws IOException {
-
-    }
-
     public void registerErrorListener(ErrorListener errorListener){
         clientController.registerErrorListener(errorListener);
     }
 
-    // TODO
-    public void joinGame(GameMessage.AnnouncementMsg msg, AnnouncementContext context) {
-        listener.interrupt();
-        clientController.joinGame(context.getMasterAddress(), false, msg.getConfig());
-        listener.listen();
-    }
-
     public void stopCurrentGame(){
         sender.stop();
+        listener.reload();
 //        listener.interrupt();
         clientController.stopCurrentGame();
     }
 
     public void restartCurrentGame(){
         sender.stop();
+        listener.reload();
         clientController.restart();
     }
 }

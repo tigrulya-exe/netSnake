@@ -136,7 +136,7 @@ public class MasterController{
     }
 
     public int getAvailablePlayerId(){
-        return availablePlayerId++;
+        return availablePlayerId;
     }
 
     public void addPlayer(Player player){

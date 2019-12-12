@@ -99,7 +99,7 @@ public class Listener {
 
         masterController.addPlayer(player);
         sender.sendMessage(address,
-                GameObjectBuilder.getAckMsg(clientController.getPlayerId(), masterController.getAvailablePlayerId())
+                GameObjectBuilder.getAckMsg(clientController.getPlayerId(), masterController.getAvailablePlayerId() - 1)
         );
     }
 
