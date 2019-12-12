@@ -151,6 +151,7 @@ public class GameObjectBuilder {
         return GameMessage.newBuilder()
                 .setAck(ack)
                 .setSenderId(senderId)
+                .setMsgSeq(currentGameMsgSeq++)
                 .setReceiverId(receiverId)
                 .build();
     }
