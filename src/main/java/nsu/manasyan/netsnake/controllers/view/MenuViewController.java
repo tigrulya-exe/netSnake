@@ -30,15 +30,16 @@ public class MenuViewController {
 
     // TODO
     public void searchGamesClicked(){
-        Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME_SEARCH);
-        NetSnakeApp.getStage().setScene(gameSearch);
-//        try {
-//            Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
+//        Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME_SEARCH);
+//        NetSnakeApp.getStage().setScene(gameSearch);
+        try {
+            Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
 //            ClientController.getInstance().joinGame( new InetSocketAddress(InetAddress.getByName("192.168.0.102"), 9192), false, SnakesProto.GameConfig.getDefaultInstance());
-//            NetSnakeApp.getStage().setScene(gameSearch);
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//        }
+            ClientController.getInstance().joinGame( new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 9192), false, SnakesProto.GameConfig.getDefaultInstance());
+            NetSnakeApp.getStage().setScene(gameSearch);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     public void exitClicked(){

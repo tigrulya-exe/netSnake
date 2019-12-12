@@ -27,9 +27,7 @@ public class GameObjectBuilder {
     }
 
     public static Player initMaster() {
-
         return new Player(name, DEFAULT_MASTER_ID, DEFAULT_MASTER_ADDRESS_STR, port, NodeRole.MASTER, 0);
-
     }
 
     public static List<GameState.Coord> initNewFoods(GameConfig config, Field field){
@@ -174,22 +172,5 @@ public class GameObjectBuilder {
         return GamePlayers.newBuilder()
                 .addAllPlayers(players)
                 .build();
-    }
-
-
-    public static String getName() {
-        return name;
-    }
-
-    public static void setName(String name) {
-        GameObjectBuilder.name = name;
-    }
-
-    public static int getPort() {
-        return port;
-    }
-
-    public static void setPort(int port) {
-        GameObjectBuilder.port = port;
     }
 }

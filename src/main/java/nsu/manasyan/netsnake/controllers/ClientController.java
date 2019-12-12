@@ -31,10 +31,12 @@ public class ClientController {
 
     private boolean isFirstGameState = true;
 
+    private volatile boolean isMasterAlive = true;
+
     private static class SingletonHelper{
+
         private static final ClientController controller = new ClientController();
     }
-
     private ClientController() {
         model = new ClientGameModel();
     }
@@ -60,9 +62,13 @@ public class ClientController {
     }
 
     public void becomeMaster() {
+        model.setMasterAddress(null);
+        model.setPlayerRole(NodeRole.MASTER);
         GameConfig config = model.getCurrentConfig();
-        field = new Field(config.getHeight(), config.getWidth());
-        masterController.init(config, model, sender, field);
+        masterController = MasterController.getInstance();
+        masterController.startGame(model, sender, field);
+        sender.stop();
+        sender.setMasterTimer(config.getPingDelayMs());
     }
 
     public void restart() {
@@ -78,10 +84,8 @@ public class ClientController {
     public void startNewGame(GameConfig config) {
         model.setCurrentConfig(config);
         model.setPlayerId(MASTER_ID);
-        model.setPlayerRole(NodeRole.MASTER);
 
-        masterController = MasterController.getInstance();
-        sender.setMasterTimer(config.getPingDelayMs());
+        field = new Field(config.getHeight(), config.getWidth());
         becomeMaster();
     }
 
@@ -95,6 +99,16 @@ public class ClientController {
 
         GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
 //        sender.sendMessage(model.getMasterAddress(), roleChange);
+    }
+
+    public void changeMaster() {
+        isMasterAlive = true;
+        if(model.getPlayerRole() == NodeRole.DEPUTY) {
+            becomeMaster();
+            return;
+        }
+        model.setMasterAddress(model.getDeputyAddress());
+        model.setDeputyAddress(null);
     }
 
     public void setRole(NodeRole role){
@@ -156,6 +170,14 @@ public class ClientController {
         sender.sendMessage(masterAddress, getJoinMessage(name, onlyView));
         sender.setClientTimer(masterAddress, config.getPingDelayMs());
         setStartConfigurations(config, masterAddress);
+    }
+
+    public boolean isMasterAlive() {
+        return isMasterAlive;
+    }
+
+    public void setMasterAlive(boolean masterAlive) {
+        isMasterAlive = masterAlive;
     }
 
     public void setPlayerId(int id){

@@ -33,6 +33,13 @@ public class Snake {
         points.add(getCoord(3,0));
     }
 
+    public Snake(SnakesProto.GameState.Snake protoSnake){
+        this.points = new ArrayList<>(protoSnake.getPointsList());
+        this.setHeadDirection(protoSnake.getHeadDirection());
+        this.playerId = protoSnake.getPlayerId();
+        this.snakeState = protoSnake.getState();
+    }
+
     public Snake(int playerId, List<Coord> points){
         this.playerId = playerId;
         this.points = points;

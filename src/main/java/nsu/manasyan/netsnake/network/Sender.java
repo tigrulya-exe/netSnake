@@ -1,9 +1,9 @@
 package nsu.manasyan.netsnake.network;
 
 import nsu.manasyan.netsnake.contexts.MessageContext;
+import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
-import nsu.manasyan.netsnake.util.GameExecutorService;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
@@ -99,7 +99,25 @@ public class Sender {
             }
         };
 
+        TimerTask checkMaster = new TimerTask() {
+            @Override
+            public void run() {
+                var clientController = ClientController.getInstance();
+                if(!clientController.isMasterAlive()){
+                    clientController.changeMaster();
+                    return;
+                }
+
+                clientController.setMasterAlive(false);
+            }
+        };
+
         timer.schedule(masterSendPing, pingDelayMs, pingDelayMs);
+    }
+
+    public void stop(){
+        if(timer != null)
+            timer.cancel();
     }
 
     public void setClientTimer(InetSocketAddress masterAddress, int pingDelayMs){
@@ -116,12 +134,20 @@ public class Sender {
             }
         };
 
-        timer.schedule(playerSendPing, pingDelayMs, pingDelayMs);
-    }
+        TimerTask checkMaster = new TimerTask() {
+            @Override
+            public void run() {
+                var clientController = ClientController.getInstance();
+                if(!clientController.isMasterAlive()){
+                    clientController.changeMaster();
+                    return;
+                }
 
-    public void stop(){
-        if(timer != null)
-            timer.cancel();
+                clientController.setMasterAlive(false);
+            }
+        };
+
+        timer.schedule(playerSendPing, pingDelayMs, pingDelayMs);
     }
 
     private void putIntoSentMessages(long msgId, MessageContext context){

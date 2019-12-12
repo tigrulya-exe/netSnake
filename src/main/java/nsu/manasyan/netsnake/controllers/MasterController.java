@@ -16,7 +16,7 @@ import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 
 public class MasterController{
-    private static final int MASTER_ID = 0;
+    private int masterId = 0;
 
     private ClientGameModel model;
 
@@ -46,17 +46,33 @@ public class MasterController{
         private static final MasterController controller = new MasterController();
     }
 
-    public void init(GameConfig config, ClientGameModel currModel, Sender senderIn, Field field){
+    public void startGame(ClientGameModel currModel, Sender senderIn, Field field){
+        var config = currModel.getCurrentConfig();
+        masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
+        currModel.setGameState(masterGameModel.toGameState());
+
+        init(currModel, senderIn, field, config.getStateDelayMs());
+    }
+
+    public void becomeMaster(ClientGameModel currModel, Sender senderIn, Field field){
+        masterGameModel = new MasterGameModel(currModel.getGameState());
+        init(currModel, senderIn, field, currModel.getCurrentConfig().getStateDelayMs());
+    }
+
+    public void init(ClientGameModel currModel, Sender senderIn, Field field, int stateDelayMs){
         model = currModel;
         sender = senderIn;
+        masterId = currModel.getPlayerId();
+        setField(field);
+        model.setCurrentDirection(masterGameModel.getPlayerHeadDirection(masterId));
+        scheduleTurns(stateDelayMs);
+    }
+
+    public void setField(Field field){
         this.field = field;
-        masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
 
         manipulator.setField(field);
-        model.setGameState(masterGameModel.toGameState());
-        model.setCurrentDirection(masterGameModel.getPlayerHeadDirection(MASTER_ID));
         snakesController.setField(field);
-        scheduleTurns(config.getStateDelayMs());
     }
 
     public void scheduleTurns(int stateDelayMs){
@@ -148,13 +164,13 @@ public class MasterController{
     }
 
     public void registerPlayerDirection(int playerId, Direction direction){
-        var directions = masterGameModel.getPlayersDirections();
+        var directions = masterGameModel.getHeadDirections();
         directions.computeIfAbsent(playerId, k -> new ArrayList<>());
         directions.get(playerId).add(direction);
     }
 
     public void registerDirection(Direction direction){
-        registerPlayerDirection(MASTER_ID, direction);
+        registerPlayerDirection(masterId, direction);
     }
 
     public void gameOver(int playerId){

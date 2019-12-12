@@ -34,9 +34,11 @@ public class ClientGameModel {
 
     private GameState gameState;
 
-    private InetSocketAddress masterAddress;
+    private volatile InetSocketAddress masterAddress;
 
     private SnakesProto.Direction currentDirection;
+
+    private InetSocketAddress deputyAddress;
 
     private List<GameStateListener> gameStateListeners = new ArrayList<>();
 
@@ -146,5 +148,13 @@ public class ClientGameModel {
 
     public void clear(){
         scores.clear();
+    }
+
+    public InetSocketAddress getDeputyAddress() {
+        return deputyAddress;
+    }
+
+    public void setDeputyAddress(InetSocketAddress deputyAddress) {
+        this.deputyAddress = deputyAddress;
     }
 }

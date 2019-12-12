@@ -10,8 +10,6 @@ import nsu.manasyan.netsnake.gui.NetSnakeApp;
 import nsu.manasyan.netsnake.gui.SceneFactory;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.AnnouncementMsg;
 
-import java.util.ConcurrentModificationException;
-import java.util.List;
 import java.util.Map;
 
 public class AnnouncementsViewController {
@@ -33,8 +31,9 @@ public class AnnouncementsViewController {
 
         for(int i = 0; i < 12    ; ++i) {
             Button joinButton = new Button("Join");
+            int tmp = i;
             joinButton.setOnAction(ae -> {
-                System.out.println("COCO JUMBO");
+                System.out.println("COCO JUMBO " + tmp);
             });
 
             Label sizeLabel = new Label(
