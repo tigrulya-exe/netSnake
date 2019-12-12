@@ -101,6 +101,9 @@ public class Listener {
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
+        if(isFirstGamestate){
+            clientController.setStartConfigurations(message.getState().getState().getConfig(), address);
+        }
         clientController.setGameState(message.getState().getState());
         isFirstGamestate = false;
     }

@@ -67,6 +67,7 @@ public class GameViewController {
 
             for (int i = 0; i < scores.size(); i++) {
                 setScore(i, scores.get(i));
+                System.out.println(scores.get(i));
             }
         });
     }

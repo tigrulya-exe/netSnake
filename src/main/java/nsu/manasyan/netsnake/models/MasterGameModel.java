@@ -19,7 +19,7 @@ public class MasterGameModel {
 
     private Map<Integer, nsu.manasyan.netsnake.Wrappers.Snake> snakes = new ConcurrentHashMap<>();
 
-    private Map<Integer, Player> players = new HashMap<>();
+    private Map<Integer, Player> players = new ConcurrentHashMap<>();
 
     // key - id, value - isAlive
     private Map<Integer, Boolean> alivePlayers = new HashMap<>();
