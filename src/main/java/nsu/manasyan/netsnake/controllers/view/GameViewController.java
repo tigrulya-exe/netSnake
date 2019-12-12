@@ -112,12 +112,7 @@ public class GameViewController {
     }
 
     public void initFieldCanvas(SnakesProto.GameConfig gameConfig){
-//        Scene scene = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
-//        Canvas canvas = new Canvas();
-//        canvas = new Canvas();
         int cellSize = getCellSize(gameConfig.getWidth(), gameConfig.getHeight());
-//        canvas.setWidth(FIELD_BOX_SIDE);
-//        canvas.setHeight(FIELD_BOX_SIDE);
         Platform.runLater(() -> {
             canvas.setWidth(cellSize * gameConfig.getWidth());
             canvas.setHeight(cellSize * gameConfig.getHeight());
@@ -128,17 +123,13 @@ public class GameViewController {
             FieldCanvas fieldCanvas = new FieldCanvas(canvas, gameConfig.getHeight(), gameConfig.getWidth(), cellSize);
             NetSnakeApp.setFieldCanvas(fieldCanvas);
 
+            if(clientController.getState() == null)
+                return;
+
 //        ObjectDrawer.drawField(MainController.getInstance().getField());
             clientController.getFoods().forEach(ObjectDrawer::drawFood);
             clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
         });
-
-//        List<Node> children =  ((AnchorPane) scene.getRoot()).getChildren();
-//        VBox gameBox = (VBox) children.get(3);
-//        gameBox.getChildren().clear();
-//        gameBox.getChildren().add(canvas);
-//        fieldBox.setAlignment(Pos.CENTER);
-//        fieldBox.s
     }
 
     private int getCellSize(int width, int height){

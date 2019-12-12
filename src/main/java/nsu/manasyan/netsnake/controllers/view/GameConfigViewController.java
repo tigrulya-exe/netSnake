@@ -60,9 +60,7 @@ public class GameConfigViewController {
         clientController.startNewGame(config);
 
         Scene game = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
-//        initFieldCanvas(game, config);
         NetSnakeApp.getStage().setScene(game);
-
     }
 
     private SnakesProto.GameConfig initConfig(){

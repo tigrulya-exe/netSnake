@@ -58,7 +58,7 @@ public class NetworkControllerBridge {
 
     public void stopCurrentGame(){
         sender.stop();
-        listener.interrupt();
+//        listener.interrupt();
         clientController.stopCurrentGame();
     }
 

@@ -19,7 +19,7 @@ public class ClientController {
 
     private ClientGameModel model;
 
-    private MasterController masterController;
+    private MasterController masterController = MasterController.getInstance();
 
     private ErrorListener errorListener;
 
@@ -61,14 +61,20 @@ public class ClientController {
         model.setMasterAddress(address);
     }
 
+    public void startNewGame(GameConfig config) {
+        model.setCurrentConfig(config);
+        model.setPlayerId(MASTER_ID);
+
+        field = new Field(config.getHeight(), config.getWidth());
+        becomeMaster();
+    }
+
     public void becomeMaster() {
         model.setMasterAddress(null);
         model.setPlayerRole(NodeRole.MASTER);
-        GameConfig config = model.getCurrentConfig();
-        masterController = MasterController.getInstance();
         masterController.startGame(model, sender, field);
         sender.stop();
-        sender.setMasterTimer(config.getPingDelayMs());
+        sender.setMasterTimer(model.getCurrentConfig().getPingDelayMs());
     }
 
     public void restart() {
@@ -80,15 +86,6 @@ public class ClientController {
         } else
             joinGame(model.getMasterAddress(), false, model.getCurrentConfig());
     }
-
-    public void startNewGame(GameConfig config) {
-        model.setCurrentConfig(config);
-        model.setPlayerId(MASTER_ID);
-
-        field = new Field(config.getHeight(), config.getWidth());
-        becomeMaster();
-    }
-
 
     public GameConfig getConfig(){
         return model.getCurrentConfig();
@@ -117,13 +114,17 @@ public class ClientController {
         model.setDeputyAddress(null);
     }
 
+    public GameState getState(){
+        return model.getGameState();
+    }
+
     public void setRole(NodeRole role){
         model.setPlayerRole(role);
     }
 
     public void setGameState(GameState gameState){
-        if(gameState.getStateOrder() <= model.getGameState().getStateOrder())
-            return;
+//        if(gameState.getStateOrder() <= model.getGameState().getStateOrder())
+//            return;
         model.setGameState(gameState);
     }
 

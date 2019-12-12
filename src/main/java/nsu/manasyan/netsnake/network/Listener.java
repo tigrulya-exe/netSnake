@@ -61,6 +61,7 @@ public class Listener {
             try {
                 socket.joinGroup(multicastAddress);
                 while (!isInterrupted) {
+                    System.out.println("LIST");
                     socket.receive(packetToReceive);
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
 
@@ -73,12 +74,14 @@ public class Listener {
 //                    continue;
 //                }
 
+                    System.out.println("INTEr");
                     handlers.get(type).handle(message, (InetSocketAddress) packetToReceive.getSocketAddress());
                     packetToReceive.setLength(BUF_LENGTH);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
         });
     }
 
@@ -102,9 +105,9 @@ public class Listener {
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
-        if(isFirstGamestate){
-            clientController.setStartConfigurations(message.getState().getState().getConfig(), address);
-        }
+//        if(isFirstGamestate){
+//            clientController.setStartConfigurations(message.getState().getState().getConfig(), address);
+//        }
         clientController.setGameState(message.getState().getState());
         isFirstGamestate = false;
     }
