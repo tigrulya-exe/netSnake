@@ -68,7 +68,7 @@ public class ClientController {
         masterController = MasterController.getInstance();
         masterController.startGame(model, sender, field);
         sender.stop();
-        sender.setMasterTimer(config.getPingDelayMs());
+//        sender.setMasterTimer(config.getPingDelayMs());
     }
 
     public void restart() {
@@ -168,7 +168,7 @@ public class ClientController {
     public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameConfig config){
         model.setMasterAddress(masterAddress);
         sender.sendMessage(masterAddress, getJoinMessage(name, onlyView));
-        sender.setClientTimer(masterAddress, config.getPingDelayMs());
+//        sender.setClientTimer(masterAddress, config.getPingDelayMs());
         setStartConfigurations(config, masterAddress);
     }
 

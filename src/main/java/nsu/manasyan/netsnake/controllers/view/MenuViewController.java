@@ -35,7 +35,7 @@ public class MenuViewController {
         try {
             Scene gameSearch = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
 //            ClientController.getInstance().joinGame( new InetSocketAddress(InetAddress.getByName("192.168.0.102"), 9192), false, SnakesProto.GameConfig.getDefaultInstance());
-            ClientController.getInstance().joinGame( new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 9192), false, SnakesProto.GameConfig.getDefaultInstance());
+            ClientController.getInstance().joinGame( new InetSocketAddress(InetAddress.getByName("127.0.0.1"), 7777), false, SnakesProto.GameConfig.getDefaultInstance());
             NetSnakeApp.getStage().setScene(gameSearch);
         } catch (UnknownHostException e) {
             e.printStackTrace();
