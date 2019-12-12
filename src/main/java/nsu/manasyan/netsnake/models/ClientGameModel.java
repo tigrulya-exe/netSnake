@@ -77,7 +77,13 @@ public class ClientGameModel {
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
+        updateScores(gameState.getPlayers().getPlayersList());
         notifyAllGameStateListeners();
+    }
+
+    private void updateScores(List<SnakesProto.GamePlayer> playersList) {
+        scores.clear();
+        playersList.forEach(p -> addScore(p.getId(), p.getName(), p.getScore()));
     }
 
     public NodeRole getPlayerRole() {
@@ -163,13 +169,12 @@ public class ClientGameModel {
     }
 
     public void clear(){
-
         scores.clear();
-    }
-
-    public void clearListeners(){
         configListeners.clear();
         announcementListeners.clear();
+    }
+
+    public void clearGameStateListeners(){
         gameStateListeners.clear();
     }
 

@@ -82,6 +82,7 @@ public class MasterController{
             @Override
             public void run(){
                 newTurn();
+                System.out.println("NEW");
                 GameState gameState = model.getGameState();
                 GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
                 sender.broadcastMessage(stateMessage);
@@ -92,8 +93,8 @@ public class MasterController{
 
     public void addScore(int playerId, int newPoints){
         String playerName = masterGameModel.getPlayers().get(playerId).getName();
-        masterGameModel.getPlayers().get(playerId).setScore(newPoints);
-        model.addScore(playerId, playerName, newPoints);
+        masterGameModel.getPlayers().get(playerId).addScore(newPoints);
+//        model.addScore(playerId, playerName, newPoints);
     }
 
     public void newTurn() {

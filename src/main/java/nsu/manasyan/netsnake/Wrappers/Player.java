@@ -85,4 +85,8 @@ public class Player {
     public SnakesProto.NodeRole getRole() {
         return role;
     }
+
+    public void addScore(int newPoints) {
+        score += newPoints;
+    }
 }

@@ -84,7 +84,6 @@ public class GameViewController {
             scoreGrid.getChildren().clear();
             for (int i = 0; i < scores.size(); i++) {
                 setScore(i, scores.get(i));
-                System.out.println(scores.get(i));
             }
         });
     }
@@ -125,7 +124,6 @@ public class GameViewController {
 
             if(clientController.getState() == null)
                 return;
-
 //        ObjectDrawer.drawField(MainController.getInstance().getField());
             clientController.getFoods().forEach(ObjectDrawer::drawFood);
             clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
