@@ -163,6 +163,7 @@ public class ClientController {
         SnakePartManipulator.getInstance().setField(field);
         model.setMasterAddress(masterAddress);
         isFirstGameState = false;
+
     }
 
     public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameConfig config){
@@ -174,6 +175,10 @@ public class ClientController {
 
     public boolean isMasterAlive() {
         return isMasterAlive;
+    }
+
+    public void registerConfigListener(ClientGameModel.ConfigListener listener){
+        model.registerConfigListener(listener);
     }
 
     public void setMasterAlive(boolean masterAlive) {

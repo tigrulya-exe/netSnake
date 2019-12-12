@@ -22,6 +22,10 @@ public class ClientGameModel {
         void onUpdate(Map<AnnouncementMsg, AnnouncementContext> announcements);
     }
 
+    public interface ConfigListener{
+        void onUpdate(GameConfig config);
+    }
+
     private int playerId;
 
     private NodeRole playerRole;
@@ -45,6 +49,8 @@ public class ClientGameModel {
     // incapsulate it in announcement wrapper
     private List<AnnouncementListener> announcementListeners = new ArrayList<>();
 
+    private ConfigListener configListener;
+
     public ClientGameModel(){
 
     }
@@ -62,6 +68,7 @@ public class ClientGameModel {
 
     public void setCurrentConfig(GameConfig currentConfig) {
         this.currentConfig = currentConfig;
+        configListener.onUpdate(currentConfig);
     }
 
     public GameState getGameState() {
@@ -103,6 +110,10 @@ public class ClientGameModel {
 
     public void registerAnnouncementListener(AnnouncementListener announcementListener){
         announcementListeners.add(announcementListener);
+    }
+
+    public void registerConfigListener(ConfigListener listener){
+        configListener = listener;
     }
 
     public void notifyAllAnnouncementListeners(){
