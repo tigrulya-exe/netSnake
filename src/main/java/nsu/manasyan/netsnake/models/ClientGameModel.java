@@ -126,7 +126,8 @@ public class ClientGameModel {
 
     public void notifyAllGameStateListeners(){
         List<ScoreContext> scoresList = new ArrayList<>(scores.values());
-        scoresList.sort(Comparator.comparingInt(ScoreContext::getPoints));
+
+        scoresList.sort(Comparator.comparingInt(ScoreContext::getPoints).reversed());
         gameStateListeners.forEach(l -> l.onUpdate(scoresList));
     }
 

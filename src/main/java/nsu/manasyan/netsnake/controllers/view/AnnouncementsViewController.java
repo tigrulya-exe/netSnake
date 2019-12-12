@@ -29,24 +29,24 @@ public class AnnouncementsViewController {
     public void initialize() {
         clientController.registerAnnouncementListener(this::onAnnouncementsUpdate);
 
-        for(int i = 0; i < 12    ; ++i) {
-            Button joinButton = new Button("Join");
-            int tmp = i;
-            joinButton.setOnAction(ae -> {
-                System.out.println("COCO JUMBO " + tmp);
-            });
-
-            Label sizeLabel = new Label(
-                    "[" + 30 + " x " + 40 + "]"
-            );
-            Label addressLabel = new Label(
-                    "localhost:8080"
-            );
-
-            addLabel(sizeLabel, 0, i);
-            addLabel(addressLabel, 1, i);
-            announcementsGrid.add(joinButton, 2, i);
-        }
+//        for(int i = 0; i < 12    ; ++i) {
+//            Button joinButton = new Button("Join");
+//            int tmp = i;
+//            joinButton.setOnAction(ae -> {
+//                System.out.println("COCO JUMBO " + tmp);
+//            });
+//
+//            Label sizeLabel = new Label(
+//                    "[" + 30 + " x " + 40 + "]"
+//            );
+//            Label addressLabel = new Label(
+//                    "localhost:8080"
+//            );
+//
+//            addLabel(sizeLabel, 0, i);
+//            addLabel(addressLabel, 1, i);
+//            announcementsGrid.add(joinButton, 2, i);
+//        }
     }
 
     private void onAnnouncementsUpdate(Map<AnnouncementMsg, AnnouncementContext> announcements){

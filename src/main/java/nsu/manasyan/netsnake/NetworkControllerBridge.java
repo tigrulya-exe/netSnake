@@ -11,6 +11,7 @@ import nsu.manasyan.netsnake.util.ErrorListener;
 import nsu.manasyan.netsnake.util.GameExecutorService;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,11 +35,11 @@ public class NetworkControllerBridge {
 
 //        this.socket = new MulticastSocket(9192);
         this.socket = new MulticastSocket(7777);
-        this.sender = new Sender( socket, sentMessages);
+        this.sender = new Sender( socket, sentMessages, InetAddress.getByName("239.192.0.4"));
 //        this.multicastListener = new MulticastListener(socket, InetAddress.getByName("239.192.0.4"));
         this.clientController = ClientController.getInstance();
         clientController.setSender(sender);
-        this.listener = new Listener( sender, sentMessages, socket);
+        this.listener = new Listener( sender, sentMessages, socket, InetAddress.getByName("239.192.0.4"));
         listener.listen();
     }
 

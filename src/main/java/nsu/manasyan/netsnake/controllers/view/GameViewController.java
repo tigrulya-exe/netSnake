@@ -65,6 +65,7 @@ public class GameViewController {
             clientController.getFoods().forEach(ObjectDrawer::drawFood);
             clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
 
+            scoreGrid.getChildren().clear();
             for (int i = 0; i < scores.size(); i++) {
                 setScore(i, scores.get(i));
                 System.out.println(scores.get(i));
@@ -73,11 +74,10 @@ public class GameViewController {
     }
 
     public void setScore(int rank, ScoreContext score){
-        scoreGrid.getChildren().clear();
 
         Label rankLabel = new Label(Integer.toString(rank));
-        rankLabel.setUserData(score);
-        rankLabel.setOnMouseClicked(this::onTick);
+//        rankLabel.setUserData(score);
+//        rankLabel.setOnMouseClicked(this::onTick);
 
 //        setGridCell(new Label(Integer.toString(rank)), 0, rank );
         setGridCell(rankLabel, 0, rank );

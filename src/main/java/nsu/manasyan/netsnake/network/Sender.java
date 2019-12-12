@@ -8,6 +8,7 @@ import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -25,15 +26,16 @@ public class Sender {
 
     private MulticastSocket socket;
 
-    private int multicastPort;
+    private int multicastPort = 9192;
 
     private volatile boolean needToSendPing = true;
 
     private Timer timer;
 
-    public Sender( MulticastSocket socket, Map<Long, MessageContext> sentMessages) {
+    public Sender( MulticastSocket socket, Map<Long, MessageContext> sentMessages, InetAddress multicastAddress) {
         this.socket = socket;
         this.sentMessages = sentMessages;
+        this.multicastAddress = multicastAddress;
     }
 
     public void broadcastMessage(GameMessage message) {
@@ -62,9 +64,15 @@ public class Sender {
     //);
     }
 
-    public void broadcastAnnouncement(GameMessage.AnnouncementMsg announcementMsg) throws IOException {
-        byte[] buf = announcementMsg.toByteArray();
-        socket.send(new DatagramPacket(buf, buf.length,multicastAddress, multicastPort));
+    public void broadcastAnnouncement(GameMessage announcementMsg) {
+        try {
+            System.out.println("Announcement:");
+            byte[] buf = announcementMsg.toByteArray();
+            socket.send(new DatagramPacket(buf, buf.length,multicastAddress, multicastPort));
+        } catch (IOException e) {
+            System.out.println("Error broadcasting announcement");
+            e.printStackTrace();
+        }
     }
 
     public void sendMessage(InetSocketAddress receiverAddress, GameMessage message) {
@@ -87,32 +95,41 @@ public class Sender {
     public void setMasterTimer(int pingDelayMs){
         timer = new Timer();
 
-        TimerTask masterSendPing  = new TimerTask() {
+//        TimerTask masterSendPing  = new TimerTask() {
+//            @Override
+//            public void run() {
+//                if(!needToSendPing){
+//                    needToSendPing = true;
+//                    return;
+//                }
+//                GameMessage ping =  GameObjectBuilder.initPingMessage();
+//                broadcastMessage(ping);
+//            }
+//        };
+        GameMessage announcementMsg = GameObjectBuilder.getAnnouncementMessage();
+
+        TimerTask broadcastAnnouncement  = new TimerTask() {
             @Override
             public void run() {
-                if(!needToSendPing){
-                    needToSendPing = true;
-                    return;
-                }
-                GameMessage ping =  GameObjectBuilder.initPingMessage();
-                broadcastMessage(ping);
+                broadcastAnnouncement(announcementMsg);
             }
         };
 
-        TimerTask checkMaster = new TimerTask() {
-            @Override
-            public void run() {
-                var clientController = ClientController.getInstance();
-                if(!clientController.isMasterAlive()){
-                    clientController.changeMaster();
-                    return;
-                }
+//        TimerTask checkMaster = new TimerTask() {
+//            @Override
+//            public void run() {
+//                var clientController = ClientController.getInstance();
+//                if(!clientController.isMasterAlive()){
+//                    clientController.changeMaster();
+//                    return;
+//                }
+//
+//                clientController.setMasterAlive(false);
+//            }
+//        };
 
-                clientController.setMasterAlive(false);
-            }
-        };
-
-        timer.schedule(masterSendPing, pingDelayMs, pingDelayMs);
+//        timer.schedule(broadcastAnnouncement, pingDelayMs, pingDelayMs);
+        timer.schedule(broadcastAnnouncement, 1000, 1000);
     }
 
     public void stop(){

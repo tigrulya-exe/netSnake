@@ -1,10 +1,13 @@
 package nsu.manasyan.netsnake.util;
 
 import nsu.manasyan.netsnake.Wrappers.Player;
+import nsu.manasyan.netsnake.controllers.ClientController;
+import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
+import javax.swing.event.CaretListener;
 import java.util.*;
 
 public class GameObjectBuilder {
@@ -120,6 +123,25 @@ public class GameObjectBuilder {
         return GameMessage.newBuilder()
                 .setState(stateMsg)
                 .setMsgSeq(currentGameMsgSeq++)
+                .build();
+    }
+
+    public static GameMessage getAnnouncementMessage(){
+        GameMessage.AnnouncementMsg announcementMsg = getAnnouncement();
+
+        return GameMessage.newBuilder()
+                .setAnnouncement(announcementMsg)
+                .setMsgSeq(currentGameMsgSeq++)
+                .build();
+    }
+
+    private static GameMessage.AnnouncementMsg getAnnouncement() {
+        GameState gameState = MasterController.getInstance().getGameState();
+
+        return GameMessage.AnnouncementMsg.newBuilder()
+                .setCanJoin(true)
+                .setConfig(gameState.getConfig())
+                .setPlayers(gameState.getPlayers())
                 .build();
     }
 

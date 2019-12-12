@@ -68,7 +68,7 @@ public class ClientController {
         masterController = MasterController.getInstance();
         masterController.startGame(model, sender, field);
         sender.stop();
-//        sender.setMasterTimer(config.getPingDelayMs());
+        sender.setMasterTimer(config.getPingDelayMs());
     }
 
     public void restart() {
@@ -128,6 +128,7 @@ public class ClientController {
     public List<GameState.Coord> getFoods(){
         return model.getGameState().getFoodsList();
     }
+
 
     public void registerGameStateListener(ClientGameModel.GameStateListener listener){
         model.registerGameStateListener(listener);

@@ -184,6 +184,10 @@ public class MasterController{
         setPlayerAsViewer(playerId);
     }
 
+    public GameState getGameState(){
+        return model.getGameState();
+    }
+
     public Field getField(){
         return field;
     }

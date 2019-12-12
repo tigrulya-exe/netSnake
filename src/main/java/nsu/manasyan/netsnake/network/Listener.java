@@ -7,9 +7,7 @@ import nsu.manasyan.netsnake.util.GameExecutorService;
 import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
+import java.net.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +33,9 @@ public class Listener {
 
     private Sender sender;
 
-    private DatagramSocket socket;
+    private MulticastSocket socket;
+
+    private InetAddress multicastAddress;
 
     private volatile boolean isInterrupted = false;
 
@@ -43,8 +43,8 @@ public class Listener {
 
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
-    public Listener( Sender sender, Map<Long, MessageContext> sentMessages, DatagramSocket socket) {
-//        this.controller = controller;
+    public Listener( Sender sender, Map<Long, MessageContext> sentMessages, MulticastSocket socket, InetAddress multicastAddress) {
+        this.multicastAddress = multicastAddress;
         this.sender = sender;
         this.sentMessages = sentMessages;
         this.socket = socket;
@@ -59,6 +59,7 @@ public class Listener {
             DatagramPacket packetToReceive = new DatagramPacket(receiveBuf, BUF_LENGTH);
             isInterrupted = false;
             try {
+                socket.joinGroup(multicastAddress);
                 while (!isInterrupted) {
                     socket.receive(packetToReceive);
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
