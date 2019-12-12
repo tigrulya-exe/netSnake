@@ -32,7 +32,7 @@ public class ClientGameModel {
 
     private Map<Integer, ScoreContext> scores = new TreeMap<>();
 
-    private Map<AnnouncementMsg, AnnouncementContext> availableGames = new ConcurrentHashMap<>();
+    private Map<AnnouncementMsg, AnnouncementContext> availableGames = new HashMap<>();
 
     private GameConfig currentConfig;
 
@@ -47,7 +47,7 @@ public class ClientGameModel {
     private List<GameStateListener> gameStateListeners = new ArrayList<>();
 
     // incapsulate it in announcement wrapper
-    private List<AnnouncementListener> announcementListeners = new ArrayList<>();
+    private volatile List<AnnouncementListener> announcementListeners = new ArrayList<>();
 
     private List<ConfigListener> configListeners = new ArrayList<>();
 

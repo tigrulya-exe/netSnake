@@ -76,19 +76,11 @@ public class GameViewController {
     public void setScore(int rank, ScoreContext score){
 
         Label rankLabel = new Label(Integer.toString(rank));
-//        rankLabel.setUserData(score);
-//        rankLabel.setOnMouseClicked(this::onTick);
-
-//        setGridCell(new Label(Integer.toString(rank)), 0, rank );
         setGridCell(rankLabel, 0, rank );
         setGridCell(new Label(score.getPlayerName()), 1, rank );
         setGridCell(new Label(Integer.toString(score.getPoints())), 2, rank );
     }
 
-    public void onTick(MouseEvent event){
-        Node source = (Node)event.getSource();
-        System.out.println(((ScoreContext)source.getUserData()).getPoints());
-    }
 
     private void stopGame(){
         NetSnakeApp.getNetworkControllerBridge().stopCurrentGame();

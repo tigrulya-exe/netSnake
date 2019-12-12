@@ -164,10 +164,10 @@ public class ClientController {
         SnakePartManipulator.getInstance().setField(field);
         model.setMasterAddress(masterAddress);
         isFirstGameState = false;
-
     }
 
     public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameConfig config){
+        model.setCurrentConfig(config);
         model.setMasterAddress(masterAddress);
         sender.sendMessage(masterAddress, getJoinMessage(name, onlyView));
 //        sender.setClientTimer(masterAddress, config.getPingDelayMs());

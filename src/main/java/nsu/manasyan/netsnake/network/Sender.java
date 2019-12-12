@@ -8,7 +8,6 @@ import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.Arrays;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -68,7 +67,7 @@ public class Sender {
         try {
             System.out.println("Announcement:");
             byte[] buf = announcementMsg.toByteArray();
-            socket.send(new DatagramPacket(buf, buf.length,multicastAddress, multicastPort));
+            socket.send(new DatagramPacket(buf, buf.length, multicastAddress, multicastPort));
         } catch (IOException e) {
             System.out.println("Error broadcasting announcement");
             e.printStackTrace();

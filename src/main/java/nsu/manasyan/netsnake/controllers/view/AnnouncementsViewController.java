@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.controllers.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -50,12 +51,15 @@ public class AnnouncementsViewController {
     }
 
     private void onAnnouncementsUpdate(Map<AnnouncementMsg, AnnouncementContext> announcements){
-        announcementsGrid.getChildren().clear();
-        int i = 0;
+        Platform.runLater(() -> {
+            announcementsGrid.getChildren().clear();
+            int i = 0;
 
-        for (var entry : announcements.entrySet()) {
-            updateGrid(entry.getKey(), entry.getValue(), i++);
-        }
+            for (var entry : announcements.entrySet()) {
+                updateGrid(entry.getKey(), entry.getValue(), i++);
+            }
+        });
+
     }
 
     private void updateGrid(AnnouncementMsg announcement, AnnouncementContext context, int rank){

@@ -2,6 +2,7 @@ package nsu.manasyan.netsnake.gui;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import nsu.manasyan.netsnake.models.Field;
 
@@ -44,8 +45,8 @@ public class FieldCanvas {
         x = (x + fieldWidth) % fieldWidth;
         y = (y + fieldHeight) % fieldHeight;
 
-//        if (color == Color.CORNSILK)
-//            context.drawImage(new Image(ObjectDrawer.class.getResourceAsStream("/1.png")), x * squareSize, y  * squareSize);
+//        if (color == Color.RED)
+//            context.drawImage(new Image(ObjectDrawer.class.getResourceAsStream("/snake.png")), x * squareSize, y  * squareSize);
 
 
         context.fillRect(x * squareSize, y  * squareSize, squareSize, squareSize);
