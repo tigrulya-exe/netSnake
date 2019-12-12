@@ -73,6 +73,7 @@ public class MasterGameModel {
 
     private void initMaster(){
         players.put(MASTER_ID, GameObjectBuilder.initMaster());
+        players.get(MASTER_ID).setId(MASTER_ID);
 //        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, field));
         //for master
         snakes.put(MASTER_ID, new nsu.manasyan.netsnake.Wrappers.Snake(MASTER_ID));

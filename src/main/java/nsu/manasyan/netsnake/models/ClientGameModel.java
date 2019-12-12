@@ -52,7 +52,7 @@ public class ClientGameModel {
     private List<ConfigListener> configListeners = new ArrayList<>();
 
     public ClientGameModel(){
-
+        playerId = -1;
     }
 
     public ClientGameModel(int playerId, GameConfig currentConfig, GameState gameState, NodeRole playerRole) {
@@ -169,6 +169,7 @@ public class ClientGameModel {
     }
 
     public void clear(){
+        playerId = -1;
         scores.clear();
         configListeners.clear();
         announcementListeners.clear();

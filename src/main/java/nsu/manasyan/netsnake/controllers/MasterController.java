@@ -135,6 +135,10 @@ public class MasterController{
                 field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
 
+    public int getAvailablePlayerId(){
+        return availablePlayerId++;
+    }
+
     public void addPlayer(Player player){
         player.setId(availablePlayerId++);
         masterGameModel.getPlayers().put(player.getId(), player);

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.*;
+import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 public class Listener {
     private interface Handler{
@@ -39,7 +40,7 @@ public class Listener {
 
     private volatile boolean isInterrupted = false;
 
-    private boolean isFirstGamestate = true;
+    private volatile boolean isJoinAck = true;
 
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
@@ -61,20 +62,16 @@ public class Listener {
             try {
                 socket.joinGroup(multicastAddress);
                 while (!isInterrupted) {
-                    System.out.println("LIST");
                     socket.receive(packetToReceive);
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
 
-                    System.out.println("Received: ");
-                    System.out.println(message);
-
                     type = message.getTypeCase();
+                    System.out.println("Received type: " + type);
 
 //                if(checkIsDuplicate(type, message.getGUID())){
 //                    continue;
 //                }
 
-                    System.out.println("INTEr");
                     handlers.get(type).handle(message, (InetSocketAddress) packetToReceive.getSocketAddress());
                     packetToReceive.setLength(BUF_LENGTH);
                 }
@@ -89,30 +86,32 @@ public class Listener {
         isInterrupted = true;
     }
 
+    public void reload(){
+        isJoinAck = true;
+    }
+
     private void handleJoinPlay(GameMessage message, InetSocketAddress address){
         JoinMsg joinMsg = message.getJoin();
         NodeRole role = (!joinMsg.hasOnlyView() || !joinMsg.getOnlyView()) ? NodeRole.NORMAL : NodeRole.VIEWER;
-
-        // todo
-//        Player player = new Player(joinMsg.getName(), message.getSenderId(),
-//                address.getHostName(), address.getPort(), role, 0);
-
-        Player player = new Player(joinMsg.getName(), 1,
+        Player player = new Player(joinMsg.getName(),
                 address.getHostName(), address.getPort(), role, 0);
         System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
         masterController.addPlayer(player);
+        sender.sendMessage(address,
+                GameObjectBuilder.getAckMsg(clientController.getPlayerId(), masterController.getAvailablePlayerId())
+        );
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
-//        if(isFirstGamestate){
-//            clientController.setStartConfigurations(message.getState().getState().getConfig(), address);
-//        }
         clientController.setGameState(message.getState().getState());
-        isFirstGamestate = false;
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){
+        if(isJoinAck) {
+            clientController.setPlayerId(message.getReceiverId());
+            isJoinAck = false;
+        }
         sentMessages.remove(message.getMsgSeq());
     }
 
@@ -163,8 +162,6 @@ public class Listener {
         handlers.put(TypeCase.ANNOUNCEMENT, this::handleAnnouncement);
         handlers.put(TypeCase.ROLE_CHANGE, this::handleRoleChange);
     }
-
-
 
 //    private boolean checkIsDuplicate(MessageType messageType, String GUID){
 //        if(messageType == MessageType.MESSAGE || messageType == MessageType.HELLO) {

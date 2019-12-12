@@ -30,7 +30,7 @@ public class GameObjectBuilder {
     }
 
     public static Player initMaster() {
-        return new Player(name, DEFAULT_MASTER_ID, DEFAULT_MASTER_ADDRESS_STR, port, NodeRole.MASTER, 0);
+        return new Player(name, DEFAULT_MASTER_ADDRESS_STR, port, NodeRole.MASTER, 0);
     }
 
     public static List<GameState.Coord> initNewFoods(GameConfig config, Field field){
@@ -144,6 +144,17 @@ public class GameObjectBuilder {
                 .setPlayers(gameState.getPlayers())
                 .build();
     }
+
+    public static GameMessage getAckMsg(int senderId, int receiverId){
+        GameMessage.AckMsg ack =  GameMessage.AckMsg.newBuilder().build();
+
+        return GameMessage.newBuilder()
+                .setAck(ack)
+                .setSenderId(senderId)
+                .setReceiverId(receiverId)
+                .build();
+    }
+
 
     public static GameMessage getSteerMessage(Direction direction, int playerId){
         GameMessage.SteerMsg steerMsg = GameMessage.SteerMsg.newBuilder()

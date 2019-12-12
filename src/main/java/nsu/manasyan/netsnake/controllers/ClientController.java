@@ -153,7 +153,14 @@ public class ClientController {
         model.registerAnnouncementListener(announcementListener);
     }
 
+    public int getPlayerId(){
+        return model.getPlayerId();
+    }
+
     public void registerDirection(Direction direction){
+        if(model.getPlayerId() == -1)
+            return;
+
         if(!isCorrectDirection(direction))
             return;
 
