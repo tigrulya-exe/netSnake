@@ -89,8 +89,14 @@ public class ClientController {
         becomeMaster();
     }
 
+
+    public GameConfig getConfig(){
+        return model.getCurrentConfig();
+    }
+
     public void stopCurrentGame() {
         model.clear();
+        model.clearListeners();
 
         if (model.getPlayerRole() == NodeRole.MASTER) {
             masterController.stopCurrentGame();

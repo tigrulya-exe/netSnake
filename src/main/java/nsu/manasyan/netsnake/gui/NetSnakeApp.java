@@ -1,20 +1,29 @@
 package nsu.manasyan.netsnake.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import nsu.manasyan.netsnake.NetworkControllerBridge;
+import nsu.manasyan.netsnake.controllers.ClientController;
+import nsu.manasyan.netsnake.proto.SnakesProto;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
 
 public class NetSnakeApp extends Application {
+
 
     private static NetworkControllerBridge networkControllerBridge;
 

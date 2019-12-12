@@ -163,7 +163,14 @@ public class ClientGameModel {
     }
 
     public void clear(){
+
         scores.clear();
+    }
+
+    public void clearListeners(){
+        configListeners.clear();
+        announcementListeners.clear();
+        gameStateListeners.clear();
     }
 
     public InetSocketAddress getDeputyAddress() {

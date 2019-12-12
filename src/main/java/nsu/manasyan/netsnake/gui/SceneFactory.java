@@ -14,6 +14,10 @@ import java.util.Map;
 
 public class SceneFactory {
 
+    private interface SceneCreator{
+        Scene create();
+    }
+
     private static final String MENU_PATH = "/menu.fxml";
 
     private static final String NEW_GAME_SETTINGS_PATH = "/gameConfig.fxml";
@@ -29,14 +33,10 @@ public class SceneFactory {
         GAME_SEARCH
     }
 
-    private static Map<SceneType, Scene> scenes = new HashMap<>();
+    private static Map<SceneType, SceneCreator> sceneCreators = new HashMap<>();
 
     private SceneFactory(){
-        try {
-            initSceneTypes();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        initSceneTypes();
     }
 
     private static class SingletonHelper{
@@ -48,30 +48,39 @@ public class SceneFactory {
     }
 
     public Scene getScene(SceneType sceneType){
-        return scenes.get(sceneType);
+        return sceneCreators.get(sceneType).create();
     }
 
-    private void initSceneTypes() throws IOException {
-        scenes.put(SceneType.MENU, initSceneType(MENU_PATH));
-        scenes.put(SceneType.GAME_SEARCH, initSceneType(GAME_SEARCH_PATH));
-        scenes.put(SceneType.NEW_GAME_SETTINGS, initSceneType(NEW_GAME_SETTINGS_PATH));
-        scenes.put(SceneType.GAME, initGameScene());
+    private void initSceneTypes() {
+        sceneCreators.put(SceneType.MENU, () -> initSceneType(MENU_PATH));
+        sceneCreators.put(SceneType.GAME_SEARCH, () -> initSceneType(GAME_SEARCH_PATH));
+        sceneCreators.put(SceneType.NEW_GAME_SETTINGS, () -> initSceneType(NEW_GAME_SETTINGS_PATH));
+        sceneCreators.put(SceneType.GAME, this::initGameScene);
     }
 
+    private Scene createScene(String path) throws IOException {
+        return initSceneType(path);
+    }
 
-    private Scene initSceneType(String path) throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setController(null);
-        loader.setRoot(null);
+    private Scene initSceneType(String path){
+        Parent root = null;
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setController(null);
+            loader.setRoot(null);
 
-        URL xmlUrl = getClass().getResource(path);
-        loader.setLocation(xmlUrl);
-        Parent root = loader.load();
+            URL xmlUrl = getClass().getResource(path);
+            loader.setLocation(xmlUrl);
+            root = loader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return new Scene(root);
     }
 
-    private Scene initGameScene() throws IOException {
+    private Scene initGameScene() {
         Scene scene = initSceneType(GAME_PATH);
+
         scene.setOnKeyPressed((ke) -> {
             SnakesProto.Direction direction;
             if ((direction = getDirection(ke.getCode())) != null)

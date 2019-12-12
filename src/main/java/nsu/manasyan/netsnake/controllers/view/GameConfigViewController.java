@@ -56,17 +56,13 @@ public class GameConfigViewController {
     }
 
     public void startClicked(){
-        int fieldWidth = getInt(width.getText());
-        int fieldHeight = getInt(height.getText());
-
-        clientController.startNewGame(initConfig());
+        SnakesProto.GameConfig config = initConfig();
+        clientController.startNewGame(config);
 
         Scene game = SceneFactory.getInstance().getScene(SceneFactory.SceneType.GAME);
-//        initFieldCanvas(game, fieldWidth, fieldHeight);
+//        initFieldCanvas(game, config);
         NetSnakeApp.getStage().setScene(game);
-        clientController.registerConfigListener(c ->
-            Platform.runLater(() -> initFieldCanvas(game, c))
-        );
+
     }
 
     private SnakesProto.GameConfig initConfig(){
@@ -81,39 +77,39 @@ public class GameConfigViewController {
                 .setNodeTimeoutMs(getInt(nodeTimeoutMs.getText()))
                 .build();
     }
-
-
-    private void initFieldCanvas(Scene scene, SnakesProto.GameConfig gameConfig){
-
-        Canvas canvas = new Canvas();
-        canvas.setWidth(600);
-        canvas.setHeight(600);
-
-        FieldCanvas fieldCanvas = new FieldCanvas(canvas, gameConfig.getHeight(), gameConfig.getWidth(), getCellSize());
-
-        NetSnakeApp.setFieldCanvas(fieldCanvas);
-
-//        ObjectDrawer.drawField(MainController.getInstance().getField());
-        Platform.runLater(() -> {
-            clientController.getFoods().forEach(ObjectDrawer::drawFood);
-            clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
-        });
-
-        List<Node> children =  ((AnchorPane) scene.getRoot()).getChildren();
-        VBox gameBox = (VBox) children.get(3);
-        gameBox.getChildren().clear();
-        gameBox.getChildren().add(canvas);
-        gameBox.setAlignment(Pos.CENTER);
-
-    }
-
-    private int getCellSize(){
-        int tmpWidth = getInt(width.getText());
-        int tmpHeight = getInt(height.getText());
-
-        int min = (tmpWidth > tmpHeight) ? tmpWidth : tmpHeight;
-        return FIELD_BOX_WIDTH/min;
-    }
+//
+//
+//    private void initFieldCanvas(Scene scene, SnakesProto.GameConfig gameConfig){
+//
+//        Canvas canvas = new Canvas();
+//        canvas.setWidth(600);
+//        canvas.setHeight(600);
+//
+//        FieldCanvas fieldCanvas = new FieldCanvas(canvas, gameConfig.getHeight(), gameConfig.getWidth(), getCellSize());
+//
+//        NetSnakeApp.setFieldCanvas(fieldCanvas);
+//
+////        ObjectDrawer.drawField(MainController.getInstance().getField());
+//        Platform.runLater(() -> {
+//            clientController.getFoods().forEach(ObjectDrawer::drawFood);
+//            clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
+//        });
+//
+//        List<Node> children =  ((AnchorPane) scene.getRoot()).getChildren();
+//        VBox gameBox = (VBox) children.get(3);
+//        gameBox.getChildren().clear();
+//        gameBox.getChildren().add(canvas);
+//        gameBox.setAlignment(Pos.CENTER);
+//
+//    }
+//
+//    private int getCellSize(){
+//        int tmpWidth = getInt(width.getText());
+//        int tmpHeight = getInt(height.getText());
+//
+//        int min = (tmpWidth > tmpHeight) ? tmpWidth : tmpHeight;
+//        return FIELD_BOX_WIDTH/min;
+//    }
 
     private int getInt(String str){
         return Integer.parseInt(str);
