@@ -49,7 +49,7 @@ public class ClientGameModel {
     // incapsulate it in announcement wrapper
     private List<AnnouncementListener> announcementListeners = new ArrayList<>();
 
-    private ConfigListener configListener;
+    private List<ConfigListener> configListeners = new ArrayList<>();
 
     public ClientGameModel(){
 
@@ -68,7 +68,7 @@ public class ClientGameModel {
 
     public void setCurrentConfig(GameConfig currentConfig) {
         this.currentConfig = currentConfig;
-        configListener.onUpdate(currentConfig);
+        notifyAllConfigListeners();
     }
 
     public GameState getGameState() {
@@ -113,7 +113,11 @@ public class ClientGameModel {
     }
 
     public void registerConfigListener(ConfigListener listener){
-        configListener = listener;
+        configListeners.add(listener);
+    }
+
+    public void notifyAllConfigListeners(){
+        configListeners.forEach(l -> l.onUpdate(currentConfig));
     }
 
     public void notifyAllAnnouncementListeners(){
