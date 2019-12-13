@@ -34,6 +34,7 @@ public class MasterController{
 
     private int availablePlayerId = 1;
 
+
     private MasterController() {
         snakesController.setController(this);
     }
@@ -92,7 +93,6 @@ public class MasterController{
     }
 
     public void addScore(int playerId, int newPoints){
-        String playerName = masterGameModel.getPlayers().get(playerId).getName();
         masterGameModel.getPlayers().get(playerId).addScore(newPoints);
 //        model.addScore(playerId, playerName, newPoints);
     }
@@ -107,6 +107,8 @@ public class MasterController{
                 snake.setHeadDirection(direction);
             snakesController.moveSnake(snake);
         }
+
+        snakesController.checkSnakes(snakes.values());
 
         model.setGameState(masterGameModel.toGameState());
         generateFood();
@@ -183,7 +185,7 @@ public class MasterController{
 
         Snake deadSnake = masterGameModel.getSnakes().get(playerId);
         turnDeadSnakeIntoFood(deadSnake);
-        removeSnake(playerId);
+//        removeSnake(playerId);
 
         model.removeScore(playerId);
         setPlayerAsViewer(playerId);
@@ -230,4 +232,5 @@ public class MasterController{
         Map<Integer, Player> players = masterGameModel.getPlayers();
         players.get(playerId).setRole(NodeRole.VIEWER);
     }
+
 }

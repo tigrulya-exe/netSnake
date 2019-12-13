@@ -1,7 +1,6 @@
 package nsu.manasyan.netsnake.gui;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -87,7 +86,8 @@ public class NetSnakeApp extends Application {
         initGameClient();
 //        Scene scene = SceneFactory.getInstance().getScene(SceneFactory.SceneType.MENU);
         FXMLLoader loader = new FXMLLoader();
-        URL xmlUrl = getClass().getResource("/menu.fxml");
+//        URL xmlUrl = getClass().getResource("/menu.fxml");
+        URL xmlUrl = getClass().getResource("/login.fxml");
         loader.setLocation(xmlUrl);
         AnchorPane root = loader.load();
 

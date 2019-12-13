@@ -10,7 +10,6 @@ import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.AnnouncementMsg;
 
 import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientGameModel {
 
@@ -49,6 +48,8 @@ public class ClientGameModel {
     // incapsulate it in announcement wrapper
     private volatile List<AnnouncementListener> announcementListeners = new ArrayList<>();
 
+    private String playerName;
+
     private List<ConfigListener> configListeners = new ArrayList<>();
 
     public ClientGameModel(){
@@ -60,6 +61,14 @@ public class ClientGameModel {
         this.currentConfig = currentConfig;
         this.gameState = gameState;
         this.playerRole =  playerRole;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
     }
 
     public GameConfig getCurrentConfig() {
@@ -83,7 +92,11 @@ public class ClientGameModel {
 
     private void updateScores(List<SnakesProto.GamePlayer> playersList) {
         scores.clear();
-        playersList.forEach(p -> addScore(p.getId(), p.getName(), p.getScore()));
+        playersList.forEach(p -> {
+            if (p.getRole() != NodeRole.VIEWER) {
+                addScore(p.getId(), p.getName(), p.getScore());
+            }
+        });
     }
 
     public NodeRole getPlayerRole() {

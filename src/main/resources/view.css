@@ -84,6 +84,11 @@ anchor-pane :focused .table-row-cell:filled:focused:selected {
     -fx-font-family: "Segoe UI Semibold";
 }
 
+.login-text-field {
+    -fx-font-size: 18pt;
+    -fx-font-family: "Segoe UI Semibold";
+}
+
 /*
  * Push Button в стиле Metro
  * Автор: Pedro Duque Vieira

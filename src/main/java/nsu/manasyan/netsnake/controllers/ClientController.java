@@ -25,8 +25,6 @@ public class ClientController {
 
     private Sender sender;
 
-    private String name = "TIGRULYA";
-
     private Field field;
 
     private boolean isFirstGameState = true;
@@ -75,6 +73,14 @@ public class ClientController {
         masterController.startGame(model, sender, field);
         sender.stop();
         sender.setMasterTimer(model.getCurrentConfig().getPingDelayMs());
+    }
+
+    public String getPlayerName(){
+        return model.getPlayerName();
+    }
+
+    public void setPlayerName(String playerName){
+        model.setPlayerName(playerName);
     }
 
     public void restart() {
@@ -183,7 +189,7 @@ public class ClientController {
     public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameConfig config){
         model.setCurrentConfig(config);
         model.setMasterAddress(masterAddress);
-        sender.sendMessage(masterAddress, getJoinMessage(name, onlyView));
+        sender.sendMessage(masterAddress, getJoinMessage(getPlayerName(), onlyView));
 //        sender.setClientTimer(masterAddress, config.getPingDelayMs());
         setStartConfigurations(config, masterAddress);
     }
