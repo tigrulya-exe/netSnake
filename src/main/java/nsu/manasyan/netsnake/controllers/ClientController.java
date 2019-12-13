@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.Wrappers.FullPoints;
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.models.Field;
@@ -9,6 +10,7 @@ import nsu.manasyan.netsnake.util.ErrorListener;
 import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +37,7 @@ public class ClientController {
 
         private static final ClientController controller = new ClientController();
     }
+
     private ClientController() {
         model = new ClientGameModel();
     }
@@ -73,6 +76,10 @@ public class ClientController {
         masterController.startGame(model, sender, field);
         sender.stop();
         sender.setMasterTimer(model.getCurrentConfig().getPingDelayMs());
+    }
+
+    public List<FullPoints> getFullPoints() {
+        return model.getFullPoints();
     }
 
     public String getPlayerName(){

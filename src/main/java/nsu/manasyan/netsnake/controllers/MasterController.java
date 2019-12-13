@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.Wrappers.FullPoints;
 import nsu.manasyan.netsnake.Wrappers.Player;
 import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.models.Field;
@@ -107,12 +108,21 @@ public class MasterController{
                 snake.setHeadDirection(direction);
             snakesController.moveSnake(snake);
         }
-
-        snakesController.checkSnakes(snakes.values());
+        updateFullPoints(snakes.values());
+        snakesController.checkSnakes(snakes.values(), model.getFullPoints());
 
         model.setGameState(masterGameModel.toGameState());
         generateFood();
         updateField();
+    }
+
+    private void updateFullPoints(Collection<Snake> snakes) {
+        List<FullPoints> fullPoints = model.getFullPoints();
+        int height = field.getHeight();
+        int width = field.getWidth();
+
+        fullPoints.clear();
+        snakes.forEach(s -> fullPoints.add(new FullPoints(s, height, width)));
     }
 
     private void generateFood() {

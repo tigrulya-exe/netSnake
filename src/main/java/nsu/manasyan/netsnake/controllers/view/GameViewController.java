@@ -77,10 +77,8 @@ public class GameViewController {
         Platform.runLater(() -> {
             FieldCanvas fieldCanvas = NetSnakeApp.getFieldCanvas();
             fieldCanvas.flush();
-//            ObjectDrawer.drawField(MainController.getInstance().getField());
             clientController.getFoods().forEach(ObjectDrawer::drawFood);
-            clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
-
+            clientController.getFullPoints().forEach(ObjectDrawer::drawSnake);
             scoreGrid.getChildren().clear();
             for (int i = 0; i < scores.size(); i++) {
                 setScore(i, scores.get(i));
@@ -126,7 +124,8 @@ public class GameViewController {
                 return;
 //        ObjectDrawer.drawField(MainController.getInstance().getField());
             clientController.getFoods().forEach(ObjectDrawer::drawFood);
-            clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
+//            clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
+            clientController.getFullPoints().forEach(ObjectDrawer::drawSnake);
         });
     }
 

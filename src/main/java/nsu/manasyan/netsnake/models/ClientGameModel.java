@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.models;
 
+import nsu.manasyan.netsnake.Wrappers.FullPoints;
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.contexts.ScoreContext;
 import nsu.manasyan.netsnake.proto.SnakesProto;
@@ -67,6 +68,9 @@ public class ClientGameModel {
         return playerName;
     }
 
+    private List<FullPoints> fullPoints = new ArrayList<>();
+
+
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }
@@ -97,6 +101,10 @@ public class ClientGameModel {
                 addScore(p.getId(), p.getName(), p.getScore());
             }
         });
+    }
+
+    public List<FullPoints> getFullPoints() {
+        return fullPoints;
     }
 
     public NodeRole getPlayerRole() {

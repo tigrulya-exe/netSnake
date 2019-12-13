@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake.controllers;
 
+import nsu.manasyan.netsnake.Wrappers.FullPoints;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto;
@@ -85,7 +86,8 @@ public class SnakesController {
         int coordsSize = points.size();
         Coord oldTale = points.get(coordsSize - 1);
 
-        field.updateField(oldTale.getX(), oldTale.getY(), FREE);
+        System.out.println(snake.getPoints());
+//        field.updateField(oldTale.getX(), oldTale.getY(), FREE);
         int tailX = getNewTailOffset(oldTale.getX());
         int tailY = getNewTailOffset(oldTale.getY());
 
@@ -156,82 +158,38 @@ public class SnakesController {
         }
     }
 
-    public void checkSnakes(Collection<Snake> snakes) {
-        ArrayList<Snake> otherSnakes = new ArrayList<>(snakes);
+    public void checkSnakes(Collection<Snake> snakes, Collection<FullPoints> fullPoints) {
 
         for (var iter = snakes.iterator(); iter.hasNext(); ) {
             Snake snake = iter.next();
-            otherSnakes.remove(snake);
-            if(snakeBytesSnake(snake, otherSnakes)) {
-                controller.gameOver(snake.getPlayerId());
+            if(checkSnake(snake, fullPoints))
                 snakes.remove(snake);
-                continue;
-            }
-            otherSnakes.add(snake);
         }
     }
 
-    private boolean snakeBytesSnake(Snake snake, Collection<Snake> otherSnakes){
-        currentSnakeHead = snake.getPoints().get(HEAD_INDEX);
-        isCurrentSnakeDead = false;
-
-        System.out.println("HEAD - [ " + currentSnakeHead.getX() + " , " + currentSnakeHead.getY() + " ]");
-        for (var iter = otherSnakes.iterator(); iter.hasNext(); ) {
-            Snake otherSnake = iter.next();
-            var otherSnakePoints = otherSnake.getPoints();
-
-            SnakePartManipulator.getInstance().useSnakeCoords(otherSnakePoints, this::containsHead);
-            if(isCurrentSnakeDead){
+    private boolean checkSnake(Snake snake, Collection<FullPoints> fullPointsList){
+        Coord head = snake.getPoints().get(0);
+        for (var iter = fullPointsList.iterator(); iter.hasNext(); ) {
+            var fullPoints = iter.next();
+            if(snake.getPlayerId() == fullPoints.getId()) {
+                if (checkSelf(head, fullPoints.getFullPoints())) {
+                    controller.gameOver(snake.getPlayerId());
+                    fullPointsList.remove(fullPoints);
+                    return true;
+                }
+                break;
+            }
+            if(fullPoints.getFullPoints().contains(head)) {
+                controller.gameOver(snake.getPlayerId());
+                fullPointsList.remove(fullPoints);
                 return true;
             }
-
-//            if(otherSnake.getPoints().contains(head)){
-//                return true;
-//            }
         }
-        ArrayList<Coord> otherPoints = new ArrayList<>(snake.getPoints());
-        Coord secondCoord = otherPoints.get(1);
-        Coord newSecondCoord = getCoord(field.wrapX(currentSnakeHead.getX() + secondCoord.getX()),
-                field.wrapY(currentSnakeHead.getY() + secondCoord.getY()));
-        otherPoints.set(1, newSecondCoord);
 
-        SnakePartManipulator.getInstance().useSnakeCoords(otherPoints.subList(1, otherPoints.size()), this::containsHead);
-
-        return isCurrentSnakeDead;
+        return false;
     }
 
-
-    private void containsHead(int from, int to, int constant, boolean isVertical){
-        if(isVertical)
-            containsVertically(from, to, constant);
-        else
-            containsHorizontally(from, to, constant);
+    private boolean checkSelf(Coord head, List<Coord> fullPoints){
+        return Collections.frequency(fullPoints, head) > 1;
     }
-
-    private void containsVertically(int yFrom, int yTo, int x){
-        int min = (yFrom < yTo) ? yFrom : yTo;
-        int max = (yFrom > yTo) ? yFrom : yTo;
-
-        for(int y = min; y < max; ++y){
-            System.out.println("[X: " + x + " , Y: " + y +"]");
-            if(currentSnakeHead.getY() == field.wrapY(y) && currentSnakeHead.getX() == x){
-                isCurrentSnakeDead = true;
-                return;
-            }
-        }
-    }
-
-    private void containsHorizontally(int xFrom, int xTo, int y){
-        int min = (xFrom < xTo) ? xFrom : xTo;
-        int max = (xFrom > xTo) ? xFrom : xTo;
-
-        for(int x = min; x <= max; ++x){
-            System.out.println("[X: " + x + " , Y: " + y +"]");
-            if(currentSnakeHead.getX() == field.wrapX(x) && currentSnakeHead.getY() == y){
-                isCurrentSnakeDead = true;
-                return;
-            }
-        }
-    }
-
 }

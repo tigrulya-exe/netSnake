@@ -1,6 +1,5 @@
 package nsu.manasyan.netsnake.util;
 
-import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Coord;
@@ -90,12 +89,12 @@ public class SnakePartManipulator {
     }
 
     private void horizontalPass(int fromZeroTo, int fromToWidth, int y){
-        snakeManipulator.manipulate(fromToWidth, field.getWidth(), y, false);
+        snakeManipulator.manipulate(fromToWidth, field.getWidth() - 1, y, false);
         snakeManipulator.manipulate(0, fromZeroTo, y, false);
     }
 
     private void verticalPass(int fromZeroTo, int fromToHeight, int x){
-        snakeManipulator.manipulate( fromToHeight, field.getHeight(), x, true);
+        snakeManipulator.manipulate( fromToHeight, field.getHeight() - 1, x, true);
         snakeManipulator.manipulate(0, fromZeroTo, x, true);
     }
 
