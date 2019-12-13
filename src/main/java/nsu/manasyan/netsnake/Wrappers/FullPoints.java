@@ -29,7 +29,7 @@ public class FullPoints {
         manipulator.useSnakeCoords(keyPoints, this::addCoords);
         fullPoints.remove(keyPoints.get(0));
         fullPoints.add(keyPoints.get(0));
-        System.out.println(toString());
+//        System.out.println(toString());
     }
 
     private void addCoords(int from, int to, int constCoord, boolean isVertical){

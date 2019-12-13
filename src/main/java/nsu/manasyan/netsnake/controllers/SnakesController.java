@@ -86,7 +86,7 @@ public class SnakesController {
         int coordsSize = points.size();
         Coord oldTale = points.get(coordsSize - 1);
 
-        System.out.println(snake.getPoints());
+//        System.out.println(snake.getPoints());
 //        field.updateField(oldTale.getX(), oldTale.getY(), FREE);
         int tailX = getNewTailOffset(oldTale.getX());
         int tailY = getNewTailOffset(oldTale.getY());
