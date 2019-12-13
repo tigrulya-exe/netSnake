@@ -11,6 +11,7 @@ import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.AnnouncementMsg;
 
 import java.net.InetSocketAddress;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientGameModel {
 
@@ -68,7 +69,7 @@ public class ClientGameModel {
         return playerName;
     }
 
-    private List<FullPoints> fullPoints = new ArrayList<>();
+    private List<FullPoints> fullPoints = new CopyOnWriteArrayList<>();
 
 
     public void setPlayerName(String playerName) {
