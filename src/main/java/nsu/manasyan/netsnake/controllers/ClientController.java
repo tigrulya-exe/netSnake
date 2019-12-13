@@ -1,6 +1,7 @@
 package nsu.manasyan.netsnake.controllers;
 
 import nsu.manasyan.netsnake.Wrappers.FullPoints;
+import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.models.Field;
@@ -11,6 +12,7 @@ import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +34,19 @@ public class ClientController {
     private boolean isFirstGameState = true;
 
     private volatile boolean isMasterAlive = true;
+
+    public void updateAllFullPoints(){
+        updateFullPoints(model.getGameState().getSnakesList());
+    }
+
+    private void updateFullPoints(Collection<GameState.Snake> snakes) {
+        List<FullPoints> fullPoints = getFullPoints();
+        int height = field.getHeight();
+        int width = field.getWidth();
+
+        fullPoints.clear();
+        snakes.forEach(s -> fullPoints.add(new FullPoints(s.getPointsList(), s.getPlayerId(), height, width)));
+    }
 
     private static class SingletonHelper{
 

@@ -105,6 +105,7 @@ public class Listener {
 
     private void handleState(GameMessage message, InetSocketAddress address){
         clientController.setGameState(message.getState().getState());
+        clientController.updateAllFullPoints();
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){

@@ -122,7 +122,7 @@ public class MasterController{
         int width = field.getWidth();
 
         fullPoints.clear();
-        snakes.forEach(s -> fullPoints.add(new FullPoints(s, height, width)));
+        snakes.forEach(s -> fullPoints.add(new FullPoints(s.getPoints(), s.getPlayerId(), height, width)));
     }
 
     private void generateFood() {

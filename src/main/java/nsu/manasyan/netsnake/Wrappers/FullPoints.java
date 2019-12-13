@@ -16,11 +16,11 @@ public class FullPoints {
 
     private int id;
 
-    public FullPoints(Snake snake, int height, int width) {
+    public FullPoints(List<SnakesProto.GameState.Coord> keyPoints, int id, int height, int width) {
         this.height = height;
         this.width = width;
-        this.id = snake.getPlayerId();
-        fromKeyPoints(snake.getPoints());
+        this.id = id;
+        fromKeyPoints(keyPoints);
     }
 
     private SnakePartManipulator manipulator = SnakePartManipulator.getInstance();
