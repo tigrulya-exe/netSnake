@@ -156,10 +156,10 @@ public class SnakesController {
                     fullPointsList.remove(fullPoints);
                     return true;
                 }
-                break;
+                continue;
             }
             if(fullPoints.getFullPoints().contains(head)) {
-                controller.gameOver(snake.getPlayerId());
+                setDead(snake);
                 fullPointsList.remove(fullPoints);
                 return true;
             }
