@@ -139,7 +139,6 @@ public class SnakesController {
     }
 
     public void checkSnakes(Collection<Snake> snakes, Collection<FullPoints> fullPoints) {
-
         for (var iter = snakes.iterator(); iter.hasNext(); ) {
             Snake snake = iter.next();
             if(checkSnake(snake, fullPoints))

@@ -238,6 +238,14 @@ public class ClientController {
         model.setPlayerId(id);
     }
 
+    public void setPlayerAlive(int id){
+        if(model.getPlayerRole() == NodeRole.MASTER){
+            masterController.setPlayerAlive(id, true);
+            return;
+        }
+        isMasterAlive = true;
+    }
+
     private boolean isCorrectDirection(Direction direction) {
         Direction currentDirection = model.getCurrentDirection();
 

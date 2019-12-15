@@ -117,7 +117,8 @@ public class Listener {
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){
-        masterController.setPlayerAlive(message.getSenderId(), true);
+
+        clientController.setPlayerAlive(message.getSenderId());
     }
 
     private void handleSteer(GameMessage message, InetSocketAddress address){

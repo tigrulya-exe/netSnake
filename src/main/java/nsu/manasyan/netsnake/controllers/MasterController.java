@@ -87,7 +87,6 @@ public class MasterController{
             @Override
             public void run(){
                 newTurn();
-                System.out.println("NEW");
                 GameState gameState = model.getGameState();
                 GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
                 sender.broadcastMessage(stateMessage);
