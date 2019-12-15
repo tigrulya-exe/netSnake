@@ -16,8 +16,9 @@ public class Player {
 
     private int score;
 
-    public Player(String name, String ipAddress, int port, SnakesProto.NodeRole role, int score) {
+    public Player(String name, int id, String ipAddress, int port, SnakesProto.NodeRole role, int score) {
         this.name = name;
+        this.id = id;
         this.ipAddress = ipAddress;
         this.port = port;
         this.role = role;

@@ -11,6 +11,9 @@ import nsu.manasyan.netsnake.util.GameObjectBuilder;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 
 import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
@@ -81,6 +84,30 @@ public class MasterController{
         masterGameModel.getPlayers().remove(playerId);
         masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
         model.removeScore(playerId);
+        checkDeputyDeath(playerId);
+    }
+
+    private void checkDeputyDeath(int playerId) {
+        if (model.getDeputyId() != playerId)
+            return;
+        try {
+            model.setDeputyAddress(null);
+
+            for (var player : masterGameModel.getPlayers().values()) {
+                if(player.getRole() != NodeRole.NORMAL)
+                    continue;
+
+                InetAddress inetAddress = InetAddress.getByName(player.getIpAddress());
+                InetSocketAddress newDeputyAddress = new InetSocketAddress(inetAddress, player.getPort());
+                model.setDeputyAddress(newDeputyAddress);
+                model.setDeputyId(player.getId());
+
+                sendRoleChangeToDeputy(newDeputyAddress, player.getId());
+                break;
+            }
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
     public void scheduleTurns(int stateDelayMs){
@@ -153,14 +180,28 @@ public class MasterController{
                 field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
 
-    public void addPlayer(Player player){
-        player.setId(availablePlayerId++);
+    public int addPlayer(String name, String address, int port, boolean onlyView){
+        NodeRole role = (onlyView ) ? NodeRole.VIEWER : NodeRole.NORMAL;
+        Player player = new Player(name,  availablePlayerId++ ,address, port, role, 0);
+        System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
+
         masterGameModel.getPlayers().put(player.getId(), player);
         model.addScore(player.getId(), player.getName(), 0);
         masterGameModel.initPlayerHeadDirections(player.getId());
         addSnake(player.getId());
+
+        return player.getId();
     }
 
+    public void checkDeputy(InetSocketAddress address, int id) {
+        if (model.getDeputyAddress() != null)
+            return;
+
+        model.setDeputyAddress(address);
+        model.setDeputyId(id);
+
+        sendRoleChangeToDeputy(address, id);
+    }
 
     public void removeSnake(int playerId){
         masterGameModel.getSnakes().remove(playerId);
@@ -201,6 +242,11 @@ public class MasterController{
         masterGameModel.clear();
     }
 
+    private void sendRoleChangeToDeputy(InetSocketAddress address, int id){
+        var roleChangeMsg = getRoleChangeMessage(null, NodeRole.DEPUTY, id);
+        sender.sendConfirmRequiredMessage(address, roleChangeMsg, id);
+    }
+
     private void turnDeadSnakeIntoFood(Snake snake) {
         manipulator.useSnakeCoords(snake.getPoints(),this::turnDeadSnakePartIntoFood);
     }
@@ -226,6 +272,13 @@ public class MasterController{
 
     public void setPlayerAsViewer(int playerId) {
         Map<Integer, Player> players = masterGameModel.getPlayers();
+        Player player = players.get(playerId);
+
+        if(player.getRole() == NodeRole.MASTER && model.getDeputyAddress() != null){
+            var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER, model.getPlayerId());
+            sender.sendConfirmRequiredMessage(model.getDeputyAddress(), roleChangeMsg, model.getDeputyId());
+        }
+
         players.get(playerId).setRole(NodeRole.VIEWER);
     }
 

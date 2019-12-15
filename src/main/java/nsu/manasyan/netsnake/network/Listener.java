@@ -94,12 +94,10 @@ public class Listener {
     private void handleJoinPlay(GameMessage message, InetSocketAddress address){
         System.out.println("JOIN ADDress: " + address);
         JoinMsg joinMsg = message.getJoin();
-        NodeRole role = (!joinMsg.hasOnlyView() || !joinMsg.getOnlyView()) ? NodeRole.NORMAL : NodeRole.VIEWER;
-        Player player = new Player(joinMsg.getName(),
-                address.getHostName(), address.getPort(), role, 0);
-        System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
-        masterController.addPlayer(player);
+        int id = masterController.addPlayer(joinMsg.getName(), address.getHostName(), address.getPort(), joinMsg.getOnlyView());
+        masterController.checkDeputy(address, id);
+
         sender.sendAck(address, masterController.getAvailablePlayerId() - 1, message.getMsgSeq());
     }
 

@@ -45,6 +45,8 @@ public class ClientGameModel {
 
     private InetSocketAddress deputyAddress;
 
+    private int deputyId;
+
     private List<GameStateListener> gameStateListeners = new ArrayList<>();
 
     // incapsulate it in announcement wrapper
@@ -176,6 +178,14 @@ public class ClientGameModel {
         } else {
             oldScore.addPoints(newPoints);
         }
+    }
+
+    public int getDeputyId() {
+        return deputyId;
+    }
+
+    public void setDeputyId(int deputyId) {
+        this.deputyId = deputyId;
     }
 
     public void removeScore(int playerId){

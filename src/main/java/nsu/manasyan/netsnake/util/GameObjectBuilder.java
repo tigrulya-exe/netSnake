@@ -9,6 +9,7 @@ import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
 import javax.swing.event.CaretListener;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class GameObjectBuilder {
     private static String name = "Steve";
@@ -21,17 +22,17 @@ public class GameObjectBuilder {
 
     private static final String DEFAULT_MASTER_ADDRESS_STR = "";
 
-    private static int currentGameMsgSeq = 0;
+    private static AtomicInteger currentGameMsgSeq = new AtomicInteger(0);
 
     public static GameMessage initPingMessage(){
         return GameMessage.newBuilder()
                 .setPing(GameMessage.PingMsg.newBuilder().build())
-                .setMsgSeq(currentGameMsgSeq++)
+                .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
                 .build();
     }
 
     public static Player initMaster() {
-        return new Player(name, DEFAULT_MASTER_ADDRESS_STR, port, NodeRole.MASTER, 0);
+        return new Player(name, DEFAULT_MASTER_ID, DEFAULT_MASTER_ADDRESS_STR, port, NodeRole.MASTER, 0);
     }
 
     public static List<GameState.Coord> initNewFoods(GameConfig config, Field field){
@@ -117,7 +118,7 @@ public class GameObjectBuilder {
 
         return GameMessage.newBuilder()
                 .setState(stateMsg)
-                .setMsgSeq(currentGameMsgSeq++)
+                .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
                 .build();
     }
 
@@ -126,7 +127,7 @@ public class GameObjectBuilder {
 
         return GameMessage.newBuilder()
                 .setAnnouncement(announcementMsg)
-                .setMsgSeq(currentGameMsgSeq++)
+                .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
                 .build();
     }
 
@@ -160,7 +161,7 @@ public class GameObjectBuilder {
         return GameMessage.newBuilder()
                 .setSteer(steerMsg)
                 .setSenderId(playerId)
-                .setMsgSeq(currentGameMsgSeq++)
+                .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
                 .build();
     }
 
@@ -174,7 +175,7 @@ public class GameObjectBuilder {
         return GameMessage.newBuilder()
                 .setRoleChange(roleChangeBuilder.build())
                 .setSenderId(playerId)
-                .setMsgSeq(currentGameMsgSeq++)
+                .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
                 .build();
     }
 
@@ -185,7 +186,7 @@ public class GameObjectBuilder {
                 .build();
 
         return GameMessage.newBuilder()
-                .setMsgSeq(currentGameMsgSeq++)
+                .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
                 .setJoin(joinMsg)
                 .build();
     }

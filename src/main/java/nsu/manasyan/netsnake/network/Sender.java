@@ -123,7 +123,6 @@ public class Sender {
             @Override
             public void run() {
                 GameMessage announcementMsg = GameObjectBuilder.getAnnouncementMessage();
-
                 broadcastAnnouncement(announcementMsg);
             }
         };
@@ -151,7 +150,6 @@ public class Sender {
         GameMessage ackMessage = getAckMsg(clientController.getPlayerId(), receiverId, msgSeq);
         System.out.println("[" + msgSeq + "] ACk: " + receiverAddress);
         sendMessage(receiverAddress, ackMessage, false);
-
     }
 
     public void sendConfirmRequiredMessage(InetSocketAddress receiverAddress, GameMessage message, int receiverId){
