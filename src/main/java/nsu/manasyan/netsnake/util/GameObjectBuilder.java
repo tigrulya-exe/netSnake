@@ -24,9 +24,10 @@ public class GameObjectBuilder {
     private static int currentGameMsgSeq = 0;
 
     public static GameMessage initPingMessage(){
-        GameMessage message = initMessage();
-        message.toBuilder().setPing(GameMessage.PingMsg.newBuilder().build());
-        return message;
+        return GameMessage.newBuilder()
+                .setPing(GameMessage.PingMsg.newBuilder().build())
+                .setMsgSeq(currentGameMsgSeq++)
+                .build();
     }
 
     public static Player initMaster() {
@@ -53,12 +54,6 @@ public class GameObjectBuilder {
         } while (field.getCell(x, y) != Field.Cell.FREE);
 
         return getCoord(x, y);
-    }
-
-    public static GameMessage initMessage(){
-        return GameMessage.newBuilder()
-                .setMsgSeq(currentGameMsgSeq++)
-                .build();
     }
 
     public static Snake initNewSnake(int playerId, Field field){

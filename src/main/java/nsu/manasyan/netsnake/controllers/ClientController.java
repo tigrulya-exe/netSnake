@@ -126,16 +126,15 @@ public class ClientController {
     }
 
     public void stopCurrentGame() {
+        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
+        sender.sendMessage(model.getMasterAddress(), roleChange);
+
         model.clear();
         model.clearGameStateListeners();
 
         if (model.getPlayerRole() == NodeRole.MASTER) {
             masterController.stopCurrentGame();
-            return;
         }
-
-        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
-        sender.sendMessage(model.getMasterAddress(), roleChange);
     }
 
     public void changeMaster() {
@@ -216,6 +215,7 @@ public class ClientController {
 
     public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameConfig config){
         model.setCurrentConfig(config);
+        System.out.println("MASTER ADDR: " + masterAddress);
         model.setMasterAddress(masterAddress);
         sender.sendMessage(masterAddress, getJoinMessage(getPlayerName(), onlyView));
         sender.setClientTimer(masterAddress, config.getPingDelayMs(), config.getNodeTimeoutMs());

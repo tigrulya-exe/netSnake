@@ -29,7 +29,7 @@ public class Sender {
 
     private int multicastPort = 9192;
 
-    private volatile boolean needToSendPing = true;
+    private volatile boolean needToSendPing = false;
 
     private Timer timer;
 
@@ -79,8 +79,7 @@ public class Sender {
     public void sendMessage(InetSocketAddress receiverAddress, GameMessage message) {
         needToSendPing = false;
 
-        System.out.println("Send to " + receiverAddress + ": ");
-        System.out.println(message);
+        System.out.println("Send to " + receiverAddress + " : " + message.getTypeCase());
         try {
             byte[] buf = message.toByteArray();
             socket.send(new DatagramPacket(buf, buf.length, receiverAddress));
