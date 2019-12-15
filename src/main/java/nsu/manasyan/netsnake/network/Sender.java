@@ -10,7 +10,6 @@ import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;

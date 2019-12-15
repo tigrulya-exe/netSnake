@@ -196,26 +196,6 @@ public class ClientController {
                 direction == DOWN && currentDirection == UP ||
                 direction == LEFT && currentDirection == RIGHT ||
                 direction == RIGHT && currentDirection == LEFT);
-
-//        switch (direction){
-//            case UP:
-//                if(currentDirection == Direction.DOWN)
-//                    return false;
-//                break;
-//            case DOWN:
-//                if(currentDirection == UP)
-//                    return false;
-//                break;
-//            case LEFT:
-//                if(currentDirection == Direction.RIGHT)
-//                    return false;
-//                break;
-//            case RIGHT:
-//                if(currentDirection == Direction.LEFT)
-//                    return false;
-//                break;
-//        }
-//        return true;
     }
 
     // getters setters

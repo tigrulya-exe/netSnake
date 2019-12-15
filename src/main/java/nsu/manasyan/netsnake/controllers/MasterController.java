@@ -227,12 +227,12 @@ public class MasterController{
     }
 
     public void gameOver(int playerId){
-        setPlayerAsViewer(playerId);
 
         Snake deadSnake = masterGameModel.getSnakes().get(playerId);
         turnDeadSnakeIntoFood(deadSnake);
 //        removeSnake(playerId);
 
+        setPlayerAsViewer(playerId);
         model.removeScore(playerId);
     }
 
@@ -277,6 +277,8 @@ public class MasterController{
         if(player.getRole() == NodeRole.MASTER && model.getDeputyAddress() != null){
             var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER, model.getPlayerId());
             sender.sendConfirmRequiredMessage(model.getDeputyAddress(), roleChangeMsg, model.getDeputyId());
+            stopCurrentGame();
+            return;
         }
 
         players.get(playerId).setRole(NodeRole.VIEWER);
