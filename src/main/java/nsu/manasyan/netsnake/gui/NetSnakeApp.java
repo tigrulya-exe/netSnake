@@ -1,6 +1,7 @@
 package nsu.manasyan.netsnake.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -136,5 +137,11 @@ public class NetSnakeApp extends Application {
     public void go(String[] args){
         launch(args);
     }
+
+    @Override
+    public void stop(){
+        System.exit(0);
+    }
+
 
 }
