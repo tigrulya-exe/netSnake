@@ -90,7 +90,6 @@ public class MasterController{
                 System.out.println("NEW");
                 GameState gameState = model.getGameState();
                 GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
-                System.out.println("BROADCAST STATE");
                 sender.broadcastMessage(stateMessage);
             }
         };
@@ -150,8 +149,6 @@ public class MasterController{
         masterGameModel.getFoods().forEach(c ->
                 field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
-
-
 
     public void addPlayer(Player player){
         player.setId(availablePlayerId++);

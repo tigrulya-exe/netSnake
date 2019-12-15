@@ -41,7 +41,10 @@ public class Sender {
 
     public void broadcastMessage(GameMessage message) {
         needToSendPing = false;
-        System.out.println("Broadcast: ");
+        if( masterController.getPlayers().size() == 1) {
+            return;
+        }
+        System.out.println("Broadcast: " + message.getTypeCase());
 //        System.out.println(message);
 
 //        GameExecutorService.getExecutorService().submit(() ->

@@ -207,10 +207,9 @@ public class ClientController {
         sender.sendMessage(model.getMasterAddress(), getSteerMessage(direction,model.getPlayerId()));
     }
 
-    public void setStartConfigurations(GameConfig config, InetSocketAddress masterAddress){
+    public void setStartConfigurations(GameConfig config){
         field = new Field(config.getHeight(), config.getWidth());
         SnakePartManipulator.getInstance().setField(field);
-        model.setMasterAddress(masterAddress);
         isFirstGameState = false;
     }
 
@@ -220,7 +219,7 @@ public class ClientController {
         model.setMasterAddress(masterAddress);
         sender.sendMessage(masterAddress, getJoinMessage(getPlayerName(), onlyView));
         sender.setClientTimer(masterAddress, config.getPingDelayMs(), config.getNodeTimeoutMs());
-        setStartConfigurations(config, masterAddress);
+        setStartConfigurations(config);
     }
 
     public boolean isMasterAlive() {
