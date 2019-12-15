@@ -1,6 +1,5 @@
 package nsu.manasyan.netsnake.network;
 
-import com.google.protobuf.Message;
 import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.contexts.SentMessagesKey;
 import nsu.manasyan.netsnake.controllers.ClientController;
@@ -176,7 +175,7 @@ public class Sender {
                     return;
                 }
 
-                clientController.setMasterAlive(false);
+                clientController.changeMaster();
             }
         };
 
@@ -207,6 +206,8 @@ public class Sender {
                         alivePlayers.put(entry.getKey(), false);
                         continue;
                     }
+
+                    masterController.removePlayer(entry.getKey());
                     iter.remove();
                 }
             }
@@ -217,16 +218,24 @@ public class Sender {
         return new TimerTask() {
             @Override
             public void run() {
-                for(var iter = sentMessages.values().iterator(); iter.hasNext(); ) {
-                    var msgContext = iter.next();
-                    if(msgContext.isFresh()) {
-                        msgContext.setFresh(false);
-                        continue;
-                    }
+                try {
+                    for (var iter = sentMessages.entrySet().iterator(); iter.hasNext(); ) {
+                        var entry = iter.next();
+                        var msgContext = entry.getValue();
+                        if (msgContext.isFresh()) {
+                            msgContext.setFresh(false);
+                            continue;
+                        }
+                        InetSocketAddress address = new InetSocketAddress(InetAddress.getByName(msgContext.getAddress()), msgContext.getPort());
+                        sendMessage(address, msgContext.getMessage(), true);
 
-                    iter.remove();
+                        iter.remove();
+                    }
+                } catch(UnknownHostException e) {
+                    e.printStackTrace();
                 }
             }
         };
     }
+
 }
