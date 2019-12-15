@@ -42,8 +42,6 @@ public class Listener {
 
     private volatile long joinMsgSeq = -1;
 
-//    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
-
     public Listener( Sender sender, Map<SentMessagesKey, MessageContext> sentMessages, MulticastSocket socket, InetAddress multicastAddress) {
         this.multicastAddress = multicastAddress;
         this.sender = sender;
