@@ -203,6 +203,7 @@ public class Sender {
     }
 
     private TimerTask getCheckAlivePlayersTask(){
+        int masterId = clientController.getMasterId();
         return new TimerTask() {
             @Override
             public void run() {
@@ -210,7 +211,7 @@ public class Sender {
 
                 for(var iter = alivePlayers.entrySet().iterator(); iter.hasNext(); ) {
                     var entry = iter.next();
-                    if(entry.getValue()) {
+                    if(entry.getValue() || entry.getKey() == masterId) {
                         alivePlayers.put(entry.getKey(), false);
                         continue;
                     }

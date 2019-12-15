@@ -77,6 +77,7 @@ public class MasterController{
     }
 
     public void removePlayer(int playerId) {
+        System.out.println("PLAYER REMOVED: " + playerId);
         masterGameModel.getPlayers().remove(playerId);
         masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
         model.removeScore(playerId);
@@ -98,6 +99,8 @@ public class MasterController{
     }
 
     public void addScore(int playerId, int newPoints){
+        if(masterGameModel.getPlayers().get(playerId) == null)
+            System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
         masterGameModel.getPlayers().get(playerId).addScore(newPoints);
     }
 
