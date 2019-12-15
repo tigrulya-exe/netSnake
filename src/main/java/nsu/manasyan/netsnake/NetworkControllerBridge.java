@@ -1,5 +1,6 @@
 package nsu.manasyan.netsnake;
 
+import nsu.manasyan.netsnake.contexts.SentMessagesKey;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.contexts.MessageContext;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class NetworkControllerBridge {
     private MulticastSocket socket;
 
-    private Map<Long, MessageContext> sentMessages = new HashMap<>();
+    private Map<SentMessagesKey, MessageContext> sentMessages = new HashMap<>();
 
     private ClientGameModel clientGameModel = new ClientGameModel();
 
@@ -50,9 +51,9 @@ public class NetworkControllerBridge {
         sender.stop();
     }
 
-    public void restartCurrentGame(){
-        sender.stop();
-        listener.reload();
-        clientController.restart();
-    }
+//    public void restartCurrentGame(){
+//        sender.stop();
+//        listener.reload();
+//        clientController.restart();
+//    }
 }

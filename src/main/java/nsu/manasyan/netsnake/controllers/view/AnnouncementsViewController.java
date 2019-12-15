@@ -65,7 +65,7 @@ public class AnnouncementsViewController {
     private void updateGrid(AnnouncementMsg announcement, AnnouncementContext context, int rank){
         Button joinButton = new Button("Join");
         joinButton.setOnAction(ae -> {
-            clientController.joinGame(context.getMasterAddress(), false, announcement.getConfig());
+            clientController.joinGame(context.getMasterAddress(), false, announcement);
             NetSnakeApp.setScene(SceneFactory.SceneType.GAME);
         });
 

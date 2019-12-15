@@ -89,7 +89,7 @@ public class MasterController{
                 newTurn();
                 GameState gameState = model.getGameState();
                 GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
-                sender.broadcastMessage(stateMessage);
+                sender.broadcastState(stateMessage);
             }
         };
         timer.schedule(newTurn, stateDelayMs, stateDelayMs);

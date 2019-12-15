@@ -57,7 +57,7 @@ public class GameViewController {
 
     public void restartClicked(){
         scoreGrid.getChildren().clear();
-        NetSnakeApp.getNetworkControllerBridge().restartCurrentGame();
+//        NetSnakeApp.getNetworkControllerBridge().restartCurrentGame();
     }
 
     public void initialize() {

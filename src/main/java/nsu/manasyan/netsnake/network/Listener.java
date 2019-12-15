@@ -1,6 +1,7 @@
 package nsu.manasyan.netsnake.network;
 
 import nsu.manasyan.netsnake.Wrappers.Player;
+import nsu.manasyan.netsnake.contexts.SentMessagesKey;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.util.GameExecutorService;
@@ -26,7 +27,7 @@ public class Listener {
 
     private ClientController clientController = ClientController.getInstance();
 
-    private Map<Long, MessageContext> sentMessages;
+    private Map<SentMessagesKey, MessageContext> sentMessages;
 
     private Map<TypeCase, Handler> handlers = new HashMap<>();
 
@@ -44,7 +45,7 @@ public class Listener {
 
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
-    public Listener( Sender sender, Map<Long, MessageContext> sentMessages, MulticastSocket socket, InetAddress multicastAddress) {
+    public Listener( Sender sender, Map<SentMessagesKey, MessageContext> sentMessages, MulticastSocket socket, InetAddress multicastAddress) {
         this.multicastAddress = multicastAddress;
         this.sender = sender;
         this.sentMessages = sentMessages;
@@ -98,9 +99,7 @@ public class Listener {
         System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
         masterController.addPlayer(player);
-        sender.sendMessage(address,
-                GameObjectBuilder.getAckMsg(clientController.getPlayerId(), masterController.getAvailablePlayerId() - 1)
-        );
+        sender.sendAck(address, masterController.getAvailablePlayerId() - 1);
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
@@ -113,7 +112,7 @@ public class Listener {
             clientController.setPlayerId(message.getReceiverId());
             isJoinAck = false;
         }
-        sentMessages.remove(message.getMsgSeq());
+        sentMessages.remove(new SentMessagesKey(message.getMsgSeq(), message.getSenderId()));
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){

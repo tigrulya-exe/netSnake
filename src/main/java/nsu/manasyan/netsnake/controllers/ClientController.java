@@ -18,7 +18,9 @@ import static nsu.manasyan.netsnake.proto.SnakesProto.Direction.*;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 
 public class ClientController {
-    private static final int MASTER_ID = 0;
+    private static final int DEFAULT_MASTER_ID = 0;
+
+    private int masterId;
 
     private ClientGameModel model;
 
@@ -30,22 +32,7 @@ public class ClientController {
 
     private Field field;
 
-    private boolean isFirstGameState = true;
-
     private volatile boolean isMasterAlive = true;
-
-    public void updateAllFullPoints(){
-        updateFullPoints(model.getGameState().getSnakesList());
-    }
-
-    private void updateFullPoints(Collection<GameState.Snake> snakes) {
-        List<FullPoints> fullPoints = getFullPoints();
-        int height = field.getHeight();
-        int width = field.getWidth();
-
-        fullPoints.clear();
-        snakes.forEach(s -> fullPoints.add(new FullPoints(s.getPointsList(), s.getPlayerId(), height, width)));
-    }
 
     private static class SingletonHelper{
 
@@ -60,6 +47,19 @@ public class ClientController {
         return ClientController.SingletonHelper.controller;
     }
 
+    public void updateAllFullPoints(){
+        updateFullPoints(model.getGameState().getSnakesList());
+    }
+
+    private void updateFullPoints(Collection<GameState.Snake> snakes) {
+        List<FullPoints> fullPoints = getFullPoints();
+        int height = field.getHeight();
+        int width = field.getWidth();
+
+        fullPoints.clear();
+        snakes.forEach(s -> fullPoints.add(new FullPoints(s.getPointsList(), s.getPlayerId(), height, width)));
+    }
+
     public void error(String errorMessage) {
         errorListener.onError(errorMessage);
     }
@@ -68,15 +68,12 @@ public class ClientController {
         this.errorListener = errorListener;
     }
 
-    public void setSender(Sender sender) {
-        this.sender = sender;
-    }
-
     public void setMasterAddress(InetSocketAddress address){
         model.setMasterAddress(address);
     }
 
     public void initMasterContext() {
+        masterId = DEFAULT_MASTER_ID;
         model.setMasterAddress(null);
         model.setPlayerRole(NodeRole.MASTER);
         sender.stop();
@@ -87,7 +84,7 @@ public class ClientController {
 
     public void startNewGame(GameConfig config) {
         model.setCurrentConfig(config);
-        model.setPlayerId(MASTER_ID);
+        model.setPlayerId(DEFAULT_MASTER_ID);
 
         field = new Field(config.getHeight(), config.getWidth());
         masterController.startGame(model, sender, field);
@@ -98,32 +95,16 @@ public class ClientController {
         masterController.becomeMaster(model, sender, field);
         initMasterContext();
     }
-
-    public List<FullPoints> getFullPoints() {
-        return model.getFullPoints();
-    }
-
-    public String getPlayerName(){
-        return model.getPlayerName();
-    }
-
-    public void setPlayerName(String playerName){
-        model.setPlayerName(playerName);
-    }
-
-    public void restart() {
-        model.clear();
-
-        if(model.getPlayerRole() == NodeRole.MASTER) {
-            masterController.stopCurrentGame();
-            startNewGame(model.getCurrentConfig());
-        } else
-            joinGame(model.getMasterAddress(), false, model.getCurrentConfig());
-    }
-
-    public GameConfig getConfig(){
-        return model.getCurrentConfig();
-    }
+//
+//    public void restart() {
+//        model.clear();
+//
+//        if(model.getPlayerRole() == NodeRole.MASTER) {
+//            masterController.stopCurrentGame();
+//            startNewGame(model.getCurrentConfig());
+//        } else
+//            joinGame(model.getMasterAddress(), false, model.getCurrentConfig());
+//    }
 
     public void stopCurrentGame() {
         model.clear();
@@ -135,7 +116,7 @@ public class ClientController {
         }
 
         GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
-        sender.sendMessage(model.getMasterAddress(), roleChange);
+        sender.sendConfirmRequiredMessage(model.getMasterAddress(), roleChange, masterId);
     }
 
     public void changeMaster() {
@@ -147,29 +128,6 @@ public class ClientController {
         model.setMasterAddress(model.getDeputyAddress());
         model.setDeputyAddress(null);
     }
-
-    public GameState getState(){
-        return model.getGameState();
-    }
-
-    public void setRole(NodeRole role){
-        model.setPlayerRole(role);
-    }
-
-    public void setGameState(GameState gameState){
-//        if(gameState.getStateOrder() <= model.getGameState().getStateOrder())
-//            return;
-        model.setGameState(gameState);
-    }
-
-    public List<GameState.Snake> getSnakes(){
-        return model.getGameState().getSnakesList();
-    }
-
-    public List<GameState.Coord> getFoods(){
-        return model.getGameState().getFoodsList();
-    }
-
 
     public void registerGameStateListener(ClientGameModel.GameStateListener listener){
         model.registerGameStateListener(listener);
@@ -187,10 +145,6 @@ public class ClientController {
         model.registerAnnouncementListener(announcementListener);
     }
 
-    public int getPlayerId(){
-        return model.getPlayerId();
-    }
-
     public void registerDirection(Direction direction){
         if(model.getPlayerId() == -1)
             return;
@@ -204,39 +158,40 @@ public class ClientController {
             return;
         }
 
-        sender.sendMessage(model.getMasterAddress(), getSteerMessage(direction,model.getPlayerId()));
+        GameMessage message = getSteerMessage(direction,model.getPlayerId());
+        sender.sendConfirmRequiredMessage(model.getMasterAddress(), message, masterId);
     }
 
     public void setStartConfigurations(GameConfig config){
         field = new Field(config.getHeight(), config.getWidth());
         SnakePartManipulator.getInstance().setField(field);
-        isFirstGameState = false;
     }
 
-    public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameConfig config){
+    public void joinGame(InetSocketAddress masterAddress, boolean onlyView, GameMessage.AnnouncementMsg announcementMsg){
+        GameConfig config = announcementMsg.getConfig();
+
         model.setCurrentConfig(config);
+        masterId = getMasterId(announcementMsg.getPlayers().getPlayersList());
         System.out.println("MASTER ADDR: " + masterAddress);
         model.setMasterAddress(masterAddress);
-        sender.sendMessage(masterAddress, getJoinMessage(getPlayerName(), onlyView));
+        sender.sendJoin(masterAddress, getJoinMessage(getPlayerName(), onlyView));
         sender.setClientTimer(masterAddress, config.getPingDelayMs(), config.getNodeTimeoutMs());
         setStartConfigurations(config);
     }
 
-    public boolean isMasterAlive() {
-        return isMasterAlive;
+    private int getMasterId(List<GamePlayer> players){
+        for(var player : players){
+            if(player.getRole() == NodeRole.MASTER)
+                return player.getId();
+        }
+
+        return  -1;
     }
 
     public void registerConfigListener(ClientGameModel.ConfigListener listener){
         model.registerConfigListener(listener);
     }
 
-    public void setMasterAlive(boolean masterAlive) {
-        isMasterAlive = masterAlive;
-    }
-
-    public void setPlayerId(int id){
-        model.setPlayerId(id);
-    }
 
     public void setPlayerAlive(int id){
         if(model.getPlayerRole() == NodeRole.MASTER){
@@ -273,5 +228,69 @@ public class ClientController {
 //                break;
 //        }
 //        return true;
+    }
+
+    // getters setters
+
+    public GameState getState(){
+        return model.getGameState();
+    }
+
+    public void setRole(NodeRole role){
+        model.setPlayerRole(role);
+    }
+
+    public void setGameState(GameState gameState){
+//        if(gameState.getStateOrder() <= model.getGameState().getStateOrder())
+//            return;
+        model.setGameState(gameState);
+    }
+
+    public List<GameState.Snake> getSnakes(){
+        return model.getGameState().getSnakesList();
+    }
+
+    public List<GameState.Coord> getFoods(){
+        return model.getGameState().getFoodsList();
+    }
+
+    public int getMasterId() {
+        return masterId;
+    }
+
+    public void setMasterAlive(boolean masterAlive) {
+        isMasterAlive = masterAlive;
+    }
+
+    public void setPlayerId(int id){
+        model.setPlayerId(id);
+    }
+
+    public int getPlayerId(){
+        return model.getPlayerId();
+    }
+
+    public GameConfig getConfig(){
+        return model.getCurrentConfig();
+    }
+
+    public void setSender(Sender sender) {
+        this.sender = sender;
+    }
+
+    public String getPlayerName(){
+        return model.getPlayerName();
+    }
+
+    public List<FullPoints> getFullPoints() {
+        return model.getFullPoints();
+    }
+
+    public void setPlayerName(String playerName){
+        model.setPlayerName(playerName);
+    }
+
+    public boolean isMasterAlive() {
+        return isMasterAlive;
     }
 }
