@@ -164,7 +164,6 @@ public class ClientController {
         System.out.println("MASTER ADDR: " + masterAddress);
         model.setMasterAddress(masterAddress);
         sender.sendJoin(masterAddress, getJoinMessage(getPlayerName(), onlyView));
-        sender.setClientTimer(masterAddress, config.getPingDelayMs(), config.getNodeTimeoutMs());
         setStartConfigurations(config);
     }
 

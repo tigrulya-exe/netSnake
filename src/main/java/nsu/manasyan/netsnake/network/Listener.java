@@ -113,11 +113,11 @@ public class Listener {
     private void handleAck(GameMessage message, InetSocketAddress address){
         if(joinMsgSeq == message.getMsgSeq()) {
             System.out.println("GET JOIN ACK");
+            sender.setClientTimer(address);
             clientController.setPlayerId(message.getReceiverId());
         }
 //        sentMessages.remove(new SentMessagesKey(message.getMsgSeq(), message.getSenderId()));
 
-        System.out.println(message);
         sentMessages.entrySet().removeIf(e -> e.getKey().getMsgSeq() == message.getMsgSeq() &&
                 e.getKey().getPlayerId() == message.getSenderId());
     }

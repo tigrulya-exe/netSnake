@@ -159,7 +159,7 @@ public class Sender {
             putIntoSentMessages(message, receiverAddress, receiverId);
     }
 
-    public void setClientTimer(InetSocketAddress masterAddress, int pingDelayMs, int nodeTimeoutMs){
+    public void setClientTimer(InetSocketAddress masterAddress){
         timer = new Timer();
         var clientController = ClientController.getInstance();
 
@@ -186,6 +186,9 @@ public class Sender {
                 clientController.changeMaster();
             }
         };
+
+        int nodeTimeoutMs = clientController.getConfig().getNodeTimeoutMs();
+        int pingDelayMs = clientController.getConfig().getPingDelayMs();
 
         timer.schedule(playerSendPing, pingDelayMs, pingDelayMs);
         timer.schedule(checkMaster, nodeTimeoutMs, nodeTimeoutMs);
