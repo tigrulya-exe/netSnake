@@ -76,8 +76,10 @@ public class MasterController{
         snakesController.setField(field);
     }
 
-    public void removePlayer(int senderId) {
-
+    public void removePlayer(int playerId) {
+        masterGameModel.getPlayers().remove(playerId);
+        masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
+        model.removeScore(playerId);
     }
 
     public void scheduleTurns(int stateDelayMs){
@@ -189,7 +191,6 @@ public class MasterController{
 //        removeSnake(playerId);
 
         model.removeScore(playerId);
-        setPlayerAsViewer(playerId);
     }
 
     public void stopCurrentGame(){
