@@ -3,12 +3,9 @@ package nsu.manasyan.netsnake.controllers;
 import nsu.manasyan.netsnake.Wrappers.FullPoints;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.Wrappers.Snake;
-import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.Direction;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Coord;
-import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,10 +20,6 @@ public class SnakesController {
     private MasterController controller;
 
     private Field field;
-
-    private boolean isCurrentSnakeDead = false;
-
-    private SnakesProto.GameState.Coord currentSnakeHead;
 
     public void setField(Field field) {
         this.field = field;
@@ -43,17 +36,6 @@ public class SnakesController {
             eatFood(snake);
         else
             moveTail(snake);
-
-//        switch (getNewHeadCell(newHead, snake.getPoints())){
-//            case FOOD:
-//                eatFood(snake);
-//                break;
-//            case FREE:
-//                moveTail(snake);
-//                break;
-//            default:
-//                setDead(snake);
-//        }
     }
 
     private Field.Cell getNewHeadCell (Coord newHead, List<Coord> points){
@@ -86,8 +68,6 @@ public class SnakesController {
         int coordsSize = points.size();
         Coord oldTale = points.get(coordsSize - 1);
 
-//        System.out.println(snake.getPoints());
-//        field.updateField(oldTale.getX(), oldTale.getY(), FREE);
         int tailX = getNewTailOffset(oldTale.getX());
         int tailY = getNewTailOffset(oldTale.getY());
 

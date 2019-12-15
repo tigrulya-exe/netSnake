@@ -22,7 +22,7 @@ public class MasterGameModel {
     private Map<Integer, Player> players = new ConcurrentHashMap<>();
 
     // key - id, value - isAlive
-    private Map<Integer, Boolean> alivePlayers = new HashMap<>();
+    private Map<Integer, Boolean> alivePlayers = new ConcurrentHashMap<>();
 
     private List<Coord> foods;
 
@@ -123,6 +123,10 @@ public class MasterGameModel {
 
     public Map<Integer, Boolean> getAlivePlayers() {
         return alivePlayers;
+    }
+
+    public void setPlayerAlive(int playerId, boolean isAlive){
+        alivePlayers.put(playerId, isAlive);
     }
 
     public Map<Integer, List<SnakesProto.Direction>> getHeadDirections() {

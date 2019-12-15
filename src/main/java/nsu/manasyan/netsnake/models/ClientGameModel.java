@@ -71,7 +71,6 @@ public class ClientGameModel {
 
     private List<FullPoints> fullPoints = new CopyOnWriteArrayList<>();
 
-
     public void setPlayerName(String playerName) {
         this.playerName = playerName;
     }

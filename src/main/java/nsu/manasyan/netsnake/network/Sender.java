@@ -21,6 +21,8 @@ public class Sender {
 
     private MasterController masterController = MasterController.getInstance();
 
+    private ClientController clientController = ClientController.getInstance();
+
     private Map<Long, MessageContext> sentMessages;
 
     private MulticastSocket socket;
@@ -91,21 +93,21 @@ public class Sender {
         return sentMessages;
     }
 
-    public void setMasterTimer(int pingDelayMs){
+    public void setMasterTimer(int pingDelayMs, int nodeTimeoutMs){
         timer = new Timer();
-
-//        TimerTask masterSendPing  = new TimerTask() {
-//            @Override
-//            public void run() {
-//                if(!needToSendPing){
-//                    needToSendPing = true;
-//                    return;
-//                }
-//                GameMessage ping =  GameObjectBuilder.initPingMessage();
-//                broadcastMessage(ping);
-//            }
-//        };
         GameMessage announcementMsg = GameObjectBuilder.getAnnouncementMessage();
+
+        TimerTask masterSendPing  = new TimerTask() {
+            @Override
+            public void run() {
+                if(!needToSendPing){
+                    needToSendPing = true;
+                    return;
+                }
+                GameMessage ping =  GameObjectBuilder.initPingMessage();
+                broadcastMessage(ping);
+            }
+        };
 
         TimerTask broadcastAnnouncement  = new TimerTask() {
             @Override
@@ -114,20 +116,10 @@ public class Sender {
             }
         };
 
-//        TimerTask checkMaster = new TimerTask() {
-//            @Override
-//            public void run() {
-//                var clientController = ClientController.getInstance();
-//                if(!clientController.isMasterAlive()){
-//                    clientController.changeMaster();
-//                    return;
-//                }
-//
-//                clientController.setMasterAlive(false);
-//            }
-//        };
+        TimerTask checkAlivePlayers = getCheckAlivePlayersTask();
 
-//        timer.schedule(broadcastAnnouncement, pingDelayMs, pingDelayMs);
+        timer.schedule(masterSendPing, pingDelayMs, pingDelayMs);
+        timer.schedule(checkAlivePlayers, nodeTimeoutMs, nodeTimeoutMs);
         timer.schedule(broadcastAnnouncement, 1000, 1000);
     }
 
@@ -136,8 +128,10 @@ public class Sender {
             timer.cancel();
     }
 
-    public void setClientTimer(InetSocketAddress masterAddress, int pingDelayMs){
+    public void setClientTimer(InetSocketAddress masterAddress, int pingDelayMs, int nodeTimeoutMs){
         timer = new Timer();
+        var clientController = ClientController.getInstance();
+
         TimerTask playerSendPing  = new TimerTask() {
             @Override
             public void run() {
@@ -153,7 +147,6 @@ public class Sender {
         TimerTask checkMaster = new TimerTask() {
             @Override
             public void run() {
-                var clientController = ClientController.getInstance();
                 if(!clientController.isMasterAlive()){
                     clientController.changeMaster();
                     return;
@@ -164,6 +157,7 @@ public class Sender {
         };
 
         timer.schedule(playerSendPing, pingDelayMs, pingDelayMs);
+        timer.schedule(checkMaster, nodeTimeoutMs, nodeTimeoutMs);
     }
 
     private void putIntoSentMessages(long msgId, MessageContext context){
@@ -172,5 +166,23 @@ public class Sender {
         }
 
         sentMessages.put(msgId, context);
+    }
+
+    private TimerTask getCheckAlivePlayersTask(){
+        return new TimerTask() {
+            @Override
+            public void run() {
+                var alivePlayers = masterController.getAlivePlayers();
+
+                for(var iter = alivePlayers.entrySet().iterator(); iter.hasNext(); ) {
+                    var entry = iter.next();
+                    if(entry.getValue()) {
+                        alivePlayers.put(entry.getKey(), false);
+                        continue;
+                    }
+                    iter.remove();
+                }
+            }
+        };
     }
 }

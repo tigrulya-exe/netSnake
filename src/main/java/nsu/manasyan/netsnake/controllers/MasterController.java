@@ -35,7 +35,6 @@ public class MasterController{
 
     private int availablePlayerId = 1;
 
-
     private MasterController() {
         snakesController.setController(this);
     }
@@ -45,9 +44,9 @@ public class MasterController{
     }
 
     private static class SingletonHelper{
+
         private static final MasterController controller = new MasterController();
     }
-
     public void startGame(ClientGameModel currModel, Sender senderIn, Field field){
         var config = currModel.getCurrentConfig();
         masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
@@ -75,6 +74,10 @@ public class MasterController{
 
         manipulator.setField(field);
         snakesController.setField(field);
+    }
+
+    public void removePlayer(int senderId) {
+
     }
 
     public void scheduleTurns(int stateDelayMs){
@@ -135,7 +138,7 @@ public class MasterController{
         }
     }
 
-    public void updateField(){
+    private void updateField(){
         field.flush();
 
         masterGameModel.getSnakes().forEach((k,v) -> {
@@ -147,9 +150,7 @@ public class MasterController{
                 field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
 
-    public int getAvailablePlayerId(){
-        return availablePlayerId;
-    }
+
 
     public void addPlayer(Player player){
         player.setId(availablePlayerId++);
@@ -159,9 +160,6 @@ public class MasterController{
         addSnake(player.getId());
     }
 
-    public Collection<Player> getPlayers(){
-        return masterGameModel.getPlayers().values();
-    }
 
     public void removeSnake(int playerId){
         masterGameModel.getSnakes().remove(playerId);
@@ -172,12 +170,8 @@ public class MasterController{
         masterGameModel.getSnakes().put(playerId, newSnake);
     }
 
-    public void setAlive(int playerId){
-        masterGameModel.getAlivePlayers().put(playerId, true);
-    }
-
-    public List<GameState.Coord> getModifiableFoods(){
-        return masterGameModel.getFoods();
+    public void setPlayerAlive(int playerId, boolean isAlive){
+        masterGameModel.setPlayerAlive(playerId, isAlive);
     }
 
     public void registerPlayerDirection(int playerId, Direction direction){
@@ -199,14 +193,6 @@ public class MasterController{
 
         model.removeScore(playerId);
         setPlayerAsViewer(playerId);
-    }
-
-    public GameState getGameState(){
-        return model.getGameState();
-    }
-
-    public Field getField(){
-        return field;
     }
 
     public void stopCurrentGame(){
@@ -241,6 +227,32 @@ public class MasterController{
     public void setPlayerAsViewer(int playerId) {
         Map<Integer, Player> players = masterGameModel.getPlayers();
         players.get(playerId).setRole(NodeRole.VIEWER);
+    }
+
+    // getters
+
+    public GameState getGameState(){
+        return model.getGameState();
+    }
+
+    public Field getField(){
+        return field;
+    }
+
+    public int getAvailablePlayerId(){
+        return availablePlayerId;
+    }
+
+    public Collection<Player> getPlayers(){
+        return masterGameModel.getPlayers().values();
+    }
+
+    public List<GameState.Coord> getModifiableFoods(){
+        return masterGameModel.getFoods();
+    }
+
+    public Map<Integer, Boolean> getAlivePlayers(){
+        return masterGameModel.getAlivePlayers();
     }
 
 }

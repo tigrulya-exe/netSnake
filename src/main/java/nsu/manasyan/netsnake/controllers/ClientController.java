@@ -1,7 +1,6 @@
 package nsu.manasyan.netsnake.controllers;
 
 import nsu.manasyan.netsnake.Wrappers.FullPoints;
-import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.contexts.AnnouncementContext;
 import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.models.Field;
@@ -11,11 +10,11 @@ import nsu.manasyan.netsnake.util.ErrorListener;
 import nsu.manasyan.netsnake.util.SnakePartManipulator;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static nsu.manasyan.netsnake.proto.SnakesProto.Direction.*;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 
 public class ClientController {
@@ -77,20 +76,27 @@ public class ClientController {
         model.setMasterAddress(address);
     }
 
+    public void initMasterContext() {
+        model.setMasterAddress(null);
+        model.setPlayerRole(NodeRole.MASTER);
+        sender.stop();
+
+        var config = model.getCurrentConfig();
+        sender.setMasterTimer(config.getPingDelayMs(), config.getNodeTimeoutMs());
+    }
+
     public void startNewGame(GameConfig config) {
         model.setCurrentConfig(config);
         model.setPlayerId(MASTER_ID);
 
         field = new Field(config.getHeight(), config.getWidth());
-        becomeMaster();
+        masterController.startGame(model, sender, field);
+        initMasterContext();
     }
 
     public void becomeMaster() {
-        model.setMasterAddress(null);
-        model.setPlayerRole(NodeRole.MASTER);
-        masterController.startGame(model, sender, field);
-        sender.stop();
-        sender.setMasterTimer(model.getCurrentConfig().getPingDelayMs());
+        masterController.becomeMaster(model, sender, field);
+        initMasterContext();
     }
 
     public List<FullPoints> getFullPoints() {
@@ -129,7 +135,7 @@ public class ClientController {
         }
 
         GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
-//        sender.sendMessage(model.getMasterAddress(), roleChange);
+        sender.sendMessage(model.getMasterAddress(), roleChange);
     }
 
     public void changeMaster() {
@@ -212,7 +218,7 @@ public class ClientController {
         model.setCurrentConfig(config);
         model.setMasterAddress(masterAddress);
         sender.sendMessage(masterAddress, getJoinMessage(getPlayerName(), onlyView));
-//        sender.setClientTimer(masterAddress, config.getPingDelayMs());
+        sender.setClientTimer(masterAddress, config.getPingDelayMs(), config.getNodeTimeoutMs());
         setStartConfigurations(config, masterAddress);
     }
 
@@ -235,24 +241,29 @@ public class ClientController {
     private boolean isCorrectDirection(Direction direction) {
         Direction currentDirection = model.getCurrentDirection();
 
-        switch (direction){
-            case UP:
-                if(currentDirection == Direction.DOWN)
-                    return false;
-                break;
-            case DOWN:
-                if(currentDirection == Direction.UP)
-                    return false;
-                break;
-            case LEFT:
-                if(currentDirection == Direction.RIGHT)
-                    return false;
-                break;
-            case RIGHT:
-                if(currentDirection == Direction.LEFT)
-                    return false;
-                break;
-        }
-        return true;
+        return !(direction == UP && currentDirection == DOWN ||
+                direction == DOWN && currentDirection == UP ||
+                direction == LEFT && currentDirection == RIGHT ||
+                direction == RIGHT && currentDirection == LEFT);
+
+//        switch (direction){
+//            case UP:
+//                if(currentDirection == Direction.DOWN)
+//                    return false;
+//                break;
+//            case DOWN:
+//                if(currentDirection == UP)
+//                    return false;
+//                break;
+//            case LEFT:
+//                if(currentDirection == Direction.RIGHT)
+//                    return false;
+//                break;
+//            case RIGHT:
+//                if(currentDirection == Direction.LEFT)
+//                    return false;
+//                break;
+//        }
+//        return true;
     }
 }

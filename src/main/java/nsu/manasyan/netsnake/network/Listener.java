@@ -117,7 +117,7 @@ public class Listener {
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){
-        masterController.setAlive(message.getSenderId());
+        masterController.setPlayerAlive(message.getSenderId(), true);
     }
 
     private void handleSteer(GameMessage message, InetSocketAddress address){
@@ -137,7 +137,8 @@ public class Listener {
         }
 
         if(roleChangeMsg.getSenderRole() == NodeRole.VIEWER){
-            masterController.setPlayerAsViewer(message.getSenderId());
+            masterController.removePlayer(message.getSenderId());
+//            masterController.setPlayerAsViewer(message.getSenderId());
         }
 
         if(roleChangeMsg.getReceiverRole() == NodeRole.DEPUTY){
