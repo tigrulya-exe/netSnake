@@ -66,6 +66,7 @@ public class Sender {
     }
 
     public void broadcastAnnouncement(GameMessage announcementMsg) {
+        needToSendPing = false;
         try {
             System.out.println("Announcement:");
             byte[] buf = announcementMsg.toByteArray();

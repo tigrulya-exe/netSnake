@@ -126,15 +126,16 @@ public class ClientController {
     }
 
     public void stopCurrentGame() {
-        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
-        sender.sendMessage(model.getMasterAddress(), roleChange);
-
         model.clear();
         model.clearGameStateListeners();
 
         if (model.getPlayerRole() == NodeRole.MASTER) {
             masterController.stopCurrentGame();
+            return;
         }
+
+        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
+        sender.sendMessage(model.getMasterAddress(), roleChange);
     }
 
     public void changeMaster() {

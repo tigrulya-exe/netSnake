@@ -90,6 +90,7 @@ public class MasterController{
                 System.out.println("NEW");
                 GameState gameState = model.getGameState();
                 GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
+                System.out.println("BROADCAST STATE");
                 sender.broadcastMessage(stateMessage);
             }
         };

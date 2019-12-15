@@ -44,10 +44,10 @@ public class NetworkControllerBridge {
     }
 
     public void stopCurrentGame(){
-        sender.stop();
         listener.reload();
 //        listener.interrupt();
         clientController.stopCurrentGame();
+        sender.stop();
     }
 
     public void restartCurrentGame(){
