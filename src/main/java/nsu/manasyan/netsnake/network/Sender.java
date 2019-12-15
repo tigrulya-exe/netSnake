@@ -4,11 +4,13 @@ import nsu.manasyan.netsnake.contexts.MessageContext;
 import nsu.manasyan.netsnake.contexts.SentMessagesKey;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.controllers.MasterController;
+import nsu.manasyan.netsnake.observable.Observable;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,6 +33,8 @@ public class Sender {
     private int multicastPort = 9192;
 
     private volatile boolean needToSendPing = false;
+
+    private volatile Observable<Long> joinMsgSeq = new Observable<>(0L);
 
     private Timer timer;
 
@@ -102,7 +106,6 @@ public class Sender {
 
     public void setMasterTimer(int pingDelayMs, int nodeTimeoutMs){
         timer = new Timer();
-        GameMessage announcementMsg = GameObjectBuilder.getAnnouncementMessage();
 
         TimerTask masterSendPing  = new TimerTask() {
             @Override
@@ -119,6 +122,8 @@ public class Sender {
         TimerTask broadcastAnnouncement  = new TimerTask() {
             @Override
             public void run() {
+                GameMessage announcementMsg = GameObjectBuilder.getAnnouncementMessage();
+
                 broadcastAnnouncement(announcementMsg);
             }
         };
@@ -136,6 +141,7 @@ public class Sender {
 
     public void sendJoin(InetSocketAddress receiverAddress, GameMessage message){
         int masterId = clientController.getMasterId();
+        joinMsgSeq.updateValue(message.getMsgSeq());
 
         if(sendMessage(receiverAddress, message, true))
             putIntoSentMessages(message, receiverAddress, masterId);
@@ -143,6 +149,7 @@ public class Sender {
 
     public void sendAck(InetSocketAddress receiverAddress, int receiverId, long msgSeq){
         GameMessage ackMessage = getAckMsg(clientController.getPlayerId(), receiverId, msgSeq);
+        System.out.println("[" + msgSeq + "] ACk: " + receiverAddress);
         sendMessage(receiverAddress, ackMessage, false);
 
     }
@@ -239,4 +246,7 @@ public class Sender {
         };
     }
 
+    public void registerJoinMsgSeqListeners(Observable.ValueListener<Long> listener) {
+        joinMsgSeq.registerValueListener(listener);
+    }
 }

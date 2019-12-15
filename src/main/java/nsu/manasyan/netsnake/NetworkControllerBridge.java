@@ -13,12 +13,13 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // TODO turn to singleton
 public class NetworkControllerBridge {
     private MulticastSocket socket;
 
-    private Map<SentMessagesKey, MessageContext> sentMessages = new HashMap<>();
+    private Map<SentMessagesKey, MessageContext> sentMessages = new ConcurrentHashMap<>();
 
     private ClientGameModel clientGameModel = new ClientGameModel();
 

@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameMessage.*;
-import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
 public class Listener {
     private interface Handler{
@@ -41,7 +40,7 @@ public class Listener {
 
     private volatile boolean isInterrupted = false;
 
-    private volatile boolean isJoinAck = true;
+    private volatile long joinMsgSeq = -1;
 
 //    private FiniteQueue<String> receivedMessageGuids = new FiniteQueue<>(RECEIVED_MESSAGES_BUF_LENGTH);
 
@@ -51,6 +50,7 @@ public class Listener {
         this.sentMessages = sentMessages;
         this.socket = socket;
         initHandlers();
+        sender.registerJoinMsgSeqListeners(jms -> this.joinMsgSeq = jms);
     }
 
     public void listen(){
@@ -67,7 +67,8 @@ public class Listener {
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
 
                     type = message.getTypeCase();
-                    System.out.println("Received type: " + type);
+                    if(type!=TypeCase.PING)
+                        System.out.println("[" + message.getMsgSeq() + "] Received type: " + type);
 
 //                if(checkIsDuplicate(type, message.getGUID())){
 //                    continue;
@@ -88,10 +89,11 @@ public class Listener {
     }
 
     public void reload(){
-        isJoinAck = true;
+        joinMsgSeq = -1;
     }
 
     private void handleJoinPlay(GameMessage message, InetSocketAddress address){
+        System.out.println("JOIN ADDress: " + address);
         JoinMsg joinMsg = message.getJoin();
         NodeRole role = (!joinMsg.hasOnlyView() || !joinMsg.getOnlyView()) ? NodeRole.NORMAL : NodeRole.VIEWER;
         Player player = new Player(joinMsg.getName(),
@@ -110,15 +112,18 @@ public class Listener {
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){
-        if(isJoinAck) {
+        if(joinMsgSeq == message.getMsgSeq()) {
+            System.out.println("GET JOIN ACK");
             clientController.setPlayerId(message.getReceiverId());
-            isJoinAck = false;
         }
-        sentMessages.remove(new SentMessagesKey(message.getMsgSeq(), message.getSenderId()));
+//        sentMessages.remove(new SentMessagesKey(message.getMsgSeq(), message.getSenderId()));
+
+        System.out.println(message);
+        sentMessages.entrySet().removeIf(e -> e.getKey().getMsgSeq() == message.getMsgSeq() &&
+                e.getKey().getPlayerId() == message.getSenderId());
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){
-
         clientController.setPlayerAlive(message.getSenderId());
     }
 

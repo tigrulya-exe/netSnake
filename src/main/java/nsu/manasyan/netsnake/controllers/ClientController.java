@@ -74,7 +74,7 @@ public class ClientController {
 
     public void initMasterContext() {
         masterId = DEFAULT_MASTER_ID;
-        model.setMasterAddress(null);
+//        model.setMasterAddress(null);
         model.setPlayerRole(NodeRole.MASTER);
         sender.stop();
 
