@@ -146,8 +146,6 @@ public class ClientController {
     }
 
     public void registerDirection(Direction direction){
-        if(model.getPlayerId() == -1)
-            return;
 
         if(!isCorrectDirection(direction))
             return;
@@ -171,6 +169,7 @@ public class ClientController {
         GameConfig config = announcementMsg.getConfig();
 
         model.setCurrentConfig(config);
+        model.setPlayerRole(NodeRole.NORMAL);
         masterId = getMasterId(announcementMsg.getPlayers().getPlayersList());
         System.out.println("MASTER ADDR: " + masterAddress);
         model.setMasterAddress(masterAddress);

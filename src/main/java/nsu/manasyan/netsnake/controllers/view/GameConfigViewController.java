@@ -1,23 +1,14 @@
 package nsu.manasyan.netsnake.controllers.view;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.VBox;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.gui.*;
 import nsu.manasyan.netsnake.proto.SnakesProto;
 
-import java.util.List;
-
 public class GameConfigViewController {
-    private static final int FIELD_BOX_WIDTH = 600;
 
     @FXML
     private Button backButton;
@@ -75,39 +66,6 @@ public class GameConfigViewController {
                 .setNodeTimeoutMs(getInt(nodeTimeoutMs.getText()))
                 .build();
     }
-//
-//
-//    private void initFieldCanvas(Scene scene, SnakesProto.GameConfig gameConfig){
-//
-//        Canvas canvas = new Canvas();
-//        canvas.setWidth(600);
-//        canvas.setHeight(600);
-//
-//        FieldCanvas fieldCanvas = new FieldCanvas(canvas, gameConfig.getHeight(), gameConfig.getWidth(), getCellSize());
-//
-//        NetSnakeApp.setFieldCanvas(fieldCanvas);
-//
-////        ObjectDrawer.drawField(MainController.getInstance().getField());
-//        Platform.runLater(() -> {
-//            clientController.getFoods().forEach(ObjectDrawer::drawFood);
-//            clientController.getSnakes().forEach(ObjectDrawer::drawSnake);
-//        });
-//
-//        List<Node> children =  ((AnchorPane) scene.getRoot()).getChildren();
-//        VBox gameBox = (VBox) children.get(3);
-//        gameBox.getChildren().clear();
-//        gameBox.getChildren().add(canvas);
-//        gameBox.setAlignment(Pos.CENTER);
-//
-//    }
-//
-//    private int getCellSize(){
-//        int tmpWidth = getInt(width.getText());
-//        int tmpHeight = getInt(height.getText());
-//
-//        int min = (tmpWidth > tmpHeight) ? tmpWidth : tmpHeight;
-//        return FIELD_BOX_WIDTH/min;
-//    }
 
     private int getInt(String str){
         return Integer.parseInt(str);
@@ -116,5 +74,4 @@ public class GameConfigViewController {
     private float getFloat(String str){
         return Float.parseFloat(str);
     }
-
 }

@@ -29,7 +29,7 @@ public class ClientGameModel {
 
     private int playerId;
 
-    private NodeRole playerRole;
+    private NodeRole playerRole = NodeRole.MASTER;
 
     private Map<Integer, ScoreContext> scores = new TreeMap<>();
 
