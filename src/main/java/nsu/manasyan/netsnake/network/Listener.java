@@ -1,6 +1,5 @@
 package nsu.manasyan.netsnake.network;
 
-import nsu.manasyan.netsnake.Wrappers.Player;
 import nsu.manasyan.netsnake.contexts.SentMessagesKey;
 import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.controllers.MasterController;
@@ -91,7 +90,7 @@ public class Listener {
         joinMsgSeq = -1;
     }
 
-    private void handleJoinPlay(GameMessage message, InetSocketAddress address){
+    private void handleJoin(GameMessage message, InetSocketAddress address){
         System.out.println("JOIN ADDress: " + address);
         JoinMsg joinMsg = message.getJoin();
 
@@ -143,8 +142,7 @@ public class Listener {
         if(roleChangeMsg.getSenderRole() == NodeRole.MASTER){
             clientController.setMasterAddress(address);
         }
-
-        if(roleChangeMsg.getSenderRole() == NodeRole.VIEWER){
+        else if(roleChangeMsg.getSenderRole() == NodeRole.VIEWER){
             masterController.removePlayer(message.getSenderId());
 //            masterController.setPlayerAsViewer(message.getSenderId());
         }
@@ -152,8 +150,7 @@ public class Listener {
         if(roleChangeMsg.getReceiverRole() == NodeRole.DEPUTY){
             clientController.setRole(NodeRole.DEPUTY);
         }
-
-        if(roleChangeMsg.getReceiverRole() == NodeRole.MASTER){
+        else if(roleChangeMsg.getReceiverRole() == NodeRole.MASTER){
             clientController.becomeMaster();
         }
 
@@ -166,7 +163,7 @@ public class Listener {
 
     private void initHandlers(){
         handlers.put(TypeCase.ACK, this::handleAck);
-        handlers.put(TypeCase.JOIN, this::handleJoinPlay);
+        handlers.put(TypeCase.JOIN, this::handleJoin);
         handlers.put(TypeCase.PING, this::handlePing);
         handlers.put(TypeCase.STATE, this::handleState);
         handlers.put(TypeCase.ERROR, this::handleError);
