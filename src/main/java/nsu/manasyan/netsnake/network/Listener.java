@@ -99,12 +99,14 @@ public class Listener {
         System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
         masterController.addPlayer(player);
-        sender.sendAck(address, masterController.getAvailablePlayerId() - 1);
+        sender.sendAck(address, masterController.getAvailablePlayerId() - 1, message.getMsgSeq());
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
         clientController.setGameState(message.getState().getState());
         clientController.updateAllFullPoints();
+
+        sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){
@@ -123,11 +125,15 @@ public class Listener {
     private void handleSteer(GameMessage message, InetSocketAddress address){
         Direction direction = message.getSteer().getDirection();
         masterController.registerPlayerDirection(message.getSenderId(), direction);
+
+        sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
     }
 
     private void handleError(GameMessage message, InetSocketAddress address){
         String errorMessage = message.getError().getErrorMessage();
         clientController.error(errorMessage);
+
+        sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
     }
 
     private void handleRoleChange(GameMessage message, InetSocketAddress address){
@@ -148,6 +154,8 @@ public class Listener {
         if(roleChangeMsg.getReceiverRole() == NodeRole.MASTER){
             clientController.becomeMaster();
         }
+
+        sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
     }
 
     private void handleAnnouncement(GameMessage message, InetSocketAddress address){

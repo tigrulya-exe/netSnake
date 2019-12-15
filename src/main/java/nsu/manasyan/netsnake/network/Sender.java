@@ -141,9 +141,10 @@ public class Sender {
             putIntoSentMessages(message, receiverAddress, masterId);
     }
 
-    public void sendAck(InetSocketAddress receiverAddress, int receiverId){
-        GameMessage ackMessage = getAckMsg(clientController.getPlayerId(), receiverId);
+    public void sendAck(InetSocketAddress receiverAddress, int receiverId, long msgSeq){
+        GameMessage ackMessage = getAckMsg(clientController.getPlayerId(), receiverId, msgSeq);
         sendMessage(receiverAddress, ackMessage, false);
+
     }
 
     public void sendConfirmRequiredMessage(InetSocketAddress receiverAddress, GameMessage message, int receiverId){

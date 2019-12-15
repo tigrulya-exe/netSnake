@@ -140,13 +140,13 @@ public class GameObjectBuilder {
                 .build();
     }
 
-    public static GameMessage getAckMsg(int senderId, int receiverId){
+    public static GameMessage getAckMsg(int senderId, int receiverId, long msgSeq){
         GameMessage.AckMsg ack =  GameMessage.AckMsg.newBuilder().build();
 
         return GameMessage.newBuilder()
                 .setAck(ack)
                 .setSenderId(senderId)
-                .setMsgSeq(currentGameMsgSeq++)
+                .setMsgSeq(msgSeq)
                 .setReceiverId(receiverId)
                 .build();
     }
