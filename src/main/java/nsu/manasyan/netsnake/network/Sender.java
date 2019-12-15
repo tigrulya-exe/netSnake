@@ -178,8 +178,8 @@ public class Sender {
         TimerTask checkMaster = new TimerTask() {
             @Override
             public void run() {
-                if(!clientController.isMasterAlive()){
-                    clientController.changeMaster();
+                if(clientController.isMasterAlive()){
+                    clientController.setMasterAlive(false);
                     return;
                 }
 

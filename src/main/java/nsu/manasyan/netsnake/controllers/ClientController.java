@@ -35,7 +35,6 @@ public class ClientController {
     private volatile boolean isMasterAlive = true;
 
     private static class SingletonHelper{
-
         private static final ClientController controller = new ClientController();
     }
 
@@ -95,16 +94,6 @@ public class ClientController {
         masterController.becomeMaster(model, sender, field);
         initMasterContext();
     }
-//
-//    public void restart() {
-//        model.clear();
-//
-//        if(model.getPlayerRole() == NodeRole.MASTER) {
-//            masterController.stopCurrentGame();
-//            startNewGame(model.getCurrentConfig());
-//        } else
-//            joinGame(model.getMasterAddress(), false, model.getCurrentConfig());
-//    }
 
     public void stopCurrentGame() {
         model.clear();
@@ -120,6 +109,7 @@ public class ClientController {
     }
 
     public void changeMaster() {
+        System.out.println("MASKPWDONWJKNIJBDWJVOQWGIVDGQHWD");
         isMasterAlive = true;
         if(model.getPlayerRole() == NodeRole.DEPUTY) {
             becomeMaster();
@@ -242,6 +232,7 @@ public class ClientController {
     public void setGameState(GameState gameState){
 //        if(gameState.getStateOrder() <= model.getGameState().getStateOrder())
 //            return;
+        isMasterAlive = true;
         model.setGameState(gameState);
     }
 

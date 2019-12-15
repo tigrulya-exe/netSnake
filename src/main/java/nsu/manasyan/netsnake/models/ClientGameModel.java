@@ -58,13 +58,6 @@ public class ClientGameModel {
         playerId = -1;
     }
 
-    public ClientGameModel(int playerId, GameConfig currentConfig, GameState gameState, NodeRole playerRole) {
-        this.playerId = playerId;
-        this.currentConfig = currentConfig;
-        this.gameState = gameState;
-        this.playerRole =  playerRole;
-    }
-
     public String getPlayerName() {
         return playerName;
     }

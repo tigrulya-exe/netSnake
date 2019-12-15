@@ -74,6 +74,7 @@ public class Listener {
 //                    continue;
 //                }
 
+
                     handlers.get(type).handle(message, (InetSocketAddress) packetToReceive.getSocketAddress());
                     packetToReceive.setLength(BUF_LENGTH);
                 }

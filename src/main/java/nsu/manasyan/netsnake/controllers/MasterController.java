@@ -44,9 +44,9 @@ public class MasterController{
     }
 
     private static class SingletonHelper{
-
         private static final MasterController controller = new MasterController();
     }
+
     public void startGame(ClientGameModel currModel, Sender senderIn, Field field){
         var config = currModel.getCurrentConfig();
         masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
@@ -99,7 +99,6 @@ public class MasterController{
 
     public void addScore(int playerId, int newPoints){
         masterGameModel.getPlayers().get(playerId).addScore(newPoints);
-//        model.addScore(playerId, playerName, newPoints);
     }
 
     public void newTurn() {

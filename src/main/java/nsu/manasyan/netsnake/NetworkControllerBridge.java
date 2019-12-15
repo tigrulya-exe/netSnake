@@ -21,8 +21,6 @@ public class NetworkControllerBridge {
 
     private Map<SentMessagesKey, MessageContext> sentMessages = new ConcurrentHashMap<>();
 
-    private ClientGameModel clientGameModel = new ClientGameModel();
-
     private ClientController clientController;
 
     private Listener listener;
