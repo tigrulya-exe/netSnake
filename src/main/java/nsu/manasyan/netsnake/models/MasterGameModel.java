@@ -156,7 +156,7 @@ public class MasterGameModel {
 
     public void addPlayer(Player player) {
         players.put(player.getId(), player);
-        alivePlayers.put(player.getId(), true);
+//        alivePlayers.put(player.getId(), true);
         initPlayerHeadDirections(player.getId());
     }
 }

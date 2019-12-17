@@ -31,7 +31,7 @@ public class ClientGameModel {
 
     private int masterId = 0;
 
-    private NodeRole playerRole = NodeRole.MASTER;
+    private volatile NodeRole playerRole = NodeRole.MASTER;
 
     private Map<Integer, ScoreContext> scores = new TreeMap<>();
 
