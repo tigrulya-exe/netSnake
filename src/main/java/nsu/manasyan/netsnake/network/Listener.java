@@ -37,6 +37,8 @@ public class Listener {
 
     private InetAddress multicastAddress;
 
+    private long lastStateSeq = 0;
+
     private volatile boolean isInterrupted = false;
 
     private volatile long joinMsgSeq = -1;
@@ -86,6 +88,7 @@ public class Listener {
 
     public void reload(){
         joinMsgSeq = -1;
+        lastStateSeq = 0;
     }
 
     private void handleJoin(GameMessage message, InetSocketAddress address){
@@ -100,6 +103,11 @@ public class Listener {
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
+        if(message.getMsgSeq() < lastStateSeq){
+            return;
+        }
+
+        lastStateSeq = message.getMsgSeq();
         clientController.setGameState(message.getState().getState());
         clientController.updateAllFullPoints();
 
