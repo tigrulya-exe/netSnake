@@ -20,10 +20,11 @@ public class GameObjectBuilder {
 
     private static AtomicInteger currentGameMsgSeq = new AtomicInteger(0);
 
-    public static GameMessage initPingMessage(){
+    public static GameMessage initPingMessage(int playerId){
         return GameMessage.newBuilder()
                 .setPing(GameMessage.PingMsg.newBuilder().build())
                 .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
+                .setSenderId(playerId)
                 .build();
     }
 

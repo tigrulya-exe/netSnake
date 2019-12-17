@@ -29,6 +29,8 @@ public class ClientGameModel {
 
     private int playerId;
 
+    private int masterId = 0;
+
     private NodeRole playerRole = NodeRole.MASTER;
 
     private Map<Integer, ScoreContext> scores = new TreeMap<>();
@@ -209,5 +211,13 @@ public class ClientGameModel {
 
     public void setDeputyAddress(InetSocketAddress deputyAddress) {
         this.deputyAddress = deputyAddress;
+    }
+
+    public int getMasterId() {
+        return masterId;
+    }
+
+    public void setMasterId(int masterId) {
+        this.masterId = masterId;
     }
 }

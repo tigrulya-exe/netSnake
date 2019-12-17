@@ -119,7 +119,7 @@ public class Listener {
     private void handleAck(GameMessage message, InetSocketAddress address){
         if(joinMsgSeq == message.getMsgSeq()) {
             System.out.println("GET JOIN ACK");
-            sender.setClientTimer(address);
+            sender.setClientTimer(address, message.getReceiverId());
             clientController.setPlayerId(message.getReceiverId());
         }
 //        sentMessages.remove(new SentMessagesKey(message.getMsgSeq(), message.getSenderId()));
@@ -129,6 +129,7 @@ public class Listener {
     }
 
     private void handlePing(GameMessage message, InetSocketAddress address){
+        System.out.println("PING : " + message.getSenderId());
         clientController.setPlayerAlive(message.getSenderId());
     }
 

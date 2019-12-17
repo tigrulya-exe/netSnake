@@ -74,7 +74,7 @@ public class Sender {
                 e.printStackTrace();
             }
         });
-        //);
+//        );
     }
 
     public void broadcastAnnouncement(GameMessage announcementMsg) {
@@ -103,7 +103,7 @@ public class Sender {
         return true;
     }
 
-    public void setMasterTimer(int pingDelayMs, int nodeTimeoutMs){
+    public void setMasterTimer(int pingDelayMs, int nodeTimeoutMs, int masterId){
         timer = new Timer();
 
         TimerTask masterSendPing  = new TimerTask() {
@@ -113,7 +113,7 @@ public class Sender {
                     needToSendPing = true;
                     return;
                 }
-                GameMessage ping =  GameObjectBuilder.initPingMessage();
+                GameMessage ping =  GameObjectBuilder.initPingMessage(masterId);
                 broadcastMessage(ping, false);
             }
         };
@@ -127,7 +127,7 @@ public class Sender {
         };
 
         timer.schedule(masterSendPing, pingDelayMs, pingDelayMs);
-        timer.schedule(getCheckAlivePlayersTask(), nodeTimeoutMs, nodeTimeoutMs);
+        timer.schedule(getCheckAlivePlayersTask(), nodeTimeoutMs * 2, nodeTimeoutMs);
         timer.schedule(broadcastAnnouncement, 1000, 1000);
         timer.schedule(getCheckSentMessagesTask(), nodeTimeoutMs/2, nodeTimeoutMs/2);
     }
@@ -156,7 +156,7 @@ public class Sender {
             putIntoSentMessages(message, receiverAddress, receiverId);
     }
 
-    public void setClientTimer(InetSocketAddress masterAddress){
+    public void setClientTimer(InetSocketAddress masterAddress, int playerId){
         timer = new Timer();
         var clientController = ClientController.getInstance();
 
@@ -167,7 +167,7 @@ public class Sender {
                     needToSendPing = true;
                     return;
                 }
-                GameMessage ping = GameObjectBuilder.initPingMessage();
+                GameMessage ping = GameObjectBuilder.initPingMessage(playerId);
                 sendMessage(masterAddress, ping, false);
             }
         };

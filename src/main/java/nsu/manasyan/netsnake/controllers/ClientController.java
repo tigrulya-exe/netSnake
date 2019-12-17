@@ -20,7 +20,7 @@ import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 public class ClientController {
     private static final int DEFAULT_MASTER_ID = 0;
 
-    private int masterId;
+//    private int masterId;
 
     private ClientGameModel model;
 
@@ -72,18 +72,17 @@ public class ClientController {
     }
 
     public void initMasterContext() {
-        masterId = DEFAULT_MASTER_ID;
-//        model.setMasterAddress(null);
         model.setPlayerRole(NodeRole.MASTER);
         sender.stop();
 
         var config = model.getCurrentConfig();
-        sender.setMasterTimer(config.getPingDelayMs(), config.getNodeTimeoutMs());
+        sender.setMasterTimer(config.getPingDelayMs(), config.getNodeTimeoutMs(), model.getMasterId());
     }
 
     public void startNewGame(GameConfig config) {
         model.setCurrentConfig(config);
         model.setPlayerId(DEFAULT_MASTER_ID);
+        model.setMasterId(DEFAULT_MASTER_ID);
 
         field = new Field(config.getHeight(), config.getWidth());
         masterController.startGame(model, sender, field);
@@ -92,6 +91,7 @@ public class ClientController {
 
     public void becomeMaster() {
         masterController.becomeMaster(model, sender, field);
+        model.setMasterId(model.getPlayerId());
         initMasterContext();
     }
 
@@ -105,7 +105,7 @@ public class ClientController {
         }
 
         GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
-        sender.sendConfirmRequiredMessage(model.getMasterAddress(), roleChange, masterId);
+        sender.sendConfirmRequiredMessage(model.getMasterAddress(), roleChange, model.getMasterId());
     }
 
     public void changeMaster() {
@@ -142,7 +142,7 @@ public class ClientController {
         }
 
         GameMessage message = getSteerMessage(direction,model.getPlayerId());
-        sender.sendConfirmRequiredMessage(model.getMasterAddress(), message, masterId);
+        sender.sendConfirmRequiredMessage(model.getMasterAddress(), message, model.getMasterId());
     }
 
     public void setStartConfigurations(GameConfig config){
@@ -155,7 +155,7 @@ public class ClientController {
 
         model.setCurrentConfig(config);
         model.setPlayerRole(NodeRole.NORMAL);
-        masterId = getMasterId(announcementMsg.getPlayers().getPlayersList());
+        model.setMasterId(getMasterId(announcementMsg.getPlayers().getPlayersList()));
         System.out.println("MASTER ADDR: " + masterAddress);
         model.setMasterAddress(masterAddress);
         sender.sendJoin(masterAddress, getJoinMessage(getPlayerName(), onlyView));
@@ -177,7 +177,7 @@ public class ClientController {
 
 
     public void setPlayerAlive(int id){
-        if(model.getPlayerRole() == NodeRole.MASTER){
+        if(model.getPlayerRole() != NodeRole.MASTER){
             masterController.setPlayerAlive(id, true);
             return;
         }
@@ -211,7 +211,7 @@ public class ClientController {
     }
 
     public int getMasterId() {
-        return masterId;
+        return model.getMasterId();
     }
 
     public void setMasterAlive(boolean masterAlive) {

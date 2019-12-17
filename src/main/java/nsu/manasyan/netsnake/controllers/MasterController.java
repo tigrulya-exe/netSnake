@@ -63,7 +63,6 @@ public class MasterController{
     public void becomeMaster(ClientGameModel currModel, Sender senderIn, Field field){
         model = currModel;
         masterGameModel = new MasterGameModel(model.getGameState(), model.getPlayerId());
-        masterGameModel.setMasterDirection();
         init(senderIn, field, model.getCurrentConfig().getStateDelayMs());
     }
 
@@ -228,7 +227,7 @@ public class MasterController{
 
     public void registerDirection(Direction newDirection){
         if(isCorrectDirection(newDirection, masterGameModel.getMasterDirection())) {
-            registerPlayerDirection(masterGameModel.getMasterId(), newDirection);
+            registerPlayerDirection(model.getMasterId(), newDirection);
             masterGameModel.setMasterDirection(newDirection);
 
         }
@@ -248,8 +247,10 @@ public class MasterController{
         turnDeadSnakeIntoFood(deadSnake);
 //        removeSnake(playerId);
 
-        setPlayerAsViewer(playerId);
-        model.removeScore(playerId);
+        if(deadSnake.getSnakeState() != GameState.Snake.SnakeState.ZOMBIE) {
+            setPlayerAsViewer(playerId);
+            model.removeScore(playerId);
+        }
     }
 
     public void stopCurrentGame(){
