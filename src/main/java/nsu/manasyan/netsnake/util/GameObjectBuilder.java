@@ -1,13 +1,11 @@
 package nsu.manasyan.netsnake.util;
 
 import nsu.manasyan.netsnake.Wrappers.Player;
-import nsu.manasyan.netsnake.controllers.ClientController;
 import nsu.manasyan.netsnake.controllers.MasterController;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.Wrappers.Snake;
 import nsu.manasyan.netsnake.proto.SnakesProto.*;
 
-import javax.swing.event.CaretListener;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,8 +13,6 @@ public class GameObjectBuilder {
     private static String name = "Steve";
 
     private static int port = -1;
-
-    private static final int DEFAULT_PORT = 18888;
 
     private static final int DEFAULT_MASTER_ID = 0;
 
@@ -80,10 +76,6 @@ public class GameObjectBuilder {
 
         return null;
     }
-
-//    private Snake getNewSnake(Field field, int int startX, int startY){
-//        return new Snake()
-//    }
 
     private static boolean checkLine(Field field, int startX, int y){
         for(int x = startX; x  < startX + 5; ++x){
@@ -170,7 +162,7 @@ public class GameObjectBuilder {
         if (senderRole != null)
             roleChangeBuilder.setSenderRole(senderRole);
         if (receiverRole != null)
-            roleChangeBuilder.setSenderRole(receiverRole);
+            roleChangeBuilder.setReceiverRole(receiverRole);
 
         return GameMessage.newBuilder()
                 .setRoleChange(roleChangeBuilder.build())

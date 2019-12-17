@@ -70,8 +70,6 @@ public class Listener {
 //                if(checkIsDuplicate(type, message.getGUID())){
 //                    continue;
 //                }
-
-
                     handlers.get(type).handle(message, (InetSocketAddress) packetToReceive.getSocketAddress());
                     packetToReceive.setLength(BUF_LENGTH);
                 }
@@ -94,7 +92,7 @@ public class Listener {
         System.out.println("JOIN ADDress: " + address);
         JoinMsg joinMsg = message.getJoin();
 
-        int id = masterController.addPlayer(joinMsg.getName(), address.getHostName(), address.getPort(), joinMsg.getOnlyView());
+        int id = masterController.addPlayer(joinMsg.getName(), address.getHostString(), address.getPort(), joinMsg.getOnlyView());
         masterController.checkDeputy(address, id);
 
         sender.sendAck(address, masterController.getAvailablePlayerId() - 1, message.getMsgSeq());

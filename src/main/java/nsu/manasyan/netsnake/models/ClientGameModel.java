@@ -43,7 +43,7 @@ public class ClientGameModel {
 
     private SnakesProto.Direction currentDirection;
 
-    private InetSocketAddress deputyAddress;
+    private volatile InetSocketAddress deputyAddress;
 
     private int deputyId;
 
