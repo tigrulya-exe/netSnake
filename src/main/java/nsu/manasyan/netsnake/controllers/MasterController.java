@@ -2,6 +2,7 @@ package nsu.manasyan.netsnake.controllers;
 
 import nsu.manasyan.netsnake.Wrappers.FullPoints;
 import nsu.manasyan.netsnake.Wrappers.Player;
+import nsu.manasyan.netsnake.exceptions.MasterDeadException;
 import nsu.manasyan.netsnake.models.ClientGameModel;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.models.MasterGameModel;
@@ -53,7 +54,7 @@ public class MasterController{
         model = currModel;
         var config = model.getCurrentConfig();
         masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
-        addPlayer(model.getPlayerName(), "", -1, NodeRole.MASTER);
+        addPlayer(model.getPlayerName(), "", 9192, NodeRole.MASTER);
         masterGameModel.setMasterDirection();
 
         model.setGameState(masterGameModel.toGameState());
@@ -63,10 +64,16 @@ public class MasterController{
     public void becomeMaster(ClientGameModel currModel, Sender senderIn, Field field){
         model = currModel;
         masterGameModel = new MasterGameModel(model.getGameState(), model.getPlayerId());
-        masterGameModel.getPlayers().remove(model.getMasterId());
+//        masterGameModel.getPlayers().remove(model.getMasterId());
+        initOldMasterAddress();
         init(senderIn, field, model.getCurrentConfig().getStateDelayMs());
         model.setMasterId(model.getPlayerId());
         masterGameModel.getPlayers().get(model.getMasterId()).setRole(NodeRole.MASTER);
+    }
+
+    private void initOldMasterAddress() {
+        Player oldMaster = masterGameModel.getPlayers().get(model.getMasterId());
+        oldMaster.setIpAddress(model.getMasterAddress().getHostString());
     }
 
     public void init(Sender senderIn, Field field, int stateDelayMs){
@@ -119,11 +126,15 @@ public class MasterController{
 
         TimerTask newTurn  = new TimerTask() {
             @Override
-            public void run(){
-                newTurn();
-                GameState gameState = model.getGameState();
-                GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
-                sender.broadcastState(stateMessage);
+            public void run() {
+                try {
+                    newTurn();
+                    GameState gameState = model.getGameState();
+                    GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
+                    sender.broadcastState(stateMessage);
+                } catch (MasterDeadException exception){
+                    System.out.println("DEAD");
+                }
             }
         };
         timer.schedule(newTurn, stateDelayMs, stateDelayMs);
@@ -247,6 +258,8 @@ public class MasterController{
     public void gameOver(int playerId){
 
         Snake deadSnake = masterGameModel.getSnakes().get(playerId);
+        if(deadSnake == null)
+            System.out.println("lkn");
         turnDeadSnakeIntoFood(deadSnake);
 //        removeSnake(playerId);
 
@@ -302,7 +315,9 @@ public class MasterController{
             var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER, model.getPlayerId(), playerId);
             sender.sendConfirmRequiredMessage(model.getDeputyAddress(), roleChangeMsg, model.getDeputyId());
             stopCurrentGame();
-            return;
+            sender.stop();
+            sender.setClientTimer(model.getDeputyAddress(), model.getMasterId());
+            throw new MasterDeadException();
         }
 
         players.get(playerId).setRole(NodeRole.VIEWER);

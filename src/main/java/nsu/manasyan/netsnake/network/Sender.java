@@ -61,7 +61,6 @@ public class Sender {
                 if (player.getId() == masterId) {
                     return;
                 }
-                System.out.println("addr: " + player.getIpAddress());
                 byte[] buf = message.toByteArray();
 
                 InetSocketAddress socketAddress = new InetSocketAddress(player.getIpAddress(), player.getPort());
@@ -215,8 +214,8 @@ public class Sender {
                     var entry = iter.next();
                     if(entry.getValue() || entry.getKey() == masterId) {
                         alivePlayers.put(entry.getKey(), false);
-                        if(entry.getKey() == 1)
-                           System.out.println("1 JHBEKUBHEJLKFJEF");
+                        if(entry.getKey() == -1)
+                           System.out.println("-1 JHBEKUBHEJLKFJEF");
                         continue;
                     }
 

@@ -89,4 +89,12 @@ public class Player {
     public void addScore(int newPoints) {
         score += newPoints;
     }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
 }
