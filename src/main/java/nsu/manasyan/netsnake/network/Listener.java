@@ -103,7 +103,9 @@ public class Listener {
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){
+        clientController.setPlayerAlive(message.getSenderId());
         if(message.getMsgSeq() < lastStateSeq){
+            sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
             return;
         }
 
@@ -131,6 +133,7 @@ public class Listener {
     }
 
     private void handleSteer(GameMessage message, InetSocketAddress address){
+        clientController.setPlayerAlive(message.getSenderId());
         Direction direction = message.getSteer().getDirection();
         masterController.registerPlayerDirection(message.getSenderId(), direction);
 
@@ -145,6 +148,7 @@ public class Listener {
     }
 
     private void handleRoleChange(GameMessage message, InetSocketAddress address){
+        clientController.setPlayerAlive(message.getSenderId());
         RoleChangeMsg roleChangeMsg = message.getRoleChange();
         if(roleChangeMsg.getSenderRole() == NodeRole.MASTER){
             clientController.setMasterAddress(address);

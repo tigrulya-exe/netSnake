@@ -186,9 +186,8 @@ public class MasterController{
         Player player = new Player(name,  availablePlayerId++ ,address, port, role, 0);
         System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
-        masterGameModel.getPlayers().put(player.getId(), player);
+        masterGameModel.addPlayer(player);
         model.addScore(player.getId(), player.getName(), 0);
-        masterGameModel.initPlayerHeadDirections(player.getId());
         addSnake(player.getId());
         return player.getId();
     }
@@ -255,8 +254,10 @@ public class MasterController{
 
     public void stopCurrentGame(){
         availablePlayerId = 1;
-        timer.cancel();
-        masterGameModel.clear();
+        if(masterGameModel != null){
+            timer.cancel();
+            masterGameModel.clear();
+        }
     }
 
     private void sendRoleChangeToDeputy(InetSocketAddress address, int id){

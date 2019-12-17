@@ -153,4 +153,10 @@ public class MasterGameModel {
     public int getMasterId() {
         return masterId;
     }
+
+    public void addPlayer(Player player) {
+        players.put(player.getId(), player);
+        alivePlayers.put(player.getId(), true);
+        initPlayerHeadDirections(player.getId());
+    }
 }
