@@ -117,6 +117,7 @@ public class Listener {
     }
 
     private void handleAck(GameMessage message, InetSocketAddress address){
+        clientController.setPlayerAlive(message.getSenderId());
         if(joinMsgSeq == message.getMsgSeq()) {
             System.out.println("GET JOIN ACK");
             sender.setClientTimer(address, message.getReceiverId());

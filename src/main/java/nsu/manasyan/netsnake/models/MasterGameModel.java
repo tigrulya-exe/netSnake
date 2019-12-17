@@ -5,7 +5,6 @@ import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.*;
 import nsu.manasyan.netsnake.util.GameObjectBuilder;
 
-import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -118,6 +117,8 @@ public class MasterGameModel {
     }
 
     public void setPlayerAlive(int playerId, boolean isAlive){
+        if(playerId == -1)
+            System.out.println("KMLDWK:OMLWD");
         alivePlayers.put(playerId, isAlive);
     }
 

@@ -53,7 +53,7 @@ public class Sender {
         if (masterController.getPlayers().size() == 1) {
             return;
         }
-        System.out.println("Broadcast: " + message.getTypeCase());
+//        System.out.println("Broadcast: " + message.getTypeCase());
 
 //        GameExecutorService.getExecutorService().submit(() ->
         masterController.getPlayers().forEach(player -> {
@@ -146,6 +146,8 @@ public class Sender {
     }
 
     public void sendAck(InetSocketAddress receiverAddress, int receiverId, long msgSeq){
+        if(clientController.getPlayerId() == -1)
+            System.out.println("LWKMLKDW");
         GameMessage ackMessage = getAckMsg(clientController.getPlayerId(), receiverId, msgSeq);
         System.out.println("[" + msgSeq + "] ACk: " + receiverAddress);
         sendMessage(receiverAddress, ackMessage, false);
