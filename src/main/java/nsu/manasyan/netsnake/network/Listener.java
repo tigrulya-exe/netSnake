@@ -43,6 +43,8 @@ public class Listener {
 
     private volatile long joinMsgSeq = -1;
 
+    private boolean joined = false;
+
     public Listener( Sender sender, Map<SentMessagesKey, MessageContext> sentMessages, MulticastSocket socket, InetAddress multicastAddress) {
         this.multicastAddress = multicastAddress;
         this.sender = sender;
@@ -66,12 +68,12 @@ public class Listener {
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
 
                     type = message.getTypeCase();
+
+                    if(!joined && (type != TypeCase.ACK && type != TypeCase.ANNOUNCEMENT) )
+                        continue;
 //                    if(type!=TypeCase.PING)
 //                        System.out.println("[" + message.getMsgSeq() + "] Received type: " + type);
 
-//                if(checkIsDuplicate(type, message.getGUID())){
-//                    continue;
-//                }
                     handlers.get(type).handle(message, (InetSocketAddress) packetToReceive.getSocketAddress());
                     packetToReceive.setLength(BUF_LENGTH);
                 }
@@ -121,6 +123,7 @@ public class Listener {
             System.out.println("GET JOIN ACK");
             sender.setClientTimer(address, message.getReceiverId());
             clientController.setPlayerId(message.getReceiverId());
+            joined  = true;
         }
 //        sentMessages.remove(new SentMessagesKey(message.getMsgSeq(), message.getSenderId()));
 
