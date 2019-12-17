@@ -66,8 +66,8 @@ public class Listener {
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
 
                     type = message.getTypeCase();
-                    if(type!=TypeCase.PING)
-                        System.out.println("[" + message.getMsgSeq() + "] Received type: " + type);
+//                    if(type!=TypeCase.PING)
+//                        System.out.println("[" + message.getMsgSeq() + "] Received type: " + type);
 
 //                if(checkIsDuplicate(type, message.getGUID())){
 //                    continue;
@@ -97,9 +97,8 @@ public class Listener {
 
         NodeRole role = (joinMsg.getOnlyView()) ? NodeRole.VIEWER : NodeRole.NORMAL;
         int id = masterController.addPlayer(joinMsg.getName(), address.getHostString(), address.getPort(), role);
-        masterController.checkDeputy(address, id);
-
         sender.sendAck(address, masterController.getAvailablePlayerId() - 1, message.getMsgSeq());
+        masterController.checkDeputy(address, id);
     }
 
     private void handleState(GameMessage message, InetSocketAddress address){

@@ -117,8 +117,6 @@ public class MasterGameModel {
     }
 
     public void setPlayerAlive(int playerId, boolean isAlive){
-        if(playerId == -1)
-            System.out.println("KMLDWK:OMLWD");
         alivePlayers.put(playerId, isAlive);
     }
 

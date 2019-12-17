@@ -100,8 +100,10 @@ public class ClientController {
             return;
         }
 
-        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null, model.getPlayerId());
-        sender.sendConfirmRequiredMessage(model.getMasterAddress(), roleChange, model.getMasterId());
+        int masterId = model.getMasterId();
+        GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null,
+                model.getPlayerId(), masterId);
+        sender.sendConfirmRequiredMessage(model.getMasterAddress(), roleChange, masterId);
     }
 
     public void changeMaster() {

@@ -158,7 +158,7 @@ public class GameObjectBuilder {
                 .build();
     }
 
-    public static GameMessage getRoleChangeMessage(NodeRole senderRole, NodeRole receiverRole, int playerId) {
+    public static GameMessage getRoleChangeMessage(NodeRole senderRole, NodeRole receiverRole, int senderId, int receiverId) {
         GameMessage.RoleChangeMsg.Builder roleChangeBuilder = GameMessage.RoleChangeMsg.newBuilder();
         if (senderRole != null)
             roleChangeBuilder.setSenderRole(senderRole);
@@ -167,7 +167,8 @@ public class GameObjectBuilder {
 
         return GameMessage.newBuilder()
                 .setRoleChange(roleChangeBuilder.build())
-                .setSenderId(playerId)
+                .setSenderId(senderId)
+                .setReceiverId(receiverId)
                 .setMsgSeq(currentGameMsgSeq.getAndAdd(1))
                 .build();
     }

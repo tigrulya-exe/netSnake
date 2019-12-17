@@ -265,7 +265,7 @@ public class MasterController{
     }
 
     private void sendRoleChangeToDeputy(InetSocketAddress address, int id){
-        var roleChangeMsg = getRoleChangeMessage(null, NodeRole.DEPUTY, id);
+        var roleChangeMsg = getRoleChangeMessage(null, NodeRole.DEPUTY, model.getPlayerId(),id);
         sender.sendConfirmRequiredMessage(address, roleChangeMsg, id);
     }
 
@@ -299,7 +299,7 @@ public class MasterController{
         checkDeputyDeath(playerId);
 
         if(player.getRole() == NodeRole.MASTER && model.getDeputyAddress() != null){
-            var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER, model.getPlayerId());
+            var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER, model.getPlayerId(), playerId);
             sender.sendConfirmRequiredMessage(model.getDeputyAddress(), roleChangeMsg, model.getDeputyId());
             stopCurrentGame();
             return;
