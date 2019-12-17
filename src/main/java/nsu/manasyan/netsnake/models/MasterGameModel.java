@@ -11,9 +11,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class MasterGameModel {
-    private static final int MASTER_ID = 0;
-
     private int stateOrder = 0;
+
+    private int masterId = 0;
 
     private SnakesProto.GameConfig config;
 
@@ -26,24 +26,26 @@ public class MasterGameModel {
 
     private List<Coord> foods;
 
-    private InetSocketAddress deputyAddress;
-
     private Map<Integer, List<SnakesProto.Direction>> headDirections = new HashMap<>();
+
+    private SnakesProto.Direction masterDirection;
 
     public MasterGameModel(List<Coord> foods, SnakesProto.GameConfig config) {
         this.foods = foods;
         this.config = config;
-        initMaster();
+        players.put(masterId, GameObjectBuilder.initMaster());
     }
 
-    public MasterGameModel(SnakesProto.GameState gameState) {
+    public MasterGameModel(SnakesProto.GameState gameState, int newMasterId) {
         // this.foods should be mutable
+        this.masterId = newMasterId;
         this.foods = new ArrayList<>(gameState.getFoodsList());
         this.config = gameState.getConfig();
         initPlayers(gameState.getPlayers().getPlayersList());
         initAlivePlayers();
         initSnakes(gameState.getSnakesList());
         initHeadDirections();
+        setMasterDirection();
     }
 
     private void initSnakes(List<Snake> immutableSnakesList) {
@@ -69,16 +71,6 @@ public class MasterGameModel {
         Collection <SnakesProto.GamePlayer> protoPlayers = players.values().stream().map(Player::toProto).collect(Collectors.toList());
         return GameObjectBuilder.getGameState(protoPlayers, getProtoSnakes(),
                 config, stateOrder++, foods);
-    }
-
-    private void initMaster(){
-        players.put(MASTER_ID, GameObjectBuilder.initMaster());
-        players.get(MASTER_ID).setId(MASTER_ID);
-//        snakes.put(MASTER_ID, GameObjectBuilder.initNewSnake(MASTER_ID, field));
-        //for master
-        snakes.put(MASTER_ID, new nsu.manasyan.netsnake.Wrappers.Snake(MASTER_ID));
-        headDirections.put(MASTER_ID, new ArrayList<>());
-        headDirections.get(MASTER_ID).add(nsu.manasyan.netsnake.Wrappers.Snake.getDefaultDirection());
     }
 
     private List<SnakesProto.GameState.Snake> getProtoSnakes(){
@@ -146,11 +138,19 @@ public class MasterGameModel {
         headDirections.get(id).add(nsu.manasyan.netsnake.Wrappers.Snake.getDefaultDirection());
     }
 
-    public InetSocketAddress getDeputyAddress() {
-        return deputyAddress;
+    public SnakesProto.Direction getMasterDirection() {
+        return masterDirection;
     }
 
-    public void setDeputyAddress(InetSocketAddress deputyAddress) {
-        this.deputyAddress = deputyAddress;
+    public void setMasterDirection() {
+        masterDirection =  getPlayerHeadDirection(masterId);
+    }
+
+    public void setMasterDirection(SnakesProto.Direction newDirection) {
+        masterDirection =  newDirection;
+    }
+
+    public int getMasterId() {
+        return masterId;
     }
 }

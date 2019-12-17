@@ -136,11 +136,6 @@ public class ClientController {
     }
 
     public void registerDirection(Direction direction){
-
-        if(!isCorrectDirection(direction))
-            return;
-
-        model.setCurrentDirection(direction);
         if(model.getPlayerRole() == NodeRole.MASTER){
             masterController.registerDirection(direction);
             return;
@@ -189,14 +184,6 @@ public class ClientController {
         isMasterAlive = true;
     }
 
-    private boolean isCorrectDirection(Direction direction) {
-        Direction currentDirection = model.getCurrentDirection();
-
-        return !(direction == UP && currentDirection == DOWN ||
-                direction == DOWN && currentDirection == UP ||
-                direction == LEFT && currentDirection == RIGHT ||
-                direction == RIGHT && currentDirection == LEFT);
-    }
 
     // getters setters
 

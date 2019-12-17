@@ -92,7 +92,8 @@ public class Listener {
         System.out.println("JOIN ADDress: " + address);
         JoinMsg joinMsg = message.getJoin();
 
-        int id = masterController.addPlayer(joinMsg.getName(), address.getHostString(), address.getPort(), joinMsg.getOnlyView());
+        NodeRole role = (joinMsg.getOnlyView()) ? NodeRole.VIEWER : NodeRole.NORMAL;
+        int id = masterController.addPlayer(joinMsg.getName(), address.getHostString(), address.getPort(), role);
         masterController.checkDeputy(address, id);
 
         sender.sendAck(address, masterController.getAvailablePlayerId() - 1, message.getMsgSeq());

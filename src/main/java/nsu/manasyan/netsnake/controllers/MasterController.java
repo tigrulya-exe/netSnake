@@ -17,11 +17,10 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
+import static nsu.manasyan.netsnake.proto.SnakesProto.Direction.*;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 
 public class MasterController{
-    private int masterId = 0;
-
     private ClientGameModel model;
 
     private Field field;
@@ -36,7 +35,7 @@ public class MasterController{
 
     private Timer timer;
 
-    private int availablePlayerId = 1;
+    private int availablePlayerId = 0;
 
     private MasterController() {
         snakesController.setController(this);
@@ -51,24 +50,27 @@ public class MasterController{
     }
 
     public void startGame(ClientGameModel currModel, Sender senderIn, Field field){
-        var config = currModel.getCurrentConfig();
+        model = currModel;
+        var config = model.getCurrentConfig();
         masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
-        currModel.setGameState(masterGameModel.toGameState());
+        addPlayer(model.getPlayerName(), "", -1, NodeRole.MASTER);
+        masterGameModel.setMasterDirection();
 
-        init(currModel, senderIn, field, config.getStateDelayMs());
+        model.setGameState(masterGameModel.toGameState());
+        init(senderIn, field, config.getStateDelayMs());
     }
 
     public void becomeMaster(ClientGameModel currModel, Sender senderIn, Field field){
-        masterGameModel = new MasterGameModel(currModel.getGameState());
-        init(currModel, senderIn, field, currModel.getCurrentConfig().getStateDelayMs());
+        model = currModel;
+        masterGameModel = new MasterGameModel(model.getGameState(), model.getPlayerId());
+        masterGameModel.setMasterDirection();
+        init(senderIn, field, model.getCurrentConfig().getStateDelayMs());
     }
 
-    public void init(ClientGameModel currModel, Sender senderIn, Field field, int stateDelayMs){
-        model = currModel;
+    public void init(Sender senderIn, Field field, int stateDelayMs){
         sender = senderIn;
-        masterId = currModel.getPlayerId();
         setField(field);
-        model.setCurrentDirection(masterGameModel.getPlayerHeadDirection(masterId));
+        masterGameModel.setMasterDirection();
         scheduleTurns(stateDelayMs);
     }
 
@@ -127,7 +129,7 @@ public class MasterController{
 
     public void addScore(int playerId, int newPoints){
         if(masterGameModel.getPlayers().get(playerId) == null)
-            System.out.println("{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
+            System.out.println("{{{{{{{{{{{{{{  {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
         masterGameModel.getPlayers().get(playerId).addScore(newPoints);
     }
 
@@ -180,8 +182,7 @@ public class MasterController{
                 field.updateField(c.getX(), c.getY(), Field.Cell.FOOD));
     }
 
-    public int addPlayer(String name, String address, int port, boolean onlyView){
-        NodeRole role = (onlyView ) ? NodeRole.VIEWER : NodeRole.NORMAL;
+    public int addPlayer(String name, String address, int port, NodeRole role){
         Player player = new Player(name,  availablePlayerId++ ,address, port, role, 0);
         System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
@@ -189,7 +190,6 @@ public class MasterController{
         model.addScore(player.getId(), player.getName(), 0);
         masterGameModel.initPlayerHeadDirections(player.getId());
         addSnake(player.getId());
-
         return player.getId();
     }
 
@@ -216,15 +216,32 @@ public class MasterController{
         masterGameModel.setPlayerAlive(playerId, isAlive);
     }
 
-    public void registerPlayerDirection(int playerId, Direction direction){
+    public void registerPlayerDirection(int playerId, Direction newDirection){
+        var snake = masterGameModel.getSnakes().get(playerId);
+        if (!isCorrectDirection(newDirection, snake.getHeadDirection())) {
+            return;
+        }
+
         var directions = masterGameModel.getHeadDirections();
         directions.computeIfAbsent(playerId, k -> new ArrayList<>());
-        directions.get(playerId).add(direction);
+        directions.get(playerId).add(newDirection);
     }
 
-    public void registerDirection(Direction direction){
-        registerPlayerDirection(masterId, direction);
+    public void registerDirection(Direction newDirection){
+        if(isCorrectDirection(newDirection, masterGameModel.getMasterDirection())) {
+            registerPlayerDirection(masterGameModel.getMasterId(), newDirection);
+            masterGameModel.setMasterDirection(newDirection);
+
+        }
     }
+
+    private boolean isCorrectDirection(Direction newDirection, Direction oldDirection) {
+        return !(oldDirection == UP && newDirection == DOWN ||
+                oldDirection == DOWN && newDirection == UP ||
+                oldDirection == LEFT && newDirection == RIGHT ||
+                oldDirection == RIGHT && newDirection == LEFT);
+    }
+
 
     public void gameOver(int playerId){
 
