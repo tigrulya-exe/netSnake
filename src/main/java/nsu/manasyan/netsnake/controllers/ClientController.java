@@ -14,13 +14,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static nsu.manasyan.netsnake.proto.SnakesProto.Direction.*;
 import static nsu.manasyan.netsnake.util.GameObjectBuilder.*;
 
 public class ClientController {
     private static final int DEFAULT_MASTER_ID = 0;
-
-//    private int masterId;
 
     private ClientGameModel model;
 
@@ -91,7 +88,6 @@ public class ClientController {
 
     public void becomeMaster() {
         masterController.becomeMaster(model, sender, field);
-        model.setMasterId(model.getPlayerId());
         initMasterContext();
     }
 
@@ -177,7 +173,7 @@ public class ClientController {
 
 
     public void setPlayerAlive(int id){
-        if(model.getPlayerRole() != NodeRole.MASTER){
+        if(model.getPlayerRole() == NodeRole.MASTER){
             masterController.setPlayerAlive(id, true);
             return;
         }

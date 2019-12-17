@@ -63,7 +63,9 @@ public class MasterController{
     public void becomeMaster(ClientGameModel currModel, Sender senderIn, Field field){
         model = currModel;
         masterGameModel = new MasterGameModel(model.getGameState(), model.getPlayerId());
+        masterGameModel.getPlayers().remove(model.getMasterId());
         init(senderIn, field, model.getCurrentConfig().getStateDelayMs());
+        model.setMasterId(model.getPlayerId());
     }
 
     public void init(Sender senderIn, Field field, int stateDelayMs){
