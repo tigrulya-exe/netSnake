@@ -257,7 +257,7 @@ public class MasterController{
     }
 
     public void stopCurrentGame(){
-        availablePlayerId = 1;
+        availablePlayerId = 0;
         if(masterGameModel != null){
             timer.cancel();
             masterGameModel.clear();
@@ -296,6 +296,8 @@ public class MasterController{
         Map<Integer, Player> players = masterGameModel.getPlayers();
         Player player = players.get(playerId);
 
+        checkDeputyDeath(playerId);
+
         if(player.getRole() == NodeRole.MASTER && model.getDeputyAddress() != null){
             var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER, model.getPlayerId());
             sender.sendConfirmRequiredMessage(model.getDeputyAddress(), roleChangeMsg, model.getDeputyId());
@@ -304,6 +306,7 @@ public class MasterController{
         }
 
         players.get(playerId).setRole(NodeRole.VIEWER);
+        masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
     }
 
     // getters

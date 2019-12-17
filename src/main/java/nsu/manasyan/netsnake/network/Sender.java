@@ -127,7 +127,7 @@ public class Sender {
         };
 
         timer.schedule(masterSendPing, pingDelayMs, pingDelayMs);
-        timer.schedule(getCheckAlivePlayersTask(), nodeTimeoutMs * 2, nodeTimeoutMs);
+        timer.schedule(getCheckAlivePlayersTask(), nodeTimeoutMs, nodeTimeoutMs);
         timer.schedule(broadcastAnnouncement, 1000, 1000);
         timer.schedule(getCheckSentMessagesTask(), nodeTimeoutMs/2, nodeTimeoutMs/2);
     }
@@ -187,7 +187,7 @@ public class Sender {
         int nodeTimeoutMs = clientController.getConfig().getNodeTimeoutMs();
         int pingDelayMs = clientController.getConfig().getPingDelayMs();
 
-        timer.schedule(playerSendPing, pingDelayMs, pingDelayMs);
+        timer.schedule(playerSendPing, 0, pingDelayMs);
         timer.schedule(checkMaster, nodeTimeoutMs, nodeTimeoutMs);
         timer.schedule(getCheckSentMessagesTask(), nodeTimeoutMs/2, nodeTimeoutMs/2);
     }
@@ -213,6 +213,8 @@ public class Sender {
                     var entry = iter.next();
                     if(entry.getValue() || entry.getKey() == masterId) {
                         alivePlayers.put(entry.getKey(), false);
+                        if(entry.getKey() == 1)
+                           System.out.println("1 JHBEKUBHEJLKFJEF");
                         continue;
                     }
 

@@ -3,6 +3,7 @@ package nsu.manasyan.netsnake.controllers;
 import nsu.manasyan.netsnake.Wrappers.FullPoints;
 import nsu.manasyan.netsnake.models.Field;
 import nsu.manasyan.netsnake.Wrappers.Snake;
+import nsu.manasyan.netsnake.proto.SnakesProto;
 import nsu.manasyan.netsnake.proto.SnakesProto.Direction;
 import nsu.manasyan.netsnake.proto.SnakesProto.GameState.Coord;
 
@@ -119,7 +120,8 @@ public class SnakesController {
 
         field.updateField(x, y, FREE);
         controller.getModifiableFoods().removeIf(f -> f.getY() == y && f.getX() == x);
-        controller.addScore(snake.getPlayerId(), 1);
+        if(snake.getSnakeState() != SnakesProto.GameState.Snake.SnakeState.ZOMBIE)
+            controller.addScore(snake.getPlayerId(), 1);
     }
 
     public void setController(MasterController mainController) {

@@ -155,8 +155,8 @@ public class Listener {
             clientController.setMasterAddress(address);
         }
         else if(roleChangeMsg.getSenderRole() == NodeRole.VIEWER){
-            masterController.removePlayer(message.getSenderId());
-//            masterController.setPlayerAsViewer(message.getSenderId());
+//            masterController.removePlayer(message.getSenderId());
+            masterController.setPlayerAsViewer(message.getSenderId());
         }
 
         if(roleChangeMsg.getReceiverRole() == NodeRole.DEPUTY){
