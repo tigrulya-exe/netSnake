@@ -135,19 +135,6 @@ public class MasterController{
     public void scheduleTurns(int stateDelayMs){
         gameLoop = Executors.newSingleThreadExecutor();
 
-//        TimerTask newTurn  = new TimerTask() {
-//            @Override
-//            public void run() {
-//                try {
-//                    newTurn();
-//                    GameState gameState = model.getGameState();
-//                    GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
-//                    sender.broadcastState(stateMessage);
-//                } catch (MasterDeadException exception){
-//                    System.out.println("DEAD");
-//                }
-//            }
-//        };
         gameLoop.submit(() -> {
             boolean interrupted = false;
             while (!interrupted) {
@@ -163,11 +150,10 @@ public class MasterController{
                     interrupted = true;
                 }
             }
+            model.setGameState(masterGameModel.toGameState());
             stopCurrentGame();
-
+            sender.stop();
         });
-
-//        timer.schedule(newTurn, stateDelayMs, stateDelayMs);
     }
 
     public void addScore(int playerId, int newPoints){
@@ -294,18 +280,18 @@ public class MasterController{
         turnDeadSnakeIntoFood(deadSnake);
 
         if(deadSnake.getSnakeState() != GameState.Snake.SnakeState.ZOMBIE) {
-            if (getPlayerRole(playerId) == NodeRole.MASTER) {
-                model.setPlayerRole(NodeRole.VIEWER);
-            }
             model.removeScore(playerId);
             setPlayerAsViewer(playerId);
+            if (getPlayerRole(playerId) == NodeRole.MASTER) {
+                model.setPlayerRole(NodeRole.VIEWER);
+                throw new MasterDeadException();
+            }
         }
     }
 
     public void stopCurrentGame(){
         availablePlayerId = 0;
         if(masterGameModel != null){
-//            timer.cancel();
             gameLoop.shutdownNow();
             masterGameModel.clear();
         }
@@ -349,16 +335,13 @@ public class MasterController{
     }
 
     private void sendRoleChangeToDeputy(Player player){
-        if(player.getRole() == NodeRole.MASTER) {
-            if (model.getDeputyAddress() != null) {
+        if(player.getRole() == NodeRole.MASTER && model.getDeputyAddress() != null) {
                 var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER,
                         model.getPlayerId(), player.getId());
                 sender.sendConfirmRequiredMessage(model.getDeputyAddress(), roleChangeMsg, model.getDeputyId());
                 stopCurrentGame();
-                sender.stop();
                 sender.setClientTimer(model.getDeputyAddress(), model.getMasterId());
-            }
-            throw new MasterDeadException();
+
         }
     }
 

@@ -59,6 +59,7 @@ public class Listener {
             GameMessage message;
             TypeCase type;
 
+
             DatagramPacket packetToReceive = new DatagramPacket(receiveBuf, BUF_LENGTH);
             isInterrupted = false;
             try {
@@ -69,10 +70,11 @@ public class Listener {
 
                     type = message.getTypeCase();
 
-                    if(!joined && (type != TypeCase.ACK && type != TypeCase.ANNOUNCEMENT) )
-                        continue;
-//                    if(type!=TypeCase.PING)
-//                        System.out.println("[" + message.getMsgSeq() + "] Received type: " + type);
+//                    if(!joined && (type != TypeCase.ACK && type != TypeCase.ANNOUNCEMENT) )
+//                        continue;
+
+                    if(type!=TypeCase.PING)
+                        System.out.println("[" + message.getMsgSeq() + "] Received type: " + type);
 
                     handlers.get(type).handle(message, (InetSocketAddress) packetToReceive.getSocketAddress());
                     packetToReceive.setLength(BUF_LENGTH);
@@ -88,7 +90,12 @@ public class Listener {
         isInterrupted = true;
     }
 
+    public void setJoined(boolean joined) {
+        this.joined = joined;
+    }
+
     public void reload(){
+        joined = false;
         joinMsgSeq = -1;
         lastStateSeq = 0;
     }
