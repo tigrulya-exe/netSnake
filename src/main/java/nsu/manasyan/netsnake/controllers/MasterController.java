@@ -254,7 +254,8 @@ public class MasterController{
 
     public void registerPlayerDirection(int playerId, Direction newDirection){
         var snake = masterGameModel.getSnakes().get(playerId);
-        if (!isCorrectDirection(newDirection, snake.getHeadDirection())) {
+
+        if (snake == null ||!isCorrectDirection(newDirection, snake.getHeadDirection())) {
             return;
         }
 

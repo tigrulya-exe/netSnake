@@ -31,6 +31,10 @@ public class ClientController {
 
     private volatile boolean isMasterAlive = true;
 
+    public long getLastStateSeq() {
+        return model.getLastStateSeq();
+    }
+
     private static class SingletonHelper{
         private static final ClientController controller = new ClientController();
     }

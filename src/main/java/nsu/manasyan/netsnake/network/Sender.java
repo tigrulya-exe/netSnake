@@ -91,6 +91,7 @@ public class Sender {
         needToSendPing = false;
 
         System.out.println("Send to " + receiverAddress + " : " + message.getTypeCase());
+
         try {
             byte[] buf = message.toByteArray();
             socket.send(new DatagramPacket(buf, buf.length, receiverAddress));

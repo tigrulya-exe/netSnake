@@ -15,6 +15,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ClientGameModel {
 
+    public long getLastStateSeq() {
+        return lastStateSeq;
+    }
+
     public interface GameStateListener{
         void onUpdate(List<ScoreContext> scores);
     }
@@ -28,6 +32,8 @@ public class ClientGameModel {
     }
 
     private int playerId;
+
+    private long lastStateSeq = 0;
 
     private int masterId = 0;
 
@@ -87,6 +93,7 @@ public class ClientGameModel {
 
     public void setGameState(GameState gameState) {
         this.gameState = gameState;
+        lastStateSeq = gameState.getStateOrder();
         updateScores(gameState.getPlayers().getPlayersList());
         notifyAllGameStateListeners();
     }

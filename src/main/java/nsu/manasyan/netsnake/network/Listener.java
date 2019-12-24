@@ -65,6 +65,7 @@ public class Listener {
             try {
                 socket.joinGroup(multicastAddress);
                 while (!isInterrupted) {
+                    System.out.println("LISO");
                     socket.receive(packetToReceive);
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
 
@@ -112,7 +113,7 @@ public class Listener {
 
     private void handleState(GameMessage message, InetSocketAddress address){
         clientController.setPlayerAlive(message.getSenderId());
-        if(message.getMsgSeq() < lastStateSeq){
+        if(message.getMsgSeq() < clientController.getLastStateSeq()){
             sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
             return;
         }
