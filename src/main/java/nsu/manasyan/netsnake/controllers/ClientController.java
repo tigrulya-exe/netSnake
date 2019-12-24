@@ -103,7 +103,7 @@ public class ClientController {
         int masterId = model.getMasterId();
         GameMessage roleChange = getRoleChangeMessage(NodeRole.VIEWER, null,
                 model.getPlayerId(), masterId);
-        sender.sendConfirmRequiredMessage(model.getMasterAddress(), roleChange, masterId);
+//        sender.sendConfirmRequiredMessage(model.getMasterAddress(), roleChange, masterId);
     }
 
     public void changeMaster() {
@@ -134,9 +134,11 @@ public class ClientController {
     }
 
     public void registerDirection(Direction direction){
-        if(model.getPlayerRole() == NodeRole.MASTER){
-            masterController.registerDirection(direction);
-            return;
+        switch (model.getPlayerRole()){
+            case MASTER:
+                masterController.registerDirection(direction);
+            case VIEWER:
+                return;
         }
 
         GameMessage message = getSteerMessage(direction,model.getPlayerId());

@@ -16,6 +16,9 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import static nsu.manasyan.netsnake.models.Field.Cell.HEAD;
 import static nsu.manasyan.netsnake.proto.SnakesProto.Direction.*;
@@ -34,7 +37,9 @@ public class MasterController{
 
     private Sender sender;
 
-    private Timer timer;
+//    private Timer timer;
+
+    private ExecutorService gameLoop = Executors.newSingleThreadExecutor();
 
     private int availablePlayerId = 0;
 
@@ -52,8 +57,11 @@ public class MasterController{
 
     public void startGame(ClientGameModel currModel, Sender senderIn, Field field){
         model = currModel;
+        availablePlayerId = 0;
+        this.field = field;
         var config = model.getCurrentConfig();
-        masterGameModel = new MasterGameModel(initNewFoods(config, field), config);
+        masterGameModel = new MasterGameModel(initNewFoods(config, field),
+                config, model.getPlayerId());
         addPlayer(model.getPlayerName(), "", 9192, NodeRole.MASTER);
         masterGameModel.setMasterDirection();
 
@@ -67,8 +75,10 @@ public class MasterController{
 //        masterGameModel.getPlayers().remove(model.getMasterId());
         initOldMasterAddress();
         init(senderIn, field, model.getCurrentConfig().getStateDelayMs());
-        model.setMasterId(model.getPlayerId());
-        masterGameModel.getPlayers().get(model.getMasterId()).setRole(NodeRole.MASTER);
+
+        int playerId = model.getPlayerId();
+        model.setMasterId(playerId);
+        masterGameModel.getPlayers().get(playerId).setRole(NodeRole.MASTER);
     }
 
     private void initOldMasterAddress() {
@@ -101,6 +111,7 @@ public class MasterController{
     private void checkDeputyDeath(int playerId) {
         if (model.getDeputyId() != playerId)
             return;
+
         try {
             model.setDeputyAddress(null);
 
@@ -122,22 +133,38 @@ public class MasterController{
     }
 
     public void scheduleTurns(int stateDelayMs){
-        timer = new Timer();
+        gameLoop = Executors.newSingleThreadExecutor();
 
-        TimerTask newTurn  = new TimerTask() {
-            @Override
-            public void run() {
-                try {
+//        TimerTask newTurn  = new TimerTask() {
+//            @Override
+//            public void run() {
+//                try {
+//                    newTurn();
+//                    GameState gameState = model.getGameState();
+//                    GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
+//                    sender.broadcastState(stateMessage);
+//                } catch (MasterDeadException exception){
+//                    System.out.println("DEAD");
+//                }
+//            }
+//        };
+        gameLoop.submit(() -> {
+            try {
+                while (true) {
                     newTurn();
                     GameState gameState = model.getGameState();
                     GameMessage stateMessage = GameObjectBuilder.initStateMessage(gameState);
                     sender.broadcastState(stateMessage);
-                } catch (MasterDeadException exception){
-                    System.out.println("DEAD");
+
+                    Thread.sleep(stateDelayMs);
                 }
+            } catch (MasterDeadException | InterruptedException exception){
+                System.out.println("DEAD");
+                stopCurrentGame();
             }
-        };
-        timer.schedule(newTurn, stateDelayMs, stateDelayMs);
+        });
+
+//        timer.schedule(newTurn, stateDelayMs, stateDelayMs);
     }
 
     public void addScore(int playerId, int newPoints){
@@ -196,7 +223,7 @@ public class MasterController{
     }
 
     public int addPlayer(String name, String address, int port, NodeRole role){
-        Player player = new Player(name,  availablePlayerId++ ,address, port, role, 0);
+        Player player = new Player(name, availablePlayerId++ ,address, port, role, 0);
         System.out.println("ADDRESS: " + player.getIpAddress() + " : " + player.getPort());
 
         masterGameModel.addPlayer(player);
@@ -240,6 +267,7 @@ public class MasterController{
     }
 
     public void registerDirection(Direction newDirection){
+
         if(isCorrectDirection(newDirection, masterGameModel.getMasterDirection())) {
             registerPlayerDirection(model.getMasterId(), newDirection);
             masterGameModel.setMasterDirection(newDirection);
@@ -261,9 +289,12 @@ public class MasterController{
         if(deadSnake == null)
             System.out.println("lkn");
         turnDeadSnakeIntoFood(deadSnake);
-//        removeSnake(playerId);
 
         if(deadSnake.getSnakeState() != GameState.Snake.SnakeState.ZOMBIE) {
+            if (getPlayerRole(playerId) == NodeRole.MASTER) {
+                model.setPlayerRole(NodeRole.VIEWER);
+                throw new MasterDeadException();
+            }
             setPlayerAsViewer(playerId);
             model.removeScore(playerId);
         }
@@ -272,7 +303,8 @@ public class MasterController{
     public void stopCurrentGame(){
         availablePlayerId = 0;
         if(masterGameModel != null){
-            timer.cancel();
+//            timer.cancel();
+            gameLoop.shutdownNow();
             masterGameModel.clear();
         }
     }
@@ -307,21 +339,28 @@ public class MasterController{
 
     public void setPlayerAsViewer(int playerId) {
         Map<Integer, Player> players = masterGameModel.getPlayers();
-        Player player = players.get(playerId);
-
         checkDeputyDeath(playerId);
+        sendRoleChangeToDeputy(players.get(playerId));
 
+        players.get(playerId).setRole(NodeRole.VIEWER);
+        masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
+    }
+
+    private void sendRoleChangeToDeputy(Player player){
         if(player.getRole() == NodeRole.MASTER && model.getDeputyAddress() != null){
-            var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER, model.getPlayerId(), playerId);
+            var roleChangeMsg = getRoleChangeMessage(NodeRole.VIEWER, NodeRole.MASTER,
+                    model.getPlayerId(), player.getId());
             sender.sendConfirmRequiredMessage(model.getDeputyAddress(), roleChangeMsg, model.getDeputyId());
             stopCurrentGame();
             sender.stop();
             sender.setClientTimer(model.getDeputyAddress(), model.getMasterId());
             throw new MasterDeadException();
         }
+    }
 
-        players.get(playerId).setRole(NodeRole.VIEWER);
-        masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
+    private NodeRole getPlayerRole(int playerId){
+        Player player = masterGameModel.getPlayers().get(playerId);
+        return player.getRole();
     }
 
     // getters

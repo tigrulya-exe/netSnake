@@ -29,7 +29,8 @@ public class MasterGameModel {
 
     private SnakesProto.Direction masterDirection;
 
-    public MasterGameModel(List<Coord> foods, SnakesProto.GameConfig config) {
+    public MasterGameModel(List<Coord> foods, SnakesProto.GameConfig config, int newMasterId) {
+        this.masterId = newMasterId;
         this.foods = foods;
         this.config = config;
         players.put(masterId, GameObjectBuilder.initMaster());

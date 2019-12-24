@@ -53,7 +53,7 @@ public class Sender {
         if (masterController.getPlayers().size() == 1) {
             return;
         }
-//        System.out.println("Broadcast: " + message.getTypeCase());
+        System.out.println("Broadcast: " + message.getTypeCase());
 
 //        GameExecutorService.getExecutorService().submit(() ->
         masterController.getPlayers().forEach(player -> {
