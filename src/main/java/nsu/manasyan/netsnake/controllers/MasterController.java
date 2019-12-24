@@ -102,9 +102,17 @@ public class MasterController{
 
     public void removePlayer(int playerId) {
         System.out.println("PLAYER REMOVED: " + playerId);
+        Player player = masterGameModel.getPlayers().get(playerId);
+
+        if(player == null){
+            return;
+        }
+
+        if(player.getRole() != NodeRole.VIEWER){
+            masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
+            model.removeScore(playerId);
+        }
         masterGameModel.getPlayers().remove(playerId);
-        masterGameModel.getSnakes().get(playerId).setSnakeState(GameState.Snake.SnakeState.ZOMBIE);
-        model.removeScore(playerId);
         checkDeputyDeath(playerId);
     }
 
