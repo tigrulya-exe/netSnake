@@ -78,6 +78,7 @@ public class MasterController{
 
         int playerId = model.getPlayerId();
         model.setMasterId(playerId);
+        model.setPlayerRole(NodeRole.MASTER);
         masterGameModel.getPlayers().get(playerId).setRole(NodeRole.MASTER);
     }
 
@@ -165,8 +166,6 @@ public class MasterController{
     }
 
     public void addScore(int playerId, int newPoints){
-        if(masterGameModel.getPlayers().get(playerId) == null)
-            System.out.println("{{{{{{{{{{{{{{  {{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{");
         masterGameModel.getPlayers().get(playerId).addScore(newPoints);
     }
 
@@ -282,10 +281,8 @@ public class MasterController{
 
 
     public void gameOver(int playerId){
-
-        Snake deadSnake = masterGameModel.getSnakes().get(playerId);
-        if(deadSnake == null)
-            System.out.println("lkn");
+        var snakes = masterGameModel.getSnakes();
+        Snake deadSnake = snakes.get(playerId);
         turnDeadSnakeIntoFood(deadSnake);
 
         if(deadSnake.getSnakeState() != GameState.Snake.SnakeState.ZOMBIE) {
@@ -293,6 +290,7 @@ public class MasterController{
             setPlayerAsViewer(playerId);
             if (getPlayerRole(playerId) == NodeRole.MASTER) {
                 model.setPlayerRole(NodeRole.VIEWER);
+                snakes.remove(playerId);
                 throw new MasterDeadException();
             }
         }
@@ -384,5 +382,4 @@ public class MasterController{
     public Map<Integer, Boolean> getAlivePlayers(){
         return masterGameModel.getAlivePlayers();
     }
-
 }

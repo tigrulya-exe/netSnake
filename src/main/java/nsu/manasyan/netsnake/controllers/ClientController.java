@@ -117,6 +117,10 @@ public class ClientController {
             becomeMaster();
             return;
         }
+
+        if(model.getDeputyAddress() == null)
+            return;
+
         model.setMasterAddress(model.getDeputyAddress());
         model.setDeputyAddress(null);
     }

@@ -113,10 +113,10 @@ public class Listener {
 
     private void handleState(GameMessage message, InetSocketAddress address){
         clientController.setPlayerAlive(message.getSenderId());
-        if(message.getMsgSeq() < clientController.getLastStateSeq()){
-            sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
-            return;
-        }
+//        if(message.getMsgSeq() < clientController.getLastStateSeq()){
+//            sender.sendAck(address, clientController.getMasterId(), message.getMsgSeq());
+//            return;
+//        }
 
         lastStateSeq = message.getMsgSeq();
         clientController.setGameState(message.getState().getState());
