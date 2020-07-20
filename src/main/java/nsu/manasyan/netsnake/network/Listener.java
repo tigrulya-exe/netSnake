@@ -65,7 +65,6 @@ public class Listener {
             try {
                 socket.joinGroup(multicastAddress);
                 while (!isInterrupted) {
-                    System.out.println("LISO");
                     socket.receive(packetToReceive);
                     message = SnakesProto.GameMessage.parseFrom(Arrays.copyOf(receiveBuf, packetToReceive.getLength()));
 
@@ -73,9 +72,6 @@ public class Listener {
 
 //                    if(!joined && (type != TypeCase.ACK && type != TypeCase.ANNOUNCEMENT) )
 //                        continue;
-
-                    if(type!=TypeCase.PING)
-                        System.out.println("[" + message.getMsgSeq() + "] Received type: " + type);
 
                     handlers.get(type).handle(message, (InetSocketAddress) packetToReceive.getSocketAddress());
                     packetToReceive.setLength(BUF_LENGTH);
